@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>-_-</title>
+  <style>
+  canvas {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    background: transparent;
+    display: inline;
+  }
+  #backgroundID {
+    z-index: -1;
+  }
+  #buddhaID {
+    z-index: 0;
+  }
+  #wrapper {
+    margin-right: auto;
+    margin-left: auto;
+    width: 800px;
+  }
+  #canvascontainer {
+    width: 100%;
+    text-align:center;
+  }
+  </style>
+</head>
+<body>
+  <div id="wrapper">
+
+    <div id="canvascontainer">
+      <!-- The canvas for the panning background -->
+      <canvas id="backgroundID" width="800" height="600">
+        Your browser does not support canvas. Please try again with a different browser.
+      </canvas>
+      <canvas id="buddhaID" width="800" height="600">
+      </canvas>
+      <script src="big_flying_buddha.js"></script>
+    </div>
+
+  </div>
+
+</body>
+</html>
