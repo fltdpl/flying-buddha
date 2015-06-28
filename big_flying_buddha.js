@@ -1,6 +1,4 @@
-/**
- * Initialize the Game and starts it.
- */
+//Initialize the Game and starts it.
 var game = new Game();
 
 function init() {
@@ -8,49 +6,6 @@ function init() {
     game.start();
 }
 
-/**
- * Define an object to hold all our images for the game so images
- * are only ever created once. This type of object is known as a
- * singleton.
- */
-var imageRepository = new function() {
-  // Define images
-  this.background = new Image();
-  this.buddha = new Image();
-  this.flameright = new Image();
-  this.flameleft = new Image();
-
-  var numImages = 4;
-  var numLoaded = 0;
-  function imageLoaded() {
-    numLoaded++;
-    if (numLoaded === numImages) {
-      window.init();
-    }
-  }
-
-  this.background.onload = function() {
-    imageLoaded();
-  }
-
-  this.buddha.onload = function() {
-    imageLoaded();
-  }
-
-  this.flameright.onload = function() {
-    imageLoaded();
-  }
-
-  this.flameleft.onload = function() {
-    imageLoaded();
-  }
-
-  // Set images src
-  this.background.src = 'images/starland.png';
-  this.buddha.src = 'images/me.png';
-  this.flameright.src = 'images/flame_r1.png'
-  this.flameleft.src = 'images/flame_l1.png'
-}
 
 /**
  * Creates the Drawable object which will be the base class for
@@ -80,9 +35,7 @@ function Drawable() {
 }
 
 /**
- * Creates the Background object which will become a child of
- * the Drawable object. The background is drawn on the "background"
- * canvas and creates the illusion of moving by panning the image.
+ * Background object
  */
 function Background() {
   this.speed = 1; // Redefine speed of the background for panning
@@ -102,14 +55,31 @@ function Background() {
   };
 }
 
-// Set Background to inherit properties from Drawable
 Background.prototype = new Drawable();
 
 
 /**
- * Create the Buddha object that the player controls. The ship is
- * drawn on the "ship" canvas and uses dirty rectangles to move
- * around the screen.
+ * Obstacle object
+ */
+function Obstacle() {
+  this.obstacle = imageRepository.obstacle01;
+  this.speed = 2;
+
+  this.draw = function() {
+    this.context.clearRect(this.x, this.y, this.width, this.height);
+    this.y += this.speed;
+    this.context.drawImage(this.obstacle, this.x, this.y);
+
+    if (this.y >= this.canvasHeight)
+    this.y = 0;
+  }
+}
+
+Obstacle.prototype = new Drawable();
+
+
+/**
+ * Buddha object
  */
 function Buddha() {
   this.speed = 3;
@@ -190,8 +160,7 @@ function Buddha() {
 Buddha.prototype = new Drawable();
 
 /**
- * Creates the Game object which will hold all objects and data for
- * the game.
+ * Creates the Game object which will hold all objects and data for the game.
  */
 function Game() {
   /*
@@ -205,11 +174,13 @@ function Game() {
     // Get the canvas element
     this.backgroundCanvas = document.getElementById('backgroundID');
     this.buddhaCanvas = document.getElementById('buddhaID');
+    this.obstaclesCanvas = document.getElementById('obstaclesID');
 
     // Test to see if canvas is supported
     if (this.backgroundCanvas.getContext) {
       this.backgroundContext = this.backgroundCanvas.getContext('2d');
       this.buddhaContext = this.buddhaCanvas.getContext('2d');
+      this.obstaclesContext = this.obstaclesCanvas.getContext('2d');
 
       // Initialize objects to contain their context and canvas
       // information
@@ -221,9 +192,19 @@ function Game() {
       Buddha.prototype.canvasWidth = this.buddhaCanvas.width;
       Buddha.prototype.canvasHeight = this.buddhaCanvas.height;
 
+      Obstacle.prototype.context = this.obstaclesContext;
+      Obstacle.prototype.canvasWidth = this.obstaclesCanvas.width;
+      Obstacle.prototype.canvasHeight = this.obstaclesCanvas.height;
+
       // Initialize the background object
       this.background = new Background();
       this.background.init(0, 0); // Set draw point to 0,0
+
+      // Initilize the obstacles object
+      this.obstacles = new Obstacle();
+      var obstaclesStartX = this.obstaclesCanvas.width / 2;
+      this.obstacles.init(obstaclesStartX, 0, imageRepository.obstacle01.width,
+        imageRepository.obstacle01.height); // Set draw point to 0,0
 
       // Initialize the buddha object
       this.buddhaO = new Buddha();
@@ -242,6 +223,7 @@ function Game() {
   // Start the animation loop
   this.start = function() {
     this.buddhaO.draw();
+    this.obstacles.draw();
     animate();
   };
 }
@@ -255,6 +237,7 @@ function Game() {
 function animate() {
   requestAnimFrame(animate);
   game.background.draw();
+  game.obstacles.draw();
   game.buddhaO.move();
 }
 
