@@ -6,6 +6,11 @@ function init() {
     game.start();
 }
 
+// Returns a random integer between min (included) and max (excluded)
+// Using Math.round() will give you a non-uniform distribution!
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
 
 /**
  * Creates the Drawable object which will be the base class for
@@ -59,20 +64,109 @@ Background.prototype = new Drawable();
 
 
 /**
+ * Pool holds obstacles to be managed to prevent garbage collection.
+ */
+function Pool(maxSize) {
+  var size = maxSize; // Max obstacles allowed in the pool
+  var pool = [];
+  this.obstacleRate = 100;
+  this.obstacleSpeed = 2;
+  this.counter = 0;
+
+  // populate the pool array with obstacles
+  this.init = function() {
+    for (var i = 0; i < size; i++) {
+      // Initalize the obstacle object
+      var obstacle = new Obstacle();
+      obstacle.init(0, 0, imageRepository.obstacle01.width,
+        imageRepository.obstacle01.height);
+      pool[i] = obstacle;
+    }
+  };
+
+  /*
+   * Grabs the last item in the list and initializes it and
+   * pushes it to the front of the array.
+   */
+  this.get = function(x, y, speed) {
+    if (!pool[size - 1].alive) {
+      pool[size - 1].spawn(x, y, speed);
+      pool.unshift(pool.pop());
+    }
+  };
+
+  /*
+	 * Draws any in use obstacle. If a obstacle goes off the screen,
+	 * clears it and pushes it to the front of the array.
+	 */
+  this.animate = function() {
+    this.counter++;
+    for (var i = 0; i < size; i++) {
+
+      // Only draw until we find a obstacle that is not alive
+      if (pool[i].alive) {
+        if (pool[i].draw()) {
+          pool[i].clear();
+          pool.push((pool.splice(i, 1))[0]);
+        }
+      } else {
+        var xmin = 0;
+        var xmax = 800;
+        var xRand = getRandomInt(xmin, xmax);
+        var yspeed = Math.random() * 2 + (3 / 2);
+        if (this.counter >= this.obstacleRate) {
+          if (!pool[size - 1].alive) {
+            this.counter = 0;
+            this.get(xRand, 0, yspeed);
+          }
+        }
+
+        break;
+      }
+    }
+  };
+
+}
+
+
+/**
  * Obstacle object
  */
 function Obstacle() {
+  this.alive = false; // Is true if the obstacle is currently in use
   this.obstacle = imageRepository.obstacle01;
   this.speed = 2;
 
-  this.draw = function() {
-    this.context.clearRect(this.x, this.y, this.width, this.height);
-    this.y += this.speed;
-    this.context.drawImage(this.obstacle, this.x, this.y);
+  // Sets the obstacle values
+  this.spawn = function(x, y, speed) {
+    this.x = x;
+    this.y = y;
+    this.speed = speed;
+    this.alive = true;
+  };
 
-    if (this.y >= this.canvasHeight)
-    this.y = 0;
+  this.draw = function() {
+    this.context.clearRect(this.x - 1, this.y - 1, this.width + 2, this.height + 2);
+    this.y += this.speed;
+
+    if (this.y >= this.canvasHeight) {
+      this.y = 0;
+      return true;
+    } else {
+      this.context.drawImage(this.obstacle, this.x, this.y);
+      return false;
+    }
+
   }
+
+  // Resets the obstacle values
+  this.clear = function() {
+    this.x = 0;
+    this.y = 0;
+    this.speed = 0;
+    this.alive = false;
+  };
+
 }
 
 Obstacle.prototype = new Drawable();
@@ -201,10 +295,13 @@ function Game() {
       this.background.init(0, 0); // Set draw point to 0,0
 
       // Initilize the obstacles object
-      this.obstacles = new Obstacle();
-      var obstaclesStartX = this.obstaclesCanvas.width / 2;
-      this.obstacles.init(obstaclesStartX, 0, imageRepository.obstacle01.width,
-        imageRepository.obstacle01.height); // Set draw point to 0,0
+      this.obstaclePool = new Pool(30);
+      this.obstaclePool.init();
+
+      //this.obstacles = new Obstacle();
+      //var obstaclesStartX = this.obstaclesCanvas.width / 2;
+      //this.obstacles.init(obstaclesStartX, 0, imageRepository.obstacle01.width,
+      //  imageRepository.obstacle01.height); // Set draw point to 0,0
 
       // Initialize the buddha object
       this.buddhaO = new Buddha();
@@ -223,7 +320,8 @@ function Game() {
   // Start the animation loop
   this.start = function() {
     this.buddhaO.draw();
-    this.obstacles.draw();
+
+    //this.obstacles.draw();
     animate();
   };
 }
@@ -237,7 +335,9 @@ function Game() {
 function animate() {
   requestAnimFrame(animate);
   game.background.draw();
-  game.obstacles.draw();
+  game.obstaclePool.animate();
+
+  //game.obstacles.draw();
   game.buddhaO.move();
 }
 
