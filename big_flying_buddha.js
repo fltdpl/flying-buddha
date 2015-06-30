@@ -12,6 +12,34 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
+// calculate readable time
+String.prototype.toHHMMSS = function() {
+  var secnum = parseInt(this, 10); // don't forget the second param
+  var hours   = Math.floor(secnum / 3600);
+  var minutes = Math.floor((secnum - (hours * 3600)) / 60);
+  var seconds = secnum - (hours * 3600) - (minutes * 60);
+
+  if (hours   < 10) {
+    hours   = '0' + hours;
+  }
+
+  if (minutes < 10) {
+    minutes = '0' + minutes;
+  }
+
+  if (seconds < 10) {
+    seconds = '0' + seconds;
+  }
+
+  if (hours < 1) {
+    var time = minutes + ':' + seconds;
+  } else {
+    var time = hours + ':' + minutes + ':' + seconds;
+  }
+
+  return time;
+}
+
 /**
  * Creates the Drawable object which will be the base class for
  * all drawable objects in the game. Sets up defualt variables
@@ -99,6 +127,8 @@ function Pool(maxSize) {
 	 */
   this.animate = function() {
     this.counter++;
+    var timediv = (new Date().getTime() - game.gamestarttime) / 1000;
+    game.playtime = timediv.toString().toHHMMSS();
     for (var i = 0; i < size; i++) {
 
       // Only draw until we find a obstacle that is not alive
@@ -270,12 +300,12 @@ Buddha.prototype = new Drawable();
  */
 function Game() {
   /*
-  	 * Gets canvas information and context and sets up all game
-  	 * objects.
-  	 * Returns true if the canvas is supported and false if it
-  	 * is not. This is to stop the animation script from constantly
-  	 * running on older browsers.
-  	 */
+   * Gets canvas information and context and sets up all game
+   * objects.
+   * Returns true if the canvas is supported and false if it
+   * is not. This is to stop the animation script from constantly
+   * running on older browsers.
+   */
   this.init = function() {
     // Get the canvas element
     this.backgroundCanvas = document.getElementById('backgroundID');
@@ -310,11 +340,6 @@ function Game() {
       this.obstaclePool = new Pool(30);
       this.obstaclePool.init();
 
-      //this.obstacles = new Obstacle();
-      //var obstaclesStartX = this.obstaclesCanvas.width / 2;
-      //this.obstacles.init(obstaclesStartX, 0, imageRepository.obstacle01.width,
-      //  imageRepository.obstacle01.height); // Set draw point to 0,0
-
       // Initialize the buddha object
       this.buddhaO = new Buddha();
 
@@ -322,6 +347,9 @@ function Game() {
       var buddhaStartY = this.buddhaCanvas.height / (4) + imageRepository.buddha.height * 2;
       this.buddhaO.init(buddhaStartX, buddhaStartY, imageRepository.buddha.width,
         imageRepository.buddha.height);
+
+      this.gamestarttime = new Date().getTime();
+      this.playtime = 0;
 
       return true;
     } else {
@@ -347,6 +375,7 @@ function animate() {
   game.background.draw();
   game.obstaclePool.animate();
   game.buddhaO.move();
+  document.getElementById('timescore').innerHTML = game.playtime;
 }
 
 // The keycodes that will be mapped when a user presses a button.

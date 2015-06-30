@@ -12,6 +12,11 @@
     top: 0px;
     background: transparent;
   }
+  #wrapper {
+    margin-right: auto;
+    margin-left: auto;
+    width: 800px;
+  }
   #backgroundID {
     z-index: -2;
   }
@@ -21,12 +26,14 @@
   #obstaclesID {
     z-index: 0;
   }
-
-  #wrapper {
-    margin-right: auto;
-    margin-left: auto;
-    width: 800px;
-  }
+  .timescore {
+  position: relative;
+  top: 10px;
+  left: 370px;
+  color: #4e4e4e;
+  font-family: Helvetica, sans-serif;
+  cursor: default;
+}
   </style>
 </head>
 <body>
@@ -39,6 +46,7 @@
     </canvas>
     <canvas id="obstaclesID" width="800" height="600">
     </canvas>
+    <div class="timescore">Zeit: <span id="timescore"></span></div>
     <script src="coll.js"></script>
     <script src="images.js"></script>
     <script src="big_flying_buddha.js"></script>
