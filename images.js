@@ -6,10 +6,6 @@ var imageRepository = new function() {
   this.flameright = new Image();
   this.flameleft = new Image();
   this.obstacle01 = new Image();
-  this.obstacle02 = new Image();
-  this.obstacle03 = new Image();
-  this.obstacle04 = new Image();
-  this.obstacle05 = new Image();
 
   var numImages = 5;
   var numLoaded = 0;
@@ -40,31 +36,11 @@ var imageRepository = new function() {
     imageLoaded();
   }
 
-  this.obstacle02.onload = function() {
-    imageLoaded();
-  }
-
-  this.obstacle03.onload = function() {
-    imageLoaded();
-  }
-
-  this.obstacle04.onload = function() {
-    imageLoaded();
-  }
-
-  this.obstacle05.onload = function() {
-    imageLoaded();
-  }
-
   // Set images src
   this.background.src = 'images/starland.png';
   this.buddha.src = 'images/me.png';
   this.flameright.src = 'images/flame_r1.png'
   this.flameleft.src = 'images/flame_l1.png'
-  this.obstacle01.src = 'images/obstacle_01.png'
-  this.obstacle02.src = 'images/obstacle_02.png'
-  this.obstacle03.src = 'images/obstacle_03.png'
-  this.obstacle04.src = 'images/obstacle_04.png'
-  this.obstacle05.src = 'images/obstacle_05.png'
+  this.obstacle01.src = 'images/ball_2.png'
 
 }

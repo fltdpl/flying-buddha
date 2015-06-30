@@ -69,8 +69,6 @@ Background.prototype = new Drawable();
 function Pool(maxSize) {
   var size = maxSize; // Max obstacles allowed in the pool
   var pool = [];
-  this.obstacleRate = 100;
-  this.obstacleSpeed = 2;
   this.counter = 0;
 
   // populate the pool array with obstacles
@@ -105,16 +103,16 @@ function Pool(maxSize) {
 
       // Only draw until we find a obstacle that is not alive
       if (pool[i].alive) {
-        if (pool[i].draw()) {
+        if (pool[i].draw() || pool[i].handleCollisions()) {
           pool[i].clear();
           pool.push((pool.splice(i, 1))[0]);
         }
       } else {
-        var xmin = 0;
-        var xmax = 800;
-        var xRand = getRandomInt(xmin, xmax);
+        var obstacleRate = 100;
+        var xRand = getRandomInt(0 + pool[i].width / 2,
+          800 - pool[i].width / 2);
         var yspeed = Math.random() * 2 + (3 / 2);
-        if (this.counter >= this.obstacleRate) {
+        if (this.counter >= obstacleRate) {
           if (!pool[size - 1].alive) {
             this.counter = 0;
             this.get(xRand, 0, yspeed);
@@ -159,6 +157,21 @@ function Obstacle() {
 
   }
 
+  this.handleCollisions = function() {
+    var bwidth = imageRepository.buddha.width;
+    var bheight = imageRepository.buddha.height;
+    var fit = 20;
+    var bx = game.buddhaO.x + bwidth / 2 - fit;
+    var by = game.buddhaO.y + bheight / 2;
+    var coll = collisionTest(this.x, this.y, this.width, bx, by, bwidth);
+    if (coll == true) {
+      this.context.clearRect(this.x - 1, this.y - 1, this.width + 2, this.height + 2);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   // Resets the obstacle values
   this.clear = function() {
     this.x = 0;
@@ -201,8 +214,7 @@ function Buddha() {
     // Determine if the action is move action
     if (KEY_STATUS.left || KEY_STATUS.right ||
     KEY_STATUS.down || KEY_STATUS.up) {
-      // The ship moved, so erase it's current image so it can
-      // be redrawn in it's new location
+      // Erase it's current image
       this.context.clearRect(this.x - 350 / 2, this.y, this.width + 350, this.height);
 
       // Update x and y according to the direction to move and
@@ -234,7 +246,7 @@ function Buddha() {
 
       }
 
-      // Finish by redrawing the ship
+      // Finish by redrawing the Buddha
       this.draw();
     }
 
@@ -320,8 +332,6 @@ function Game() {
   // Start the animation loop
   this.start = function() {
     this.buddhaO.draw();
-
-    //this.obstacles.draw();
     animate();
   };
 }
@@ -336,8 +346,6 @@ function animate() {
   requestAnimFrame(animate);
   game.background.draw();
   game.obstaclePool.animate();
-
-  //game.obstacles.draw();
   game.buddhaO.move();
 }
 
