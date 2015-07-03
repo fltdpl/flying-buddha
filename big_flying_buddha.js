@@ -15,12 +15,12 @@ function getRandomInt(min, max) {
 // calculate readable time
 String.prototype.toHHMMSS = function() {
   var secnum = parseInt(this, 10); // don't forget the second param
-  var hours   = Math.floor(secnum / 3600);
+  var hours = Math.floor(secnum / 3600);
   var minutes = Math.floor((secnum - (hours * 3600)) / 60);
   var seconds = secnum - (hours * 3600) - (minutes * 60);
 
-  if (hours   < 10) {
-    hours   = '0' + hours;
+  if (hours < 10) {
+    hours = '0' + hours;
   }
 
   if (minutes < 10) {
@@ -60,11 +60,9 @@ function Drawable() {
   this.canvasHeight = 0;
 
   // Define abstract function to be implemented in child objects
-  this.draw = function() {
-    };
+  this.draw = function() {};
 
-  this.move = function() {
-    };
+  this.move = function() {};
 }
 
 /**
@@ -84,7 +82,7 @@ function Background() {
 
     // If the image scrolled off the screen, reset
     if (this.y >= this.canvasHeight)
-    this.y = 0;
+      this.y = 0;
   };
 }
 
@@ -122,9 +120,9 @@ function Pool(maxSize) {
   };
 
   /*
-	 * Draws any in use obstacle. If a obstacle goes off the screen,
-	 * clears it and pushes it to the front of the array.
-	 */
+   * Draws any in use obstacle. If a obstacle goes off the screen,
+   * clears it and pushes it to the front of the array.
+   */
   this.animate = function() {
     this.counter++;
     var timediv = (new Date().getTime() - game.gamestarttime) / 1000;
@@ -179,7 +177,8 @@ function Obstacle() {
   };
 
   this.draw = function() {
-    this.context.clearRect(this.x - 1, this.y - 1, this.width + 2, this.height + 2);
+    this.context.clearRect(this.x - 1, this.y - 1, this.width + 2, this.height +
+      2);
     this.y += this.speed;
 
     if (this.y >= this.canvasHeight) {
@@ -200,7 +199,8 @@ function Obstacle() {
     var by = game.buddhaO.y + bheight / 2;
     var coll = collisionTest(this.x, this.y, this.width, bx, by, bwidth);
     if (coll == true) {
-      this.context.clearRect(this.x - 1, this.y - 1, this.width + 2, this.height + 2);
+      this.context.clearRect(this.x - 1, this.y - 1, this.width + 2, this.height +
+        2);
       return true;
     } else {
       return false;
@@ -226,16 +226,34 @@ Obstacle.prototype = new Drawable();
 function Buddha() {
   this.speed = 3;
   this.omt = false;
+  this.flameleft = sprite({
+    context: game.buddhaContext,
+    width: 243,
+    height: 45,
+    image: imageRepository.flameleft,
+    numberOfFrames: 3,
+    ticksPerFrame: 12
+  });
+  this.flameright = sprite({
+    context: game.buddhaContext,
+    width: 243,
+    height: 45,
+    image: imageRepository.flameright,
+    numberOfFrames: 3,
+    ticksPerFrame: 12
+  });
 
   this.draw = function() {
     this.context.drawImage(imageRepository.buddha, this.x, this.y);
 
     if (this.fleft) {
-      this.context.drawImage(imageRepository.flameright, this.x + 172, this.y + 82);
+      this.flameleft.update();
+      this.flameleft.render(this.x + 168, this.y + 80);
       this.omt = true;
       this.start = new Date().getTime();
     } else if (this.fright) {
-      this.context.drawImage(imageRepository.flameleft, this.x - 128, this.y + 74);
+      this.flameright.update();
+      this.flameright.render(this.x - 55, this.y + 72);
       this.omt = true;
       this.start = new Date().getTime();
     }
@@ -252,9 +270,11 @@ function Buddha() {
 
     // Determine if the action is move action
     if (KEY_STATUS.left || KEY_STATUS.right ||
-    KEY_STATUS.down || KEY_STATUS.up) {
+      KEY_STATUS.down || KEY_STATUS.up) {
       // Erase it's current image
-      this.context.clearRect(this.x - 350 / 2, this.y, this.width + 350, this.height);
+      this.flameleft.clear(this.x + 168, this.y + 80);
+      this.flameright.clear(this.x - 55, this.y + 72);
+      this.context.clearRect(this.x, this.y, this.width, this.height);
 
       // Update x and y according to the direction to move and
       // redraw the ship. Change the else if's to if statements
@@ -264,24 +284,24 @@ function Buddha() {
         this.fright = false;
         this.x -= this.speed
         if (this.x <= 0) // Keep player within the screen
-        this.x = 0;
+          this.x = 0;
 
       } else if (KEY_STATUS.right) {
         this.fleft = false;
         this.fright = true;
         this.x += this.speed
         if (this.x >= this.canvasWidth - this.width)
-        this.x = this.canvasWidth - this.width;
+          this.x = this.canvasWidth - this.width;
 
       } else if (KEY_STATUS.up) {
         this.y -= this.speed
         if (this.y <= this.canvasHeight / 3)
-        this.y = this.canvasHeight / 3;
+          this.y = this.canvasHeight / 3;
 
       } else if (KEY_STATUS.down) {
         this.y += this.speed
         if (this.y >= this.canvasHeight - this.height)
-        this.y = this.canvasHeight - this.height;
+          this.y = this.canvasHeight - this.height;
 
       }
 
@@ -292,9 +312,10 @@ function Buddha() {
     if (this.omt) {
       var end = new Date().getTime();
       var diff = (end - this.start);
-      if (diff >= 150) {
+      if (diff >= 50) {
         this.omt = false;
-        this.context.clearRect(this.x - 350 / 2, this.y, this.width + 350, this.height);
+        this.flameleft.clear(this.x + 168, this.y + 80);
+        this.flameright.clear(this.x - 55, this.y + 72);
         this.context.drawImage(imageRepository.buddha, this.x, this.y);
       }
     }
@@ -352,8 +373,8 @@ function Game() {
       // Initialize the buddha object
       this.buddhaO = new Buddha();
 
-      this.buddhaStartX = this.buddhaCanvas.width / 2
-        - imageRepository.buddha.width / 2;
+      this.buddhaStartX = this.buddhaCanvas.width / 2 - imageRepository.buddha
+        .width / 2;
       this.buddhaStartY = this.buddhaCanvas.height / 3;
       this.buddhaO.init(this.buddhaStartX, this.buddhaStartY,
         imageRepository.buddha.width, imageRepository.buddha.height);
@@ -466,6 +487,7 @@ document.onkeydown = function(e) {
     KEY_STATUS[KEY_CODES[keyCode]] = true;
   }
 }
+
 /**
  * Sets up the document to listen to ownkeyup events (fired when
  * any key on the keyboard is released). When a key is released,
@@ -486,12 +508,12 @@ document.onkeyup = function(e) {
  * otherwise defaults to setTimeout().
  */
 window.requestAnimFrame = (function() {
-  return window.requestAnimationFrame       ||
-  window.webkitRequestAnimationFrame ||
-  window.mozRequestAnimationFrame    ||
-  window.oRequestAnimationFrame      ||
-  window.msRequestAnimationFrame     ||
-			function(/* function */ callback, /* DOMElement */ element) {
-  window.setTimeout(callback, 1000 / 60);
-			};
+  return window.requestAnimationFrame ||
+    window.webkitRequestAnimationFrame ||
+    window.mozRequestAnimationFrame ||
+    window.oRequestAnimationFrame ||
+    window.msRequestAnimationFrame ||
+    function( /* function */ callback, /* DOMElement */ element) {
+      window.setTimeout(callback, 1000 / 60);
+    };
 })();
