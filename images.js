@@ -6,6 +6,7 @@ var imageRepository = new function() {
   this.flameright = new Image();
   this.flameleft = new Image();
   this.obstacle01 = new Image();
+  this.obstacle02 = new Image();
 
   var numImages = 5;
   var numLoaded = 0;
@@ -36,11 +37,16 @@ var imageRepository = new function() {
     imageLoaded();
   }
 
+  this.obstacle02.onload = function() {
+    imageLoaded();
+  }
+
   // Set images src
   this.background.src = 'images/starland.png';
   this.buddha.src = 'images/me.png';
   this.flameright.src = 'images/flame_r1.png'
   this.flameleft.src = 'images/flame_l1.png'
   this.obstacle01.src = 'images/ball_2.png'
+  this.obstacle02.src = 'images/obstacle_02.png'
 
 }

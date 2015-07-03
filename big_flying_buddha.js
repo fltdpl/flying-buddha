@@ -343,13 +343,15 @@ function Game() {
       // Initialize the buddha object
       this.buddhaO = new Buddha();
 
-      var buddhaStartX = this.buddhaCanvas.width / 2 - imageRepository.buddha.width / 2;
-      var buddhaStartY = this.buddhaCanvas.height / (4) + imageRepository.buddha.height * 2;
-      this.buddhaO.init(buddhaStartX, buddhaStartY, imageRepository.buddha.width,
-        imageRepository.buddha.height);
+      this.buddhaStartX = this.buddhaCanvas.width / 2
+        - imageRepository.buddha.width / 2;
+      this.buddhaStartY = this.buddhaCanvas.height / 3;
+      this.buddhaO.init(this.buddhaStartX, this.buddhaStartY,
+        imageRepository.buddha.width, imageRepository.buddha.height);
 
       this.gamestarttime = new Date().getTime();
       this.playtime = 0;
+      this.ingame = false;
 
       return true;
     } else {
@@ -362,7 +364,42 @@ function Game() {
     this.buddhaO.draw();
     animate();
   };
+
+  // startbutton
+  this.startbutton = function() {
+    document.getElementById('gametitle').style.display = 'none';
+    this.ingame = true;
+  }
+
+  // Restart the game
+  this.restart = function() {
+    this.backgroundContext.clearRect(
+      0, 0, this.backgroundCanvas.width, this.backgroundCanvas.height);
+    this.buddhaContext.clearRect(
+      0, 0, this.buddhaCanvas.width, this.buddhaCanvas.height);
+    this.obstaclesContext.clearRect(
+      0, 0, this.obstaclesCanvas.width, this.obstaclesCanvas.height);
+
+    this.background.init(0, 0);
+    this.buddhaO.init(this.buddhaStartX, this.buddhaStartY,
+      imageRepository.buddha.width, imageRepository.buddha.height);
+
+    this.gamestarttime = new Date().getTime();
+    this.playtime = 0;
+
+    this.start();
+  };
+
 }
+
+/**
+ * start
+ */
+function checkReadyState() {
+  document.getElementById('gametitle').style.display = 'none';
+  game.start();
+}
+
 
 /**
  * The animation loop. Calls the requestAnimationFrame shim to
@@ -371,11 +408,16 @@ function Game() {
  * object.
  */
 function animate() {
-  requestAnimFrame(animate);
-  game.background.draw();
-  game.obstaclePool.animate();
-  game.buddhaO.move();
-  document.getElementById('timescore').innerHTML = game.playtime;
+  if (game.ingame) {
+    requestAnimFrame(animate);
+    game.background.draw();
+    game.obstaclePool.animate();
+    game.buddhaO.move();
+    document.getElementById('timescore').innerHTML = game.playtime;
+  } else {
+    requestAnimFrame(animate);
+    game.background.draw();
+  }
 }
 
 // The keycodes that will be mapped when a user presses a button.
