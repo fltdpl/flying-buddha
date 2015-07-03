@@ -3,6 +3,7 @@ var imageRepository = new function() {
   // Define images
   this.background = new Image();
   this.buddha = new Image();
+  this.buddhasad = new Image();
   this.flameright = new Image();
   this.flameleft = new Image();
   this.obstacle01 = new Image();
@@ -25,6 +26,10 @@ var imageRepository = new function() {
     imageLoaded();
   }
 
+  this.buddhasad.onload = function() {
+    imageLoaded();
+  }
+
   this.flameright.onload = function() {
     imageLoaded();
   }
@@ -43,7 +48,8 @@ var imageRepository = new function() {
 
   // Set images src
   this.background.src = 'images/starland.png';
-  this.buddha.src = 'images/me.png';
+  this.buddha.src = 'images/buddhaface.png';
+  this.buddhasad.src = 'images/buddhaface_sad.png';
   this.flameright.src = 'images/flame_r1.png'
   this.flameleft.src = 'images/flame_l1.png'
   this.obstacle01.src = 'images/ball_2.png'

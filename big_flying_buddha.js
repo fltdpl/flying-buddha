@@ -133,9 +133,14 @@ function Pool(maxSize) {
 
       // Only draw until we find a obstacle that is not alive
       if (pool[i].alive) {
-        if (pool[i].draw() || pool[i].handleCollisions()) {
+        if (pool[i].draw()) {
           pool[i].clear();
           pool.push((pool.splice(i, 1))[0]);
+        }
+
+        if (pool[i].handleCollisions()) {
+          game.gameOver();
+          break;
         }
       } else {
         var obstacleRate = 100;
@@ -235,6 +240,10 @@ function Buddha() {
       this.start = new Date().getTime();
     }
 
+  };
+
+  this.drawsimple = function() {
+    this.context.drawImage(imageRepository.buddhasad, this.x, this.y);
   };
 
   this.move = function() {
@@ -368,36 +377,40 @@ function Game() {
   // startbutton
   this.startbutton = function() {
     document.getElementById('gametitle').style.display = 'none';
+    document.getElementById('timescoreclass').style.display = 'block';
+    this.gamestarttime = new Date().getTime();
+    this.playtime = 0;
     this.ingame = true;
   }
 
-  // Restart the game
-  this.restart = function() {
+  // Game over
+  this.gameOver = function() {
+    document.getElementById('game-over').style.display = 'block';
+    this.ingame = false;
+
     this.backgroundContext.clearRect(
       0, 0, this.backgroundCanvas.width, this.backgroundCanvas.height);
-    this.buddhaContext.clearRect(
-      0, 0, this.buddhaCanvas.width, this.buddhaCanvas.height);
     this.obstaclesContext.clearRect(
       0, 0, this.obstaclesCanvas.width, this.obstaclesCanvas.height);
-
-    this.background.init(0, 0);
+    this.buddhaContext.clearRect(
+      0, 0, this.buddhaCanvas.width, this.buddhaCanvas.height);
     this.buddhaO.init(this.buddhaStartX, this.buddhaStartY,
-      imageRepository.buddha.width, imageRepository.buddha.height);
+      imageRepository.buddhasad.width, imageRepository.buddhasad.height);
+    this.buddhaO.drawsimple();
 
-    this.gamestarttime = new Date().getTime();
-    this.playtime = 0;
-
-    this.start();
   };
 
-}
+  // Restart the game
+  this.restart = function() {
+    document.getElementById('game-over').style.display = 'none';
 
-/**
- * start
- */
-function checkReadyState() {
-  document.getElementById('gametitle').style.display = 'none';
-  game.start();
+    this.obstaclePool.init()
+    this.gamestarttime = new Date().getTime();
+    this.playtime = 0;
+    this.ingame = true;
+
+  };
+
 }
 
 
@@ -408,11 +421,11 @@ function checkReadyState() {
  * object.
  */
 function animate() {
-  if (game.ingame) {
+  if (game.ingame === true) {
     requestAnimFrame(animate);
     game.background.draw();
-    game.obstaclePool.animate();
     game.buddhaO.move();
+    game.obstaclePool.animate();
     document.getElementById('timescore').innerHTML = game.playtime;
   } else {
     requestAnimFrame(animate);

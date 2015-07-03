@@ -33,16 +33,26 @@
   color: #4e4e4e;
   font-family: Helvetica, sans-serif;
   cursor: default;
+  display: none;
   }
   .gametitle {
     position: relative;
     text-align: center;
-    top: 260px;
+    top: 340px;
     cursor: default;
   }
-  #gameP {
+  .gametitle p {
     position: relative;
-    margin-top: -50px;
+  }
+  .game-over {
+    position: relative;
+    top: 350px;
+    text-align: center;
+    cursor: default;
+    display: none;
+  }
+  .game-over p {
+    position: relative;
   }
   </style>
 </head>
@@ -56,13 +66,23 @@
     </canvas>
     <canvas id="obstaclesID" width="800" height="600">
     </canvas>
-    <div class="timescore">Zeit: <span id="timescore"></span></div>
+
+    <div id="timescoreclass" class="timescore">Zeit: <span id="timescore"></span></div>
+
     <div id="gametitle" class="gametitle">
       <img src="images/flybu.png" alt="the mighty flying buddha">
-      <p id=gameP><span onclick="game.startbutton()">
-        <img src="images/start.png" alt="the mighty flying buddha">
+      <p><span onclick="game.startbutton()">
+        <img src="images/start.png" alt="start the game">
       </span></p>
      </div>
+
+     <div id="game-over" class="game-over">
+       <img src="images/gameover.png" alt="game over">
+       <p><span onclick="game.restart()">
+         <img src="images/restart.png" alt="restart the game">
+       </span></p>
+    </div>
+
     <script src="coll.js"></script>
     <script src="images.js"></script>
     <script src="big_flying_buddha.js"></script>
