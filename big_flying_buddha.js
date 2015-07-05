@@ -127,6 +127,18 @@ function Pool(maxSize) {
     this.counter++;
     var timediv = (new Date().getTime() - game.gamestarttime) / 1000;
     game.playtime = timediv.toString().toHHMMSS();
+
+    //var speedrate = timediv;
+    var speedrate = 7;
+
+    // Clear Obstacle areas
+    for (var i = 0; i < size; i++) {
+      if (pool[i].alive) {
+        pool[i].clearObArea();
+      }
+    }
+
+    // Draw obstacles or create new ones
     for (var i = 0; i < size; i++) {
 
       // Only draw until we find a obstacle that is not alive
@@ -144,7 +156,7 @@ function Pool(maxSize) {
         var obstacleRate = 100;
         var xRand = getRandomInt(0 + pool[i].width / 2,
           800 - pool[i].width / 2);
-        var yspeed = Math.random() * 2 + (3 / 2);
+        var yspeed = Math.random() * speedrate;
         if (this.counter >= obstacleRate) {
           if (!pool[size - 1].alive) {
             this.counter = 0;
@@ -177,8 +189,6 @@ function Obstacle() {
   };
 
   this.draw = function() {
-    this.context.clearRect(this.x - 1, this.y - 1, this.width + 2, this.height +
-      2);
     this.y += this.speed;
 
     if (this.y >= this.canvasHeight) {
@@ -191,16 +201,23 @@ function Obstacle() {
 
   }
 
+  this.clearObArea = function() {
+    this.context.clearRect(this.x - 1, this.y - 1,
+      this.width + 2, this.height + 2);
+  }
+
   this.handleCollisions = function() {
     var bwidth = imageRepository.buddha.width;
     var bheight = imageRepository.buddha.height;
-    var fit = 20;
-    var bx = game.buddhaO.x + bwidth / 2 - fit;
+    var fit = 30;
+    var bx = game.buddhaO.x + bwidth / 2;
     var by = game.buddhaO.y + bheight / 2;
-    var coll = collisionTest(this.x, this.y, this.width, bx, by, bwidth);
+    var ox = this.x + this.width / 2;
+    var oy = this.y + this.height / 2;
+    var coll = collisionTest(ox, oy, this.width - fit, bx, by, bwidth - fit);
     if (coll == true) {
-      this.context.clearRect(this.x - 1, this.y - 1, this.width + 2, this.height +
-        2);
+      this.context.clearRect(this.x - 1, this.y - 1,
+        this.width + 2, this.height + 2);
       return true;
     } else {
       return false;
@@ -224,7 +241,7 @@ Obstacle.prototype = new Drawable();
  * Buddha object
  */
 function Buddha() {
-  this.speed = 3;
+  this.speed = 5;
   this.omt = false;
   this.flameleft = sprite({
     context: game.buddhaContext,
@@ -513,7 +530,7 @@ window.requestAnimFrame = (function() {
     window.mozRequestAnimationFrame ||
     window.oRequestAnimationFrame ||
     window.msRequestAnimationFrame ||
-    function( /* function */ callback, /* DOMElement */ element) {
+    function(/* function */ callback, /* DOMElement */ element) {
       window.setTimeout(callback, 1000 / 60);
     };
 })();
