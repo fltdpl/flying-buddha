@@ -7,14 +7,28 @@ function init() {
 }
 
 // Returns a random integer between min (included) and max (excluded)
-// Using Math.round() will give you a non-uniform distribution!
 function getRandomInt(min, max) {
-  return Math.floor(Math.random() * (max - min)) + min;
+  if (min > max) {
+    return -1;
+  }
+
+  if (min == max) {
+    return min;
+  }
+
+  var r;
+
+  do {
+    r = Math.random();
+  }
+  while (r == 1.0);
+
+  return min + parseInt(r * (max - min + 1));
 }
 
 // calculate readable time
 String.prototype.toHHMMSS = function() {
-  var secnum = parseInt(this, 10); // don't forget the second param
+  var secnum = parseInt(this, 10);
   var hours = Math.floor(secnum / 3600);
   var minutes = Math.floor((secnum - (hours * 3600)) / 60);
   var seconds = secnum - (hours * 3600) - (minutes * 60);
@@ -101,9 +115,10 @@ function Pool(maxSize) {
   this.init = function() {
     for (var i = 0; i < size; i++) {
       // Initalize the obstacle object
-      var obstacle = new Obstacle();
-      obstacle.init(0, 0, imageRepository.obstacle01.width,
-        imageRepository.obstacle01.height);
+      obstacletyp = obstaclePic();
+      var obstacle = new Obstacle(obstacletyp);
+      obstacle.init(0, 0, obstacletyp.width,
+        obstacletyp.height);
       pool[i] = obstacle;
     }
   };
@@ -129,7 +144,8 @@ function Pool(maxSize) {
     game.playtime = timediv.toString().toHHMMSS();
 
     //var speedrate = timediv;
-    var speedrate = 7;
+    var minspeed = 1
+    var speedrate = 3;
 
     // Clear Obstacle areas
     for (var i = 0; i < size; i++) {
@@ -156,7 +172,7 @@ function Pool(maxSize) {
         var obstacleRate = 100;
         var xRand = getRandomInt(0 + pool[i].width / 2,
           800 - pool[i].width / 2);
-        var yspeed = Math.random() * speedrate;
+        var yspeed = minspeed + Math.random() * speedrate;
         if (this.counter >= obstacleRate) {
           if (!pool[size - 1].alive) {
             this.counter = 0;
@@ -175,9 +191,10 @@ function Pool(maxSize) {
 /**
  * Obstacle object
  */
-function Obstacle() {
+function Obstacle(obstacle) {
   this.alive = false; // Is true if the obstacle is currently in use
-  this.obstacle = imageRepository.obstacle01;
+  //this.obstacle = imageRepository.obstacle01;
+  this.obstacle = obstacle;
   this.speed = 2;
 
   // Sets the obstacle values

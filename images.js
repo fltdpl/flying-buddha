@@ -8,8 +8,11 @@ var imageRepository = new function() {
   this.flameleft = new Image();
   this.obstacle01 = new Image();
   this.obstacle02 = new Image();
+  this.obstacle03 = new Image();
+  this.obstacle04 = new Image();
+  this.obstacle05 = new Image();
 
-  var numImages = 5;
+  var numImages = 10;
   var numLoaded = 0;
 
   function imageLoaded() {
@@ -47,15 +50,40 @@ var imageRepository = new function() {
     imageLoaded();
   }
 
+  this.obstacle03.onload = function() {
+    imageLoaded();
+  }
+
+  this.obstacle04.onload = function() {
+    imageLoaded();
+  }
+
+  this.obstacle05.onload = function() {
+    imageLoaded();
+  }
+
   // Set images src
   this.background.src = 'images/starland.png';
   this.buddha.src = 'images/buddhaface.png';
   this.buddhasad.src = 'images/buddhaface_sad.png';
   this.flameright.src = 'images/fire_right.png'
   this.flameleft.src = 'images/fire_left.png'
-  this.obstacle01.src = 'images/ball_2.png'
-  this.obstacle02.src = 'images/obstacle_02.png'
+  this.obstacle01.src = 'images/obst_1.png'
+  this.obstacle02.src = 'images/obst_2.png'
+  this.obstacle03.src = 'images/obst_3.png'
+  this.obstacle04.src = 'images/obst_4.png'
+  this.obstacle05.src = 'images/obst_5.png'
 
+}
+
+function obstaclePic() {
+  var obstpool = new Array(imageRepository.obstacle01,
+    imageRepository.obstacle02,
+    imageRepository.obstacle03,
+    imageRepository.obstacle04,
+    imageRepository.obstacle05)
+  var pic = getRandomInt(0, obstpool.length - 1);
+  return obstpool[pic];
 }
 
 function sprite(options) {
