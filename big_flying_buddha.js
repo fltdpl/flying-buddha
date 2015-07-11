@@ -144,8 +144,31 @@ function Pool(maxSize) {
     game.playtime = timediv.toString().toHHMMSS();
 
     //var speedrate = timediv;
-    var minspeed = 1
+    var minspeed = 1;
     var speedrate = 3;
+    var obstacleRate = 100;
+
+    if (timediv >= 20 && timediv <= 40) {
+      minspeed = 1.5;
+      speedrate = 3;
+      obstacleRate = 80;
+    } else if (timediv >= 40 && timediv <= 60) {
+      minspeed = 2;
+      speedrate = 3;
+      obstacleRate = 70;
+    } else if (timediv >= 60 && timediv <= 80) {
+      minspeed = 2;
+      speedrate = 4;
+      obstacleRate = 60;
+    } else if (timediv >= 80 && timediv <= 100) {
+      minspeed = 3;
+      speedrate = 4;
+      obstacleRate = 50;
+    } else if (timediv >= 100 && timediv <= 120) {
+      minspeed = 3;
+      speedrate = 5;
+      obstacleRate = 40;
+    }
 
     // Clear Obstacle areas
     for (var i = 0; i < size; i++) {
@@ -169,7 +192,6 @@ function Pool(maxSize) {
           break;
         }
       } else {
-        var obstacleRate = 100;
         var xRand = getRandomInt(0 + pool[i].width / 2,
           800 - pool[i].width / 2);
         var yspeed = minspeed + Math.random() * speedrate;
@@ -180,7 +202,7 @@ function Pool(maxSize) {
           }
         }
 
-        break;
+        //break;
       }
     }
   };
