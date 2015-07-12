@@ -11,6 +11,7 @@ var imageRepository = new function() {
   this.obstacle03 = new Image();
   this.obstacle04 = new Image();
   this.obstacle05 = new Image();
+  this.obstBall01 = new Image();
 
   var numImages = 10;
   var numLoaded = 0;
@@ -62,17 +63,22 @@ var imageRepository = new function() {
     imageLoaded();
   }
 
+  this.obstBall01.onload = function() {
+    imageLoaded();
+  }
+
   // Set images src
   this.background.src = 'images/starland.png';
   this.buddha.src = 'images/buddhaface.png';
   this.buddhasad.src = 'images/buddhaface_sad.png';
-  this.flameright.src = 'images/fire_right.png'
-  this.flameleft.src = 'images/fire_left.png'
-  this.obstacle01.src = 'images/obst_1.png'
-  this.obstacle02.src = 'images/obst_2.png'
-  this.obstacle03.src = 'images/obst_3.png'
-  this.obstacle04.src = 'images/obst_4.png'
-  this.obstacle05.src = 'images/obst_5.png'
+  this.flameright.src = 'images/fire_right.png';
+  this.flameleft.src = 'images/fire_left.png';
+  this.obstacle01.src = 'images/obst_1.png';
+  this.obstacle02.src = 'images/obst_2.png';
+  this.obstacle03.src = 'images/obst_3.png';
+  this.obstacle04.src = 'images/obst_4.png';
+  this.obstacle05.src = 'images/obst_5.png';
+  this.obstBall01.src = 'images/ball_2.png';
 
 }
 

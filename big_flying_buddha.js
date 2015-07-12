@@ -102,114 +102,6 @@ function Background() {
 
 Background.prototype = new Drawable();
 
-
-/**
- * Pool holds obstacles to be managed to prevent garbage collection.
- */
-function Pool(maxSize) {
-  var size = maxSize; // Max obstacles allowed in the pool
-  var pool = [];
-  this.counter = 0;
-
-  // populate the pool array with obstacles
-  this.init = function() {
-    for (var i = 0; i < size; i++) {
-      // Initalize the obstacle object
-      obstacletyp = obstaclePic();
-      var obstacle = new Obstacle(obstacletyp);
-      obstacle.init(0, 0, obstacletyp.width,
-        obstacletyp.height);
-      pool[i] = obstacle;
-    }
-  };
-
-  /*
-   * Grabs the last item in the list and initializes it and
-   * pushes it to the front of the array.
-   */
-  this.get = function(x, y, speed) {
-    if (!pool[size - 1].alive) {
-      pool[size - 1].spawn(x, y, speed);
-      pool.unshift(pool.pop());
-    }
-  };
-
-  /*
-   * Draws any in use obstacle. If a obstacle goes off the screen,
-   * clears it and pushes it to the front of the array.
-   */
-  this.animate = function() {
-    this.counter++;
-    var timediv = (new Date().getTime() - game.gamestarttime) / 1000;
-    game.playtime = timediv.toString().toHHMMSS();
-
-    //var speedrate = timediv;
-    var minspeed = 1;
-    var speedrate = 3;
-    var obstacleRate = 100;
-
-    if (timediv >= 20 && timediv <= 40) {
-      minspeed = 1.5;
-      speedrate = 3;
-      obstacleRate = 80;
-    } else if (timediv >= 40 && timediv <= 60) {
-      minspeed = 2;
-      speedrate = 3;
-      obstacleRate = 70;
-    } else if (timediv >= 60 && timediv <= 80) {
-      minspeed = 2;
-      speedrate = 4;
-      obstacleRate = 60;
-    } else if (timediv >= 80 && timediv <= 100) {
-      minspeed = 3;
-      speedrate = 4;
-      obstacleRate = 50;
-    } else if (timediv >= 100 && timediv <= 120) {
-      minspeed = 3;
-      speedrate = 5;
-      obstacleRate = 40;
-    }
-
-    // Clear Obstacle areas
-    for (var i = 0; i < size; i++) {
-      if (pool[i].alive) {
-        pool[i].clearObArea();
-      }
-    }
-
-    // Draw obstacles or create new ones
-    for (var i = 0; i < size; i++) {
-
-      // Only draw until we find a obstacle that is not alive
-      if (pool[i].alive) {
-        if (pool[i].draw()) {
-          pool[i].clear();
-          pool.push((pool.splice(i, 1))[0]);
-        }
-
-        if (pool[i].handleCollisions()) {
-          game.gameOver();
-          break;
-        }
-      } else {
-        var xRand = getRandomInt(0 + pool[i].width / 2,
-          800 - pool[i].width / 2);
-        var yspeed = minspeed + Math.random() * speedrate;
-        if (this.counter >= obstacleRate) {
-          if (!pool[size - 1].alive) {
-            this.counter = 0;
-            this.get(xRand, 0, yspeed);
-          }
-        }
-
-        //break;
-      }
-    }
-  };
-
-}
-
-
 /**
  * Obstacle object
  */
@@ -274,6 +166,179 @@ function Obstacle(obstacle) {
 }
 
 Obstacle.prototype = new Drawable();
+
+
+/**
+ * Pool holds obstacles to be managed to prevent garbage collection.
+ */
+function Pool(maxSize) {
+  var size = maxSize; // Max obstacles allowed in the pool
+  var pool = [];
+  this.counter = 0;
+
+  // populate the pool array with obstacles
+  this.init = function() {
+    for (var i = 0; i < size; i++) {
+      // Initalize the obstacle object
+      obstacletyp = obstaclePic();
+      var obstacle = new Obstacle(obstacletyp);
+      obstacle.init(0, 0, obstacletyp.width,
+        obstacletyp.height);
+      pool[i] = obstacle;
+    }
+  };
+
+  /*
+   * Grabs the last item in the list and initializes it and
+   * pushes it to the front of the array.
+   */
+  this.get = function(x, y, speed) {
+    if (!pool[size - 1].alive) {
+      pool[size - 1].spawn(x, y, speed);
+      pool.unshift(pool.pop());
+    }
+  };
+
+  // Clear Obstacle areas
+  this.clearobstscreen = function() {
+    for (var i = 0; i < size; i++) {
+      if (pool[i].alive) {
+        pool[i].clearObArea();
+      }
+    }
+  }
+
+  /*
+   * Draws any in use obstacle.
+   */
+  this.animate = function() {
+    this.counter++;
+    var timediv = (new Date().getTime() - game.gamestarttime) / 1000;
+
+    //var speedrate = timediv;
+    var minspeed = 1;
+    var speedrate = 3;
+    var obstacleRate = 100;
+
+    if (timediv >= 20 && timediv <= 40) {
+      minspeed = 1.5;
+      speedrate = 3;
+      obstacleRate = 80;
+    } else if (timediv >= 40 && timediv <= 60) {
+      minspeed = 2;
+      speedrate = 3;
+      obstacleRate = 70;
+    } else if (timediv >= 60 && timediv <= 80) {
+      minspeed = 2;
+      speedrate = 4;
+      obstacleRate = 60;
+    } else if (timediv >= 80 && timediv <= 100) {
+      minspeed = 3;
+      speedrate = 4;
+      obstacleRate = 50;
+    } else if (timediv >= 100 && timediv <= 120) {
+      minspeed = 3;
+      speedrate = 5;
+      obstacleRate = 40;
+    }
+
+    // Draw obstacles or create new ones
+    for (var i = 0; i < size; i++) {
+
+      // Only draw until we find a obstacle that is not alive
+      if (pool[i].alive) {
+        if (pool[i].draw()) {
+          pool[i].clear();
+          pool.push((pool.splice(i, 1))[0]);
+        }
+
+        if (pool[i].handleCollisions()) {
+          game.gameover = true;
+          break;
+        }
+      } else {
+        var xRand = getRandomInt(0 + pool[i].width / 2,
+          800 - pool[i].width / 2);
+        var yspeed = minspeed + Math.random() * speedrate;
+        if (this.counter >= obstacleRate) {
+          if (!pool[size - 1].alive) {
+            this.counter = 0;
+            this.get(xRand, 0, yspeed);
+          }
+        }
+
+        //break;
+      }
+    }
+  };
+
+}
+
+
+/**
+ * Obstacles to catch
+ */
+function CatchPool() {
+  this.counter = 0;
+
+  // Initialize the catch object(s)
+  this.init = function() {
+    this.snowball = new Obstacle(imageRepository.obstBall01)
+    this.snowball.init(0, 0, imageRepository.obstBall01.width,
+      imageRepository.obstBall01.height)
+  };
+
+  // Clear Obstacle areas
+  this.clearobstscreen = function() {
+    if (this.snowball.alive) {
+      this.snowball.clearObArea();
+    }
+  };
+
+  this.get = function(x, y, speed) {
+    if (!this.snowball.alive) {
+      this.snowball.spawn(x, y, speed);
+    }
+  };
+
+  /*
+   * Draws any in use obstacle.
+   */
+  this.animate = function() {
+    this.counter++;
+    var timediv = (new Date().getTime() - game.gamestarttime) / 1000;
+
+    //var speedrate = timediv;
+    var minspeed = 1;
+    var speedrate = 3;
+    var obstacleRate = 150;
+
+    // Only draw until we find a obstacle that is not alive
+    if (this.snowball.alive) {
+      if (this.snowball.draw()) {
+        this.snowball.clear();
+      }
+
+      if (this.snowball.handleCollisions()) {
+        this.snowball.clear();
+        game.score += 10;
+      }
+
+    } else {
+      var xRand = getRandomInt(0 + this.snowball.width / 2,
+        800 - this.snowball.width / 2);
+      var yspeed = minspeed + Math.random() * speedrate;
+      if (this.counter >= obstacleRate) {
+        if (!this.snowball.alive) {
+          this.counter = 0;
+          this.get(xRand, 0, yspeed);
+        }
+      }
+    }
+
+  }
+
+}
 
 
 /**
@@ -426,6 +491,10 @@ function Game() {
       this.obstaclePool = new Pool(30);
       this.obstaclePool.init();
 
+      // Initilize the obstacles to catch object
+      this.catchPool = new CatchPool();
+      this.catchPool.init();
+
       // Initialize the buddha object
       this.buddhaO = new Buddha();
 
@@ -437,7 +506,9 @@ function Game() {
 
       this.gamestarttime = new Date().getTime();
       this.playtime = 0;
+      this.score = 0;
       this.ingame = false;
+      this.gameover = false;
 
       return true;
     } else {
@@ -455,8 +526,11 @@ function Game() {
   this.startbutton = function() {
     document.getElementById('gametitle').style.display = 'none';
     document.getElementById('timescoreclass').style.display = 'block';
+    document.getElementById('scoreclass').style.display = 'block';
     this.gamestarttime = new Date().getTime();
+    this.timedivB = 5;
     this.playtime = 0;
+    this.score = 0;
     this.ingame = true;
   }
 
@@ -464,6 +538,7 @@ function Game() {
   this.gameOver = function() {
     document.getElementById('game-over').style.display = 'block';
     this.ingame = false;
+    this.gameover = false;
 
     this.backgroundContext.clearRect(
       0, 0, this.backgroundCanvas.width, this.backgroundCanvas.height);
@@ -481,29 +556,48 @@ function Game() {
   this.restart = function() {
     document.getElementById('game-over').style.display = 'none';
 
-    this.obstaclePool.init()
+    this.obstaclePool.init();
+    this.catchPool.init();
     this.gamestarttime = new Date().getTime();
+    this.timedivB = 0;
     this.playtime = 0;
+    this.score = 0;
     this.ingame = true;
 
+  };
+
+  // Score
+  this.funcscore = function() {
+    var timediv = (new Date().getTime() - this.gamestarttime) / 1000;
+    this.playtime = timediv.toString().toHHMMSS();
+    if (timediv - this.timedivB >= 10) {
+      this.timedivB = timediv;
+      this.score += 5;
+    }
   };
 
 }
 
 
 /**
- * The animation loop. Calls the requestAnimationFrame shim to
- * optimize the game loop and draws all game objects. This
- * function must be a gobal function and cannot be within an
- * object.
+ * The animation loop
  */
 function animate() {
+  if (game.gameover === true) {
+    game.gameOver();
+  }
+
   if (game.ingame === true) {
     requestAnimFrame(animate);
     game.background.draw();
     game.buddhaO.move();
+    game.obstaclePool.clearobstscreen();
+    game.catchPool.clearobstscreen();
     game.obstaclePool.animate();
+    game.catchPool.animate();
+    game.funcscore();
     document.getElementById('timescore').innerHTML = game.playtime;
+    document.getElementById('score').innerHTML = game.score;
   } else {
     requestAnimFrame(animate);
     game.background.draw();
