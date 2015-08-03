@@ -46,13 +46,12 @@ String.prototype.toHHMMSS = function() {
   }
 
   if (hours < 1) {
-    var time = minutes + ':' + seconds;
+    return minutes + ':' + seconds;
   } else {
-    var time = hours + ':' + minutes + ':' + seconds;
+    return hours + ':' + minutes + ':' + seconds;
   }
 
-  return time;
-}
+};
 
 /**
  * Creates the Drawable object which will be the base class for
@@ -67,7 +66,7 @@ function Drawable() {
     this.y = y;
     this.width = width;
     this.height = height;
-  }
+  };
 
   this.speed = 0;
   this.canvasWidth = 0;
@@ -130,12 +129,12 @@ function Obstacle(obstacle) {
       return false;
     }
 
-  }
+  };
 
   this.clearObArea = function() {
     this.context.clearRect(this.x - 1, this.y - 1,
       this.width + 2, this.height + 2);
-  }
+  };
 
   this.handleCollisions = function() {
     var bwidth = imageRepository.buddha.width;
@@ -146,14 +145,14 @@ function Obstacle(obstacle) {
     var ox = this.x + this.width / 2;
     var oy = this.y + this.height / 2;
     var coll = collisionTest(ox, oy, this.width - fit, bx, by, bwidth - fit);
-    if (coll == true) {
+    if (coll === true) {
       this.context.clearRect(this.x - 1, this.y - 1,
         this.width + 2, this.height + 2);
       return true;
     } else {
       return false;
     }
-  }
+  };
 
   // Resets the obstacle values
   this.clear = function() {
@@ -206,7 +205,7 @@ function Pool(maxSize) {
         pool[i].clearObArea();
       }
     }
-  }
+  };
 
   /*
    * Draws any in use obstacle.
@@ -283,9 +282,9 @@ function CatchPool() {
 
   // Initialize the catch object(s)
   this.init = function() {
-    this.snowball = new Obstacle(imageRepository.obstBall01)
+    this.snowball = new Obstacle(imageRepository.obstBall01);
     this.snowball.init(0, 0, imageRepository.obstBall01.width,
-      imageRepository.obstBall01.height)
+      imageRepository.obstBall01.height);
   };
 
   // Clear Obstacle areas
@@ -336,7 +335,7 @@ function CatchPool() {
       }
     }
 
-  }
+  };
 
 }
 
@@ -403,24 +402,24 @@ function Buddha() {
       if (KEY_STATUS.left) {
         this.fleft = true;
         this.fright = false;
-        this.x -= this.speed
+        this.x -= this.speed;
         if (this.x <= 0) // Keep player within the screen
           this.x = 0;
 
       } else if (KEY_STATUS.right) {
         this.fleft = false;
         this.fright = true;
-        this.x += this.speed
+        this.x += this.speed;
         if (this.x >= this.canvasWidth - this.width)
           this.x = this.canvasWidth - this.width;
 
       } else if (KEY_STATUS.up) {
-        this.y -= this.speed
+        this.y -= this.speed;
         if (this.y <= this.canvasHeight / 3)
           this.y = this.canvasHeight / 3;
 
       } else if (KEY_STATUS.down) {
-        this.y += this.speed
+        this.y += this.speed;
         if (this.y >= this.canvasHeight - this.height)
           this.y = this.canvasHeight - this.height;
 
@@ -532,7 +531,7 @@ function Game() {
     this.playtime = 0;
     this.score = 0;
     this.ingame = true;
-  }
+  };
 
   // Game over
   this.gameOver = function() {
@@ -612,14 +611,14 @@ KEY_CODES = {
   38: 'up',
   39: 'right',
   40: 'down'
-}
+};
 
 // Creates the array to hold the KEY_CODES and sets all their values
 // to false. Checking true/flase is the quickest way to check status
 // of a key press and which one was pressed when determining
 // when to move and which direction.
 KEY_STATUS = {};
-for (code in KEY_CODES) {
+for (var code in KEY_CODES) {
   KEY_STATUS[KEY_CODES[code]] = false;
 }
 /**
@@ -636,7 +635,7 @@ document.onkeydown = function(e) {
     e.preventDefault();
     KEY_STATUS[KEY_CODES[keyCode]] = true;
   }
-}
+};
 
 /**
  * Sets up the document to listen to ownkeyup events (fired when
@@ -650,7 +649,7 @@ document.onkeyup = function(e) {
     e.preventDefault();
     KEY_STATUS[KEY_CODES[keyCode]] = false;
   }
-}
+};
 
 /**
  * requestAnim shim layer by Paul Irish

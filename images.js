@@ -13,7 +13,7 @@ var imageRepository = new function() {
   this.obstacle05 = new Image();
   this.obstBall01 = new Image();
 
-  var numImages = 10;
+  var numImages = 11;
   var numLoaded = 0;
 
   function imageLoaded() {
