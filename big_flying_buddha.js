@@ -53,13 +53,45 @@ String.prototype.toHHMMSS = function() {
 
 };
 
+
+/**
+ * Life
+ */
+function ShowStatusLife (stat) {
+  if (stat == 3) {
+    document.getElementById('statuslife3full').style.display = 'block';
+    document.getElementById('statuslife2full').style.display = 'none';
+    document.getElementById('statuslife1full').style.display = 'none';
+    document.getElementById('statuslife0full').style.display = 'none';
+  }
+  if (stat == 2) {
+    document.getElementById('statuslife3full').style.display = 'none';
+    document.getElementById('statuslife2full').style.display = 'block';
+    document.getElementById('statuslife1full').style.display = 'none';
+    document.getElementById('statuslife0full').style.display = 'none';
+  }
+  if (stat == 1) {
+    document.getElementById('statuslife3full').style.display = 'none';
+    document.getElementById('statuslife2full').style.display = 'none';
+    document.getElementById('statuslife1full').style.display = 'block';
+    document.getElementById('statuslife0full').style.display = 'none';
+  }
+  if (stat === 0) {
+    document.getElementById('statuslife3full').style.display = 'none';
+    document.getElementById('statuslife2full').style.display = 'none';
+    document.getElementById('statuslife1full').style.display = 'none';
+    document.getElementById('statuslife0full').style.display = 'block';
+  }
+}
+
+
 /**
  * Creates the Drawable object which will be the base class for
  * all drawable objects in the game. Sets up defualt variables
  * that all child objects will inherit, as well as the defualt
  * functions.
  */
-function Drawable() {
+function Drawable () {
   this.init = function(x, y, width, height) {
     // Defualt variables
     this.x = x;
@@ -252,8 +284,25 @@ function Pool(maxSize) {
         }
 
         if (pool[i].handleCollisions()) {
-          game.gameover = true;
-          break;
+          if (game.life == 3) {
+            ShowStatusLife(2);
+            game.life = 2;
+            pool[i].clear();
+            pool.push((pool.splice(i, 1))[0]);
+          } else if (game.life == 2) {
+            ShowStatusLife(1);
+            game.life = 1;
+            pool[i].clear();
+            pool.push((pool.splice(i, 1))[0]);
+          } else if (game.life == 1) {
+            ShowStatusLife(0);
+            game.life = 0;
+            pool[i].clear();
+            pool.push((pool.splice(i, 1))[0]);
+          } else {
+            game.gameover = true;
+            break;
+          }
         }
       } else {
         var xRand = getRandomInt(0 + pool[i].width / 2,
@@ -506,6 +555,7 @@ function Game() {
       this.gamestarttime = new Date().getTime();
       this.playtime = 0;
       this.score = 0;
+      this.life = 3;
       this.ingame = false;
       this.gameover = false;
 
@@ -527,6 +577,7 @@ function Game() {
     document.getElementById('timescoreclass').style.display = 'block';
     document.getElementById('scoreclass').style.display = 'block';
     this.gamestarttime = new Date().getTime();
+    ShowStatusLife(this.life);
     this.timedivB = 5;
     this.playtime = 0;
     this.score = 0;
@@ -555,6 +606,8 @@ function Game() {
   this.restart = function() {
     document.getElementById('game-over').style.display = 'none';
 
+    this.life = 3;
+    ShowStatusLife(this.life);
     this.obstaclePool.init();
     this.catchPool.init();
     this.gamestarttime = new Date().getTime();

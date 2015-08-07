@@ -17,6 +17,12 @@
     margin-left: auto;
     width: 800px;
   }
+  #gameheader {
+    margin-top: 10px;
+    margin-right: auto;
+    margin-left: auto;
+    width: 800px;
+  }
   #backgroundID {
     z-index: -2;
   }
@@ -26,23 +32,45 @@
   #obstaclesID {
     z-index: 0;
   }
+  .scoreblock {
+    position: relative;
+    float: left;
+  }
   .timescore {
-  position: relative;
-  text-align: left;
-  top: 10px;
-  color: #4e4e4e;
-  font-family: Helvetica, sans-serif;
-  cursor: default;
-  display: none;
+    position: relative;
+    text-align:left;
+    color: #4e4e4e;
+    font-family: Helvetica, sans-serif;
+    cursor: default;
+    display: none;
   }
   .score {
-  position: relative;
-  text-align: left;
-  top: 10px;
-  color: #4e4e4e;
-  font-family: Helvetica, sans-serif;
-  cursor: default;
-  display: none;
+    position: relative;
+    text-align:left;
+    color: #4e4e4e;
+    font-family: Helvetica, sans-serif;
+    cursor: default;
+    display: none;
+  }
+  .statuslife3full {
+    position: relative;
+    float: right;
+    display: none;
+  }
+  .statuslife2full {
+    position: relative;
+    float: right;
+    display: none;
+  }
+  .statuslife1full {
+    position: relative;
+    float: right;
+    display: none;
+  }
+  .statuslife0full {
+    position: relative;
+    float: right;
+    display: none;
   }
   .gametitle {
     position: relative;
@@ -76,8 +104,24 @@
     <canvas id="obstaclesID" width="800" height="600">
     </canvas>
 
-    <div id="timescoreclass" class="timescore">Zeit: <span id="timescore"></span></div>
-    <div id="scoreclass" class="score">Score: <span id="score"></span></div>
+    <div id="gameheader">
+      <div id="scoreblock" class="scoreblock">
+        <div id="timescoreclass" class="timescore">Zeit: <span id="timescore"></span></div>
+        <div id="scoreclass" class="score">Score: <span id="score"></span></div>
+      </div>
+      <div id="statuslife3full" class="statuslife3full">
+        <img src="images/3hearts3full.png" alt="lifes">
+      </div>
+      <div id="statuslife2full" class="statuslife2full">
+        <img src="images/3hearts2full.png" alt="lifes">
+      </div>
+      <div id="statuslife1full" class="statuslife1full">
+        <img src="images/3hearts1full.png" alt="lifes">
+      </div>
+      <div id="statuslife0full" class="statuslife0full">
+        <img src="images/3heartsempty.png" alt="lifes">
+      </div>
+    </div>
 
     <div id="gametitle" class="gametitle">
       <img src="images/flybu.png" alt="the mighty flying buddha">
