@@ -284,6 +284,8 @@ function Pool(maxSize) {
         }
 
         if (pool[i].handleCollisions()) {
+          game.hitface = true;
+          game.hitfacetime = new Date().getTime();
           if (game.life == 3) {
             ShowStatusLife(2);
             game.life = 2;
@@ -297,9 +299,6 @@ function Pool(maxSize) {
           } else if (game.life == 1) {
             ShowStatusLife(0);
             game.life = 0;
-            pool[i].clear();
-            pool.push((pool.splice(i, 1))[0]);
-          } else {
             game.gameover = true;
             break;
           }
@@ -413,7 +412,11 @@ function Buddha() {
   });
 
   this.draw = function() {
-    this.context.drawImage(imageRepository.buddha, this.x, this.y);
+    if (game.hitface === true) {
+      this.context.drawImage(imageRepository.buddhaO , this.x, this.y);
+    } else {
+      this.context.drawImage(imageRepository.buddha , this.x, this.y);
+    }
 
     if (this.fleft) {
       this.flameleft.update();
@@ -485,7 +488,22 @@ function Buddha() {
         this.omt = false;
         this.flameleft.clear(this.x + 168, this.y + 80);
         this.flameright.clear(this.x - 55, this.y + 72);
-        this.context.drawImage(imageRepository.buddha, this.x, this.y);
+        if (game.hitface === true) {
+          this.context.drawImage(imageRepository.buddhaO , this.x, this.y);
+        } else {
+          this.context.drawImage(imageRepository.buddha , this.x, this.y);
+        }
+      }
+    }
+
+    if (game.hitface === true) {
+      var endhitface = new Date().getTime();
+      var diffhitface = (endhitface - game.hitfacetime);
+      if (diffhitface >= 800) {
+        game.hitface = false;
+        this.context.drawImage(imageRepository.buddha , this.x, this.y);
+      } else {
+        this.context.drawImage(imageRepository.buddhaO , this.x, this.y);
       }
     }
 
@@ -558,6 +576,8 @@ function Game() {
       this.life = 3;
       this.ingame = false;
       this.gameover = false;
+      this.hitface = false;
+      this.hitfacetime = 0;
 
       return true;
     } else {
@@ -614,6 +634,8 @@ function Game() {
     this.timedivB = 0;
     this.playtime = 0;
     this.score = 0;
+    this.hitface = false;
+    this.hitfacetime = 0;
     this.ingame = true;
 
   };

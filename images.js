@@ -4,6 +4,7 @@ var imageRepository = new function() {
   this.background = new Image();
   this.buddha = new Image();
   this.buddhasad = new Image();
+  this.buddhaO = new Image();
   this.flameright = new Image();
   this.flameleft = new Image();
   this.obstacle01 = new Image();
@@ -25,52 +26,57 @@ var imageRepository = new function() {
 
   this.background.onload = function() {
     imageLoaded();
-  }
+  };
 
   this.buddha.onload = function() {
     imageLoaded();
-  }
+  };
 
   this.buddhasad.onload = function() {
     imageLoaded();
-  }
+  };
+
+  this.buddhaO.onload = function() {
+    imageLoaded();
+  };
 
   this.flameright.onload = function() {
     imageLoaded();
-  }
+  };
 
   this.flameleft.onload = function() {
     imageLoaded();
-  }
+  };
 
   this.obstacle01.onload = function() {
     imageLoaded();
-  }
+  };
 
   this.obstacle02.onload = function() {
     imageLoaded();
-  }
+  };
 
   this.obstacle03.onload = function() {
     imageLoaded();
-  }
+  };
 
   this.obstacle04.onload = function() {
     imageLoaded();
-  }
+  };
 
   this.obstacle05.onload = function() {
     imageLoaded();
-  }
+  };
 
   this.obstBall01.onload = function() {
     imageLoaded();
-  }
+  };
 
   // Set images src
   this.background.src = 'images/starland.png';
   this.buddha.src = 'images/buddhaface.png';
   this.buddhasad.src = 'images/buddhaface_sad.png';
+  this.buddhaO.src = 'images/buddhaface_O.png';
   this.flameright.src = 'images/fire_right.png';
   this.flameleft.src = 'images/fire_left.png';
   this.obstacle01.src = 'images/obst_1.png';
@@ -80,14 +86,14 @@ var imageRepository = new function() {
   this.obstacle05.src = 'images/obst_5.png';
   this.obstBall01.src = 'images/ball_2.png';
 
-}
+};
 
 function obstaclePic() {
   var obstpool = new Array(imageRepository.obstacle01,
     imageRepository.obstacle02,
     imageRepository.obstacle03,
     imageRepository.obstacle04,
-    imageRepository.obstacle05)
+    imageRepository.obstacle05);
   var pic = getRandomInt(0, obstpool.length - 1);
   return obstpool[pic];
 }
@@ -143,7 +149,7 @@ function sprite(options) {
     clearwidth = that.width / numberOfFrames + 2;
     clearheight = that.height + 2;
     that.context.clearRect(clearx, cleary, clearwidth, clearheight);
-  }
+  };
 
   return that;
 }
