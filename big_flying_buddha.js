@@ -251,23 +251,23 @@ function Pool(maxSize) {
     var speedrate = 3;
     var obstacleRate = 100;
 
-    if (timediv >= 20 && timediv <= 40) {
+    if (timediv >= 60 && timediv < 120) {
       minspeed = 1.5;
       speedrate = 3;
       obstacleRate = 80;
-    } else if (timediv >= 40 && timediv <= 60) {
+    } else if (timediv >= 120 && timediv < 180) {
       minspeed = 2;
       speedrate = 3;
       obstacleRate = 70;
-    } else if (timediv >= 60 && timediv <= 80) {
+    } else if (timediv >= 180 && timediv < 240) {
       minspeed = 2;
       speedrate = 4;
       obstacleRate = 60;
-    } else if (timediv >= 80 && timediv <= 100) {
+    } else if (timediv >= 240 && timediv < 300) {
       minspeed = 3;
       speedrate = 4;
       obstacleRate = 50;
-    } else if (timediv >= 100 && timediv <= 120) {
+    } else if (timediv >= 300) {
       minspeed = 3;
       speedrate = 5;
       obstacleRate = 40;
@@ -326,25 +326,39 @@ function Pool(maxSize) {
  * Obstacles to catch
  */
 function CatchPool() {
+  var size = 10; // Max obstacles allowed in the pool
+  var pool = [];
   this.counter = 0;
 
   // Initialize the catch object(s)
   this.init = function() {
-    this.snowball = new Obstacle(imageRepository.obstBall01);
-    this.snowball.init(0, 0, imageRepository.obstBall01.width,
-      imageRepository.obstBall01.height);
+    for (var i = 0; i < size; i++) {
+      // Initalize the obstacle object
+      obstacletyp = starPic();
+      var obstacle = new Obstacle(obstacletyp);
+      obstacle.init(0, 0, obstacletyp.width,
+        obstacletyp.height);
+      pool[i] = obstacle;
+    }
+  };
+
+  /*
+   * Grabs the last item in the list and initializes it and
+   * pushes it to the front of the array.
+   */
+  this.get = function(x, y, speed) {
+    if (!pool[size - 1].alive) {
+      pool[size - 1].spawn(x, y, speed);
+      pool.unshift(pool.pop());
+    }
   };
 
   // Clear Obstacle areas
   this.clearobstscreen = function() {
-    if (this.snowball.alive) {
-      this.snowball.clearObArea();
-    }
-  };
-
-  this.get = function(x, y, speed) {
-    if (!this.snowball.alive) {
-      this.snowball.spawn(x, y, speed);
+    for (var i = 0; i < size; i++) {
+      if (pool[i].alive) {
+        pool[i].clearObArea();
+      }
     }
   };
 
@@ -358,30 +372,37 @@ function CatchPool() {
     //var speedrate = timediv;
     var minspeed = 1;
     var speedrate = 3;
-    var obstacleRate = 150;
+    var obstacleRate = 70;
 
-    // Only draw until we find a obstacle that is not alive
-    if (this.snowball.alive) {
-      if (this.snowball.draw()) {
-        this.snowball.clear();
-      }
+    // Draw obstacles or create new ones
+    for (var i = 0; i < size; i++) {
 
-      if (this.snowball.handleCollisions()) {
-        this.snowball.clear();
-        game.score += 10;
-      }
+      // Only draw until we find a obstacle that is not alive
+      if (pool[i].alive) {
+        if (pool[i].draw()) {
+          pool[i].clear();
+        }
 
-    } else {
-      var xRand = getRandomInt(0 + this.snowball.width / 2,
-        800 - this.snowball.width / 2);
-      var yspeed = minspeed + Math.random() * speedrate;
-      if (this.counter >= obstacleRate) {
-        if (!this.snowball.alive) {
-          this.counter = 0;
-          this.get(xRand, 0, yspeed);
+        if (pool[i].handleCollisions()) {
+          pool[i].clear();
+          game.score += 10;
+        }
+
+      } else {
+        var xRand = getRandomInt(0 + pool[i].width / 2,
+          800 - pool[i].width / 2);
+        var yspeed = minspeed + Math.random() * speedrate;
+        if (this.counter >= obstacleRate) {
+          if (!pool[i].alive) {
+            this.counter = 0;
+            this.get(xRand, 0, yspeed);
+          }
         }
       }
+
     }
+
+
 
   };
 
