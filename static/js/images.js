@@ -18,7 +18,7 @@ var imageRepository = new function() {
   this.star04 = new Image();
   this.star05 = new Image();
 
-  var numImages = 11;
+  var numImages = 16;
   var numLoaded = 0;
 
   function imageLoaded() {
@@ -94,22 +94,23 @@ var imageRepository = new function() {
 
 
   // Set images src
-  this.background.src = 'images/starland.png';
-  this.buddha.src = 'images/buddhaface.png';
-  this.buddhasad.src = 'images/buddhaface_sad.png';
-  this.buddhaO.src = 'images/buddhaface_O.png';
-  this.flameright.src = 'images/fire_right.png';
-  this.flameleft.src = 'images/fire_left.png';
-  this.obstacle01.src = 'images/obst_1.png';
-  this.obstacle02.src = 'images/obst_2.png';
-  this.obstacle03.src = 'images/obst_3.png';
-  this.obstacle04.src = 'images/obst_4.png';
-  this.obstacle05.src = 'images/obst_5.png';
-  this.star01.src = 'images/star_1.png';
-  this.star02.src = 'images/star_2.png';
-  this.star03.src = 'images/star_3.png';
-  this.star04.src = 'images/star_4.png';
-  this.star05.src = 'images/star_5.png';
+  this.background.src = 'static/img/starland.png';
+  this.buddha.src = 'static/img/buddhaface.png';
+  this.buddhasad.src = 'static/img/buddhaface_sad.png';
+  this.buddhaO.src = 'static/img/buddhaface_O.png';
+  this.flameright.src = 'static/img/fire_right.png';
+  this.flameleft.src = 'static/img/fire_left.png';
+  this.obstacle01.src = 'static/img/obst_1.png';
+  this.obstacle02.src = 'static/img/obst_2.png';
+  this.obstacle03.src = 'static/img/obst_3.png';
+  this.obstacle04.src = 'static/img/obst_4.png';
+  this.obstacle05.src = 'static/img/obst_5.png';
+  this.star01.src = 'static/img/star_1.png';
+  this.star02.src = 'static/img/star_2.png';
+  this.star03.src = 'static/img/star_3.png';
+  this.star04.src = 'static/img/star_4.png';
+  this.star05.src = 'static/img/star_5.png';
+
 
 };
 
