@@ -1,0 +1,105 @@
+.wrapper {
+  .make-row();
+  margin-right: auto;
+  margin-left: auto;
+  width: 800px;
+}
+
+
+.content-main {
+  .make-row();
+}
+
+/* Game related */
+.game-box {
+  width: 801px;
+  height: 601px;
+  position: relative;
+}
+
+canvas {
+  position: absolute;
+  top: 0px;
+  background: transparent;
+}
+
+#backgroundID {
+  position: absolute;
+  z-index: -2;
+}
+#buddhaID {
+  z-index: -1;
+}
+#obstaclesID {
+  z-index: 0;
+}
+
+/* Title screen */
+#gametitle {
+  position: relative;
+  text-align: center;
+  top: 340px;
+  cursor: default;
+}
+.gametitle p {
+  position: relative;
+}
+
+/* Game over screen */
+#game-over {
+  position: relative;
+  top: 350px;
+  text-align: center;
+  cursor: default;
+  display: none;
+}
+.game-over p {
+  position: relative;
+}
+
+/* Game header */
+#gameheader {
+  position: relative;
+  margin-top: 10px;
+  margin-right: auto;
+  margin-left: auto;
+  width: 780px;
+}
+.scoreblock {
+  position: relative;
+  float: left;
+}
+.timescore {
+  position: relative;
+  text-align:left;
+  color: #4e4e4e;
+  font-family: Helvetica, sans-serif;
+  cursor: default;
+  display: none;
+}
+.score {
+  position: relative;
+  text-align:left;
+  color: #4e4e4e;
+  font-family: Helvetica, sans-serif;
+  cursor: default;
+  display: none;
+}
+.statuslife {
+  position: relative;
+  float: right;
+  display: none;
+}
+
+
+.content-below {
+  .make-row();
+}
+
+/* High score */
+#highscore {
+  margin-top: 40px;
+  width: 400px;
+  margin-right: auto;
+  margin-left: auto;
+}

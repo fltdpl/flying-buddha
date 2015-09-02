@@ -57,7 +57,7 @@ String.prototype.toHHMMSS = function() {
 /**
  * Life
  */
-function ShowStatusLife (stat) {
+function ShowStatusLife(stat) {
   if (stat == 3) {
     document.getElementById('statuslife3full').style.display = 'block';
     document.getElementById('statuslife2full').style.display = 'none';
@@ -594,9 +594,11 @@ function Game() {
       this.gamestarttime = new Date().getTime();
       this.playtime = 0;
       this.score = 0;
+      this.highscore = 0;
       this.life = 3;
       this.ingame = false;
       this.gameover = false;
+      this.played = false;
       this.hitface = false;
       this.hitfacetime = 0;
 
@@ -630,6 +632,7 @@ function Game() {
     document.getElementById('game-over').style.display = 'block';
     this.ingame = false;
     this.gameover = false;
+    this.played = true;
 
     this.backgroundContext.clearRect(
       0, 0, this.backgroundCanvas.width, this.backgroundCanvas.height);
@@ -640,6 +643,11 @@ function Game() {
     this.buddhaO.init(this.buddhaStartX, this.buddhaStartY,
       imageRepository.buddhasad.width, imageRepository.buddhasad.height);
     this.buddhaO.drawsimple();
+
+    if (this.score > this.highscore) {
+      // Modal for highscore list
+      ScoresViewModel.beginAdd();
+    }
 
   };
 
@@ -696,6 +704,14 @@ function animate() {
   } else {
     requestAnimFrame(animate);
     game.background.draw();
+
+    if (KEY_STATUS.space) {
+      if (game.played === false) {
+        game.startbutton();
+      } else {
+        game.restart();
+      }
+    }
   }
 }
 

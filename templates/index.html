@@ -1,131 +1,28 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <title>-_-</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html  lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
-        <script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.js"></script>
-        <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
-        <script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-2.2.1.js"></script>
+  <title>-_-</title>
 
-        <script src="{{ url_for('static', filename='js/images.js') }}"></script>
-        <script src="{{ url_for('static', filename='js/coll.js') }}"></script>
-        <script src="{{ url_for('static', filename='js/big_flying_buddha.js') }}"></script>
+  <!-- Bootstrap -->
+  <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+  <!-- Main CSS -->
+  <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
 
-        <!--
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-        -->
 
-        <style>
-        body {
-          margin:auto;
-          padding:auto;
-        }
-        canvas {
-          position: absolute;
-          top: 0px;
-          background: transparent;
-        }
-        #wrapper {
-          margin-right: auto;
-          margin-left: auto;
-          width: 800px;
-        }
-        #gameheader {
-          margin-top: 10px;
-          margin-right: auto;
-          margin-left: auto;
-          width: 800px;
-        }
-        #backgroundID {
-          z-index: -2;
-        }
-        #buddhaID {
-          z-index: -1;
-        }
-        #obstaclesID {
-          z-index: 0;
-        }
-        .scoreblock {
-          position: relative;
-          float: left;
-        }
-        .timescore {
-          position: relative;
-          text-align:left;
-          color: #4e4e4e;
-          font-family: Helvetica, sans-serif;
-          cursor: default;
-          display: none;
-        }
-        .score {
-          position: relative;
-          text-align:left;
-          color: #4e4e4e;
-          font-family: Helvetica, sans-serif;
-          cursor: default;
-          display: none;
-        }
-        .statuslife3full {
-          position: relative;
-          float: right;
-          display: none;
-        }
-        .statuslife2full {
-          position: relative;
-          float: right;
-          display: none;
-        }
-        .statuslife1full {
-          position: relative;
-          float: right;
-          display: none;
-        }
-        .statuslife0full {
-          position: relative;
-          float: right;
-          display: none;
-        }
-        .gametitle {
-          position: relative;
-          text-align: center;
-          top: 340px;
-          cursor: default;
-        }
-        .gametitle p {
-          position: relative;
-        }
-        .game-over {
-          position: relative;
-          top: 350px;
-          text-align: center;
-          cursor: default;
-          display: none;
-        }
-        .game-over p {
-          position: relative;
-        }
-        .highscore_form {
-          position: relative;
-          top: 350px;
-          text-align: center;
-          cursor: default;
-          display: none;
-        }
-        .highscore {
-          position: relative;
-          top: 350px;
-          text-align: center;
-          cursor: default;
-        }
-        </style>
+</head>
+<body>
 
-    </head>
-    <body>
+  <div class="wrapper">
 
-      <div id="wrapper">
+
+    <div class="content-main">
+
+      <div class="game-box">
+
         <canvas id="backgroundID" width="800" height="600">
           Your browser does not support canvas. Please try again with a different browser.
         </canvas>
@@ -134,102 +31,205 @@
         <canvas id="obstaclesID" width="800" height="600">
         </canvas>
 
+        <div id="gametitle">
+          <img src="{{ url_for('static', filename='img/flybu.png') }}" alt="the mighty flying buddha">
+          <p><span onclick="game.startbutton()">
+            <img src="{{ url_for('static', filename='img/start.png') }}" alt="start the game">
+          </span></p>
+        </div>
+
+        <div id="game-over">
+          <img src="{{ url_for('static', filename='img/gameover.png') }}" alt="game over">
+          <p><span onclick="game.restart()">
+            <img src="{{ url_for('static', filename='img/restart.png') }}" alt="restart the game">
+          </span></p>
+        </div>
+
         <div id="gameheader">
           <div id="scoreblock" class="scoreblock">
             <div id="timescoreclass" class="timescore">Zeit: <span id="timescore"></span></div>
             <div id="scoreclass" class="score">Score: <span id="score"></span></div>
           </div>
-          <div id="statuslife3full" class="statuslife3full">
+          <div id="statuslife3full" class="statuslife">
             <img src="{{ url_for('static', filename='img/3hearts3full.png') }}" alt="lifes">
           </div>
-          <div id="statuslife2full" class="statuslife2full">
+          <div id="statuslife2full" class="statuslife">
             <img src="{{ url_for('static', filename='img/3hearts2full.png') }}" alt="lifes">
           </div>
-          <div id="statuslife1full" class="statuslife1full">
+          <div id="statuslife1full" class="statuslife">
             <img src="{{ url_for('static', filename='img/3hearts1full.png') }}" alt="lifes">
           </div>
-          <div id="statuslife0full" class="statuslife0full">
+          <div id="statuslife0full" class="statuslife">
             <img src="{{ url_for('static', filename='img/3heartsempty.png') }}" alt="lifes">
           </div>
         </div>
 
-        <div id="gametitle" class="gametitle">
-          <img src="{{ url_for('static', filename='img/flybu.png') }}" alt="the mighty flying buddha">
-          <p><span onclick="game.startbutton()">
-            <img src="{{ url_for('static', filename='img/start.png') }}" alt="start the game">
-          </span></p>
-         </div>
+      </div>
 
-         <div id="game-over" class="game-over">
-           <img src="{{ url_for('static', filename='img/gameover.png') }}" alt="game over">
-           <p><span onclick="game.restart()">
-             <img src="{{ url_for('static', filename='img/restart.png') }}" alt="restart the game">
-           </span></p>
-        </div>
+    </div>
 
 
-        <div id="highscore">
+    <div class="content-secondary">
+
+      <div id="highscore">
+          <h2>Highscore</h2>
+
           <table class="table table-striped">
-            <tr><td><b>Points</b></td><td><b>Name</b></td></tr>
-            <!-- ko foreach: scores -->
-            <tr>
-              <td><b data-bind="text: points"></b></td>
-              <td><b data-bind="text: name"></b></td>
-            </tr>
-            <!-- /ko -->
+            <thead>
+              <tr>
+                <th>Points</th>
+                <th>Name</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- ko foreach: scores -->
+              <tr>
+                <td><b data-bind="text: points"></b></td>
+                <td><b data-bind="text: name"></b></td>
+              </tr>
+              <!-- /ko -->
+            </tbody>
           </table>
-        </div>
+
+      </div>
+
+      <div id="addScoreModal" class="modal fade" tabindex="=1" role="dialog" aria-labelledby="addDialogLabel" aria-hidden="true">
+          <div class="modal-dialog">
+              <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                      <h3 id="addDialogLabel">You are on the highscore list!</h3>
+                  </div>
+                  <div class="modal-body">
+                      <form id="save-name-form">
+                        <div class=class="form-group">
+                          <label class="control-label" for="inputName">Your name for the highscore list:</label>
+                          <input data-bind="value: name" type="text" class="form-control" id="inputScore" placeholder="Pippi Lotta" style="width: 150px;">
+                        </div>
+                      </form>
+                  </div>
+                  <div class="modal-footer">
+                      <button form="save-name-form" class="btn btn-primary" type="submit">yeahhhhhhhh</button>
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                  </div>
+              </div>
+          </div>
+      </div>
 
 
-        <div id="highscore_form">
-
-        </div>
-
-        <script type="text/javascript">
-
-          function TasksViewModel() {
-            var self = this;
-            self.scoresURI = 'http://localhost:5000/buddha/api/highscore';
-            self.usr = "jie993nkvlae83n3n275bvuxy";
-            self.pwd = "xvu22cxytsaaslf8302rvie99";
-            self.scores = ko.observableArray();
+    </div>
 
 
-            self.ajax = function(uri, method, data) {
-              var request = {
-                  url: uri,
-                  type: method,
-                  contentType: "application/json",
-                  accepts: "application/json",
-                  cache: false,
-                  dataType: 'json',
-                  data: JSON.stringify(data),
-                  beforeSend: function (xhr) {
-                    xhr.setRequestHeader("Authorization",
-                      "Basic " + btoa(self.usr + ":" + self.pwd));
-                  },
-                  error: function(jqXHR) {
-                    console.log("ajax error " + jqXHR.status);
-                  }
-              };
-              return $.ajax(request);
-            };
-
-            self.ajax(self.scoresURI, 'GET').done(function(data) {
-              for (var i = 0; i < data.scores.length; i++) {
-                self.scores.push({
-                  points: ko.observable(data.scores[i].points),
-                  name: ko.observable(data.scores[i].name),
-                });
-              }
-            });
-
-          }
-          ko.applyBindings(new TasksViewModel(), $('#main')[0]);
-
-        </script>
+  </div>
 
 
 
-    </body>
+
+  <!-- jQuery, Bootstrap and Knockout -->
+  <script src="{{ url_for('static', filename='js/jquery-2.1.4.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/knockout-3.3.0.js') }}"></script>
+
+  <!-- Game data -->
+  <script src="{{ url_for('static', filename='js/images.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/coll.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/big_flying_buddha.js') }}"></script>
+
+  <!-- Communication with the backend for highscore -->
+  <script type="text/javascript">
+
+    function ScoresViewModel() {
+      var self = this;
+      self.scoresURI = 'http://localhost:5000/buddha/api/highscore';
+      self.usr = "jie993nkvlae83n3n275bvuxy";
+      self.pwd = "xvu22cxytsaaslf8302rvie99";
+      self.scores = ko.observableArray();
+
+
+      self.ajax = function(uri, method, data) {
+        var request = {
+            url: uri,
+            type: method,
+            contentType: "application/json",
+            accepts: "application/json",
+            cache: false,
+            dataType: 'json',
+            data: JSON.stringify(data),
+            beforeSend: function (xhr) {
+              xhr.setRequestHeader("Authorization",
+                "Basic " + btoa(self.usr + ":" + self.pwd));
+            },
+            error: function(jqXHR) {
+              console.log("ajax error " + jqXHR.status);
+            }
+        };
+        return $.ajax(request);
+      };
+
+      self.ajax(self.scoresURI, 'GET').done(function(data) {
+        for (var i = 0; i < data.scores.length; i++) {
+          self.scores.push({
+            points: ko.observable(data.scores[i].points),
+            name: ko.observable(data.scores[i].name)
+          });
+        }
+        game.highscore = data.scores[data.scores.length-1].points;
+      });
+
+      self.beginAdd = function() {
+        $('#addScoreModal').modal('show');
+      }
+
+
+      self.add = function(score) {
+        self.ajax(self.scoresURI, 'POST', score).done(function(data) {
+
+          self.scores.removeAll();
+
+          self.ajax(self.scoresURI, 'GET').done(function(data) {
+            for (var i = 0; i < data.scores.length; i++) {
+              self.scores.push({
+                points: ko.observable(data.scores[i].points),
+                name: ko.observable(data.scores[i].name)
+              });
+            }
+            game.highscore = data.scores[data.scores.length-1].points;
+          });
+
+        });
+      }
+
+    }
+
+    function AddScoreViewModel() {
+      var self = this;
+      self.name = ko.observable();
+
+      self.addScore = function() {
+        $('#addScoreModal').modal('hide');
+        ScoresViewModel.add({
+            name: self.name(),
+            points: game.score
+        });
+        self.name("");
+      }
+
+      $('.btn-primary').click(function(){
+          self.addScore();
+      });
+
+
+    }
+
+
+    var ScoresViewModel = new ScoresViewModel();
+    var AddScoreViewModel = new AddScoreViewModel();
+    ko.applyBindings(ScoresViewModel, $('#highscore')[0]);
+    ko.applyBindings(AddScoreViewModel, $('#addScoreModal')[0]);
+
+
+  </script>
+
+
+</body>
 </html>

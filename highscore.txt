@@ -1,4 +1,13 @@
-tom 123
-tim 234
-tum 345
 tem 456
+tum 345
+tom 160
+tom 60
+tom 50
+tom 50
+tom 40
+tom 40
+tom 30
+yeah 30
+blucccc 30
+bla 0
+kopolla 0
