@@ -98,8 +98,24 @@ canvas {
 
 /* High score */
 #highscore {
-  margin-top: 40px;
+  margin-top: 120px;
   width: 400px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+
+.content-footer {
+  .make-row();
+}
+
+#footer {
+  margin-top: 40px;
+  border-top: thin solid #cfcfcf;
+}
+
+.container-footer {
+  width: 780px;
   margin-right: auto;
   margin-left: auto;
 }

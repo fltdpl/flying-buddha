@@ -616,6 +616,7 @@ function Game() {
 
   // startbutton
   this.startbutton = function() {
+    window.scrollTo(0, 0);
     document.getElementById('gametitle').style.display = 'none';
     document.getElementById('timescoreclass').style.display = 'block';
     document.getElementById('scoreclass').style.display = 'block';
@@ -653,6 +654,7 @@ function Game() {
 
   // Restart the game
   this.restart = function() {
+    window.scrollTo(0, 0);
     document.getElementById('game-over').style.display = 'none';
 
     this.life = 3;
@@ -709,7 +711,9 @@ function animate() {
       if (game.played === false) {
         game.startbutton();
       } else {
-        game.restart();
+        if (game.score < highscore) {
+          game.restart();
+        }
       }
     }
   }

@@ -21,7 +21,7 @@
 
     <div class="content-main">
 
-      <div class="game-box">
+      <div class="game-box" id="game-box">
 
         <canvas id="backgroundID" width="800" height="600">
           Your browser does not support canvas. Please try again with a different browser.
@@ -30,20 +30,6 @@
         </canvas>
         <canvas id="obstaclesID" width="800" height="600">
         </canvas>
-
-        <div id="gametitle">
-          <img src="{{ url_for('static', filename='img/flybu.png') }}" alt="the mighty flying buddha">
-          <p><span onclick="game.startbutton()">
-            <img src="{{ url_for('static', filename='img/start.png') }}" alt="start the game">
-          </span></p>
-        </div>
-
-        <div id="game-over">
-          <img src="{{ url_for('static', filename='img/gameover.png') }}" alt="game over">
-          <p><span onclick="game.restart()">
-            <img src="{{ url_for('static', filename='img/restart.png') }}" alt="restart the game">
-          </span></p>
-        </div>
 
         <div id="gameheader">
           <div id="scoreblock" class="scoreblock">
@@ -64,12 +50,32 @@
           </div>
         </div>
 
+        <div id="gametitle">
+          <img src="{{ url_for('static', filename='img/flybu.png') }}" alt="the mighty flying buddha">
+          <p><span onclick="game.startbutton()">
+              <img src="{{ url_for('static', filename='img/start.png') }}" alt="start the game">
+            </span>
+          </p>
+          <p>
+            <span onclick="scrolltohighscore()">
+              <img src="{{ url_for('static', filename='img/highscore.png') }}" alt="show highscore">
+            </span>
+          </p>
+        </div>
+
+        <div id="game-over">
+          <img src="{{ url_for('static', filename='img/gameover.png') }}" alt="game over">
+          <p><span onclick="game.restart()">
+            <img src="{{ url_for('static', filename='img/restart.png') }}" alt="restart the game">
+          </span></p>
+        </div>
+
       </div>
 
     </div>
 
 
-    <div class="content-secondary">
+    <div class="content-below">
 
       <div id="highscore">
           <h2>Highscore</h2>
@@ -104,7 +110,7 @@
                       <form id="save-name-form" accept-charset="UTF-8">
                         <div class=class="form-group">
                           <label class="control-label" for="inputName">Your name for the highscore list:</label>
-                          <input data-bind="value: name" type="text" class="form-control" id="inputScore" placeholder="Pippi Lotta" autofocus style="width: 150px;">
+                          <input data-bind="value: name" type="text" class="form-control" id="inputScore" placeholder="Rosa" maxlength="20" autofocus style="width: 150px;">
                         </div>
                       </form>
                   </div>
@@ -116,6 +122,23 @@
           </div>
       </div>
 
+
+    </div>
+
+
+
+    <div class="content-footer">
+
+      <div id="footer">
+        <div class="container-footer">
+          <p></p>
+          <p class="text-muted">flying buddha on github: <a  href="https://github.com/fltdpl/flying-buddha">https://github.com/fltdpl/flying-buddha</a></p>
+        </div>
+      </div>
+
+      <ul class="nav pull-right scroll-top">
+        <li><a href="#" title="Scroll to top"><i class="glyphicon   glyphicon-chevron-up"></i></a></li>
+      </ul>
 
     </div>
 
@@ -230,6 +253,17 @@
     var AddScoreViewModel = new AddScoreViewModel();
     ko.applyBindings(ScoresViewModel, $('#highscore')[0]);
     ko.applyBindings(AddScoreViewModel, $('#addScoreModal')[0]);
+
+
+    function scrolltotop() {
+      document.getElementById( 'game-box' ).scrollIntoView();
+    };
+
+    function scrolltohighscore() {
+      document.getElementById( 'highscore' ).scrollIntoView();
+    };
+
+    scrolltotop()
 
 
   </script>

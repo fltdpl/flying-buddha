@@ -12,14 +12,13 @@ def separate(filename):
     strgs = []
     with open(filename) as myfile:
         for line in myfile:
-            for item in line.split(' '):
-                try:
-                    # Try converting the item to an integer
-                    value = int(item, 10)
-                    ints.append(value)
-                except ValueError:
-                    # if it fails, it's a string.
-                    strgs.append(item)
+            item = line.split(' ', 1 )
+            strvalue = item[0]
+            intvalue = int(item[1], 10)
+
+            ints.append(intvalue)
+            strgs.append(strvalue)
+
     return ints, strgs
 
 def deleteContent(fName):
