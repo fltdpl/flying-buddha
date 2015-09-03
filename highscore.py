@@ -69,6 +69,9 @@ def newHighscore(newName, newPoints):
     scores_max = 100;
     scores_list = 10;
 
+    # encode
+    newName = newName.encode("utf-8")
+
     # appending the new score to the highscore file
     append2list(scores_file, newName, newPoints)
 
