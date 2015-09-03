@@ -8,7 +8,7 @@
   <title>-_-</title>
 
   <!-- Bootstrap -->
-  <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
   <!-- Main CSS -->
   <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
 
@@ -132,12 +132,16 @@
       <div id="footer">
         <div class="container-footer">
           <p></p>
-          <p class="text-muted">flying buddha on github: <a  href="https://github.com/fltdpl/flying-buddha">https://github.com/fltdpl/flying-buddha</a></p>
+          <p class="text-muted">flying buddha source: <a  href="https://github.com/fltdpl/flying-buddha">https://github.com/fltdpl/flying-buddha</a></p>
         </div>
       </div>
 
       <ul class="nav pull-right scroll-top">
-        <li><a href="#" title="Scroll to top"><i class="glyphicon   glyphicon-chevron-up"></i></a></li>
+        <li>
+          <a href="#" title="Scroll to top">
+            <span class="glyphicon glyphicon-chevron-up"></span>
+          </a>
+        </li>
       </ul>
 
     </div>
@@ -149,9 +153,9 @@
 
 
   <!-- jQuery, Bootstrap and Knockout -->
-  <script charset="UTF-8" src="{{ url_for('static', filename='js/jquery-2.1.4.min.js') }}"></script>
-  <script charset="UTF-8" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-  <script charset="UTF-8" src="{{ url_for('static', filename='js/knockout-3.3.0.js') }}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.3.0/knockout-min.js"></script>
 
   <!-- Game data -->
   <script charset="UTF-8" src="{{ url_for('static', filename='js/images.js') }}"></script>
