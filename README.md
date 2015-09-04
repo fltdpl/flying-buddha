@@ -2,14 +2,15 @@
 
 little browser game
 
-saves the highscore list in highscore.txt
+saves the highscore list in highscore.txt on the server
 
-needs:
-pip install flask
-pip install flask-httpauth
-pip install jinja2
-pip install werkzeug
-pip install argparse
-pip install distribute
-pip install flup
-pip install wsgiref
+needs (pip install): 
++ flask
++ flask-httpauth
++ jinja2
++ werkzeug
++ argparse
++ distribute
++ flup
++ wsgiref
+
