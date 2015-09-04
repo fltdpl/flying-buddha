@@ -631,6 +631,7 @@ function Game() {
   // Game over
   this.gameOver = function() {
     document.getElementById('game-over').style.display = 'block';
+    document.getElementById('addScoreModal').style.display = 'block';
     this.ingame = false;
     this.gameover = false;
     this.played = true;

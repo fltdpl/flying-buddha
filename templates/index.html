@@ -52,7 +52,8 @@
 
         <div id="gametitle">
           <img src="{{ url_for('static', filename='img/flybu.png') }}" alt="the mighty flying buddha">
-          <p><span onclick="game.startbutton()">
+          <p>
+            <span onclick="game.startbutton()">
               <img src="{{ url_for('static', filename='img/start.png') }}" alt="start the game">
             </span>
           </p>
@@ -65,9 +66,16 @@
 
         <div id="game-over">
           <img src="{{ url_for('static', filename='img/gameover.png') }}" alt="game over">
-          <p><span onclick="game.restart()">
-            <img src="{{ url_for('static', filename='img/restart.png') }}" alt="restart the game">
-          </span></p>
+          <p>
+            <span onclick="game.restart()">
+              <img src="{{ url_for('static', filename='img/restart.png') }}" alt="restart the game">
+            </span>
+          </p>
+          <p>
+            <span onclick="scrolltohighscore()">
+              <img src="{{ url_for('static', filename='img/highscore.png') }}" alt="show highscore">
+            </span>
+          </p>
         </div>
 
       </div>
@@ -200,7 +208,9 @@
             name: ko.observable(data.scores[i].name)
           });
         }
-        game.highscore = data.scores[data.scores.length-1].points;
+        if (data.scores.length < 10) {
+          game.highscore = data.scores[data.scores.length-1].points;
+        }
       });
 
       self.beginAdd = function() {
@@ -224,7 +234,9 @@
                 name: ko.observable(data.scores[i].name)
               });
             }
-            game.highscore = data.scores[data.scores.length-1].points;
+            if (data.scores.length < 10) {
+              game.highscore = data.scores[data.scores.length-1].points;
+            }
           });
 
         });
