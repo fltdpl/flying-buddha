@@ -4,7 +4,7 @@ little browser game
 
 saves the highscore list in highscore.txt on the server
 
-needs (pip install): 
+needs (pip install):
 + flask
 + flask-httpauth
 + jinja2
@@ -13,4 +13,3 @@ needs (pip install):
 + distribute
 + flup
 + wsgiref
-

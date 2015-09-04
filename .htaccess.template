@@ -1,0 +1,15 @@
+<IfModule mod_fcgid.c>
+    AddHandler fcgid-script .fcgi
+    <Files ~ (\.fcgi)>
+        SetHandler fcgid-script
+        Options +SymLinksIfOwnerMatch +ExecCGI
+    </Files>
+</IfModule>
+
+<IfModule mod_rewrite.c>
+    Options +SymLinksIfOwnerMatch
+    RewriteEngine On
+    RewriteBase /
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^(.*)$ /fcgi-bin/buddha_app.fcgi/$1 [QSA,L]
+</IfModule>
