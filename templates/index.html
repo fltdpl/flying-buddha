@@ -178,7 +178,7 @@
 
     function ScoresViewModel() {
       var self = this;
-      self.scoresURI = '/buddha/api/highscore';
+      self.scoresURI = './buddha/api/highscore';
       self.usr = "jie993nkvlae83n3n275bvuxy";
       self.pwd = "xvu22cxytsaaslf8302rvie99";
       self.scores = ko.observableArray();
@@ -230,19 +230,17 @@
 
           self.scores.removeAll();
 
-          self.ajax(self.scoresURI, 'GET').done(function(data) {
-            for (var i = 0; i < data.scores.length; i++) {
-              self.scores.push({
-                points: ko.observable(data.scores[i].points),
-                name: ko.observable(data.scores[i].name)
-              });
-            }
-            if (data.scores.length < 10) {
-              game.highscore = data.scores[data.scores.length-1].points;
-            }
-          });
-
+          for (var i = 0; i < data.scores.length; i++) {
+            self.scores.push({
+              points: ko.observable(data.scores[i].points),
+              name: ko.observable(data.scores[i].name)
+            });
+          }
+          if (data.scores.length < 10) {
+            game.highscore = data.scores[data.scores.length-1].points;
+          }
         });
+
       }
 
     }

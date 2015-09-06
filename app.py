@@ -43,12 +43,6 @@ def index():
 
 @app.route('/buddha/api/highscore', methods=['GET'])
 @auth.login_required
-def get_tasks():
-    scores = highscore.printHighscore()
-    return jsonify({'scores': scores})
-
-
-@app.route('/buddha/api/highscore', methods=['GET'])
 def get_scores():
     scores = highscore.printHighscore()
     if len(scores) == 0:
@@ -58,6 +52,7 @@ def get_scores():
 
 
 @app.route('/buddha/api/highscore', methods=['POST'])
+@auth.login_required
 def create_score():
     if not request.json or not 'name' in request.json:
         abort(400)
@@ -68,8 +63,11 @@ def create_score():
         'name': newName,
         'points': newPoints,
     }
-
-    return jsonify({'newscore': newscore}), 201
+    scores = highscore.printHighscore()
+    if len(scores) == 0:
+        abort(404)
+    else:
+        return jsonify({'scores': scores})
 
 
 if __name__ == '__main__':
