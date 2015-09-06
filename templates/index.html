@@ -140,8 +140,10 @@
       <div id="footer">
         <div class="container-footer">
           <p></p>
-          <p class="text-muted">last change on this site: 2015/09/04</p>
-          <p class="text-muted">flying buddha source: <a  href="https://github.com/fltdpl/flying-buddha">https://github.com/fltdpl/flying-buddha</a></p>
+          <p class="text-muted">last change on this site: 2015/09/04</br>
+              flying buddha source:
+              <a href="https://github.com/fltdpl/flying-buddha">https://github.com/fltdpl/flying-buddha</a>
+          </p>
         </div>
       </div>
 
@@ -176,7 +178,7 @@
 
     function ScoresViewModel() {
       var self = this;
-      self.scoresURI = 'http://localhost:5000/buddha/api/highscore';
+      self.scoresURI = '/buddha/api/highscore';
       self.usr = "jie993nkvlae83n3n275bvuxy";
       self.pwd = "xvu22cxytsaaslf8302rvie99";
       self.scores = ko.observableArray();
