@@ -176,8 +176,6 @@
   <!-- Communication with the backend for highscore -->
   <script type="text/javascript" charset="UTF-8">
 
-
-
     function ScoresViewModel() {
       var self = this;
       self.scoresURI = './buddha/api/highscore';
@@ -190,7 +188,7 @@
         var request = {
             url: uri,
             type: method,
-            contentType: "application/json",
+            contentType: "application/json; charset=utf-8",
             accepts: "application/json",
             cache: false,
             dataType: 'json',
@@ -228,20 +226,24 @@
 
 
           self.add = function(score) {
-            self.ajax(self.scoresURI, 'POST', score).done(function(data) {
+            try {
+              self.ajax(self.scoresURI, 'POST', score).done(function(data) {
 
+                self.scores.removeAll();
+                for (var i = 0; i < data.scores.length; i++) {
+                  self.scores.push({
+                    points: ko.observable(data.scores[i].points),
+                    name: ko.observable(data.scores[i].name)
+                  });
+                }
+                if (data.scores.length > 10) {
+                  game.highscore = data.scores[data.scores.length-1].points;
+                }
+              });
+            }
+            catch(err) {
               self.scores.removeAll();
-
-              for (var i = 0; i < data.scores.length; i++) {
-                self.scores.push({
-                  points: ko.observable(data.scores[i].points),
-                  name: ko.observable(data.scores[i].name)
-                });
-              }
-              if (data.scores.length > 10) {
-                game.highscore = data.scores[data.scores.length-1].points;
-              }
-            });
+            }
 
           };
 
@@ -283,9 +285,6 @@
         }
 
         scrolltotop();
-
-
-
 
 
   </script>
