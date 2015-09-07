@@ -179,8 +179,6 @@
     function ScoresViewModel() {
       var self = this;
       self.scoresURI = './buddha/api/highscore';
-      self.usr = "jie993nkvlae83n3n275bvuxy";
-      self.pwd = "xvu22cxytsaaslf8302rvie99";
       self.scores = ko.observableArray();
 
 
@@ -193,10 +191,6 @@
             cache: false,
             dataType: 'json',
             data: JSON.stringify(data),
-            beforeSend: function (xhr) {
-              xhr.setRequestHeader("Authorization",
-                "Basic " + btoa(self.usr + ":" + self.pwd));
-              },
               error: function(jqXHR) {
                 console.log("ajax error " + jqXHR.status);
               }
