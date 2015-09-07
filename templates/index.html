@@ -140,7 +140,7 @@
       <div id="footer">
         <div class="container-footer">
           <p></p>
-          <p class="text-muted">last change on this site: 2015/09/04</br>
+          <p class="text-muted">last change on this site: 2015/09/04<br></br>
               flying buddha source:
               <a href="https://github.com/fltdpl/flying-buddha">https://github.com/fltdpl/flying-buddha</a>
           </p>
@@ -176,6 +176,8 @@
   <!-- Communication with the backend for highscore -->
   <script type="text/javascript" charset="UTF-8">
 
+
+
     function ScoresViewModel() {
       var self = this;
       self.scoresURI = './buddha/api/highscore';
@@ -196,91 +198,94 @@
             beforeSend: function (xhr) {
               xhr.setRequestHeader("Authorization",
                 "Basic " + btoa(self.usr + ":" + self.pwd));
-            },
-            error: function(jqXHR) {
-              console.log("ajax error " + jqXHR.status);
+              },
+              error: function(jqXHR) {
+                console.log("ajax error " + jqXHR.status);
+              }
+            };
+            return $.ajax(request);
+          };
+
+          self.ajax(self.scoresURI, 'GET').done(function(data) {
+            for (var i = 0; i < data.scores.length; i++) {
+              self.scores.push({
+                points: ko.observable(data.scores[i].points),
+                name: ko.observable(data.scores[i].name)
+              });
             }
-        };
-        return $.ajax(request);
-      };
-
-      self.ajax(self.scoresURI, 'GET').done(function(data) {
-        for (var i = 0; i < data.scores.length; i++) {
-          self.scores.push({
-            points: ko.observable(data.scores[i].points),
-            name: ko.observable(data.scores[i].name)
+            if (data.scores.length > 10) {
+              game.highscore = data.scores[data.scores.length-1].points;
+            }
           });
-        }
-        if (data.scores.length < 10) {
-          game.highscore = data.scores[data.scores.length-1].points;
-        }
-      });
 
-      self.beginAdd = function() {
-        $('#addScoreModal').modal('show');
+          self.beginAdd = function() {
+            $('#addScoreModal').modal('show');
 
-        $('#addScoreModal').on('shown.bs.modal', function() {
-          $(this).find('[autofocus]').focus();
-        });
-      }
-
-
-      self.add = function(score) {
-        self.ajax(self.scoresURI, 'POST', score).done(function(data) {
-
-          self.scores.removeAll();
-
-          for (var i = 0; i < data.scores.length; i++) {
-            self.scores.push({
-              points: ko.observable(data.scores[i].points),
-              name: ko.observable(data.scores[i].name)
+            $('#addScoreModal').on('shown.bs.modal', function() {
+              $(this).find('[autofocus]').focus();
             });
-          }
-          if (data.scores.length < 10) {
-            game.highscore = data.scores[data.scores.length-1].points;
-          }
-        });
-
-      }
-
-    }
-
-    function AddScoreViewModel() {
-      var self = this;
-      self.name = ko.observable();
-
-      self.addScore = function() {
-        $('#addScoreModal').modal('hide');
-        ScoresViewModel.add({
-            name: self.name(),
-            points: game.score
-        });
-        self.name("");
-      }
-
-      $('.btn-primary').click(function(){
-          self.addScore();
-      });
+          };
 
 
-    }
+          self.add = function(score) {
+            self.ajax(self.scoresURI, 'POST', score).done(function(data) {
+
+              self.scores.removeAll();
+
+              for (var i = 0; i < data.scores.length; i++) {
+                self.scores.push({
+                  points: ko.observable(data.scores[i].points),
+                  name: ko.observable(data.scores[i].name)
+                });
+              }
+              if (data.scores.length > 10) {
+                game.highscore = data.scores[data.scores.length-1].points;
+              }
+            });
+
+          };
+
+        }
+
+        function AddScoreViewModel() {
+          var self = this;
+          self.name = ko.observable();
+
+          self.addScore = function() {
+            $('#addScoreModal').modal('hide');
+            ScoresViewModel.add({
+              name: self.name(),
+              points: game.score
+            });
+            self.name("");
+          };
+
+          $('.btn-primary').click(function(){
+            self.addScore();
+          });
 
 
-    var ScoresViewModel = new ScoresViewModel();
-    var AddScoreViewModel = new AddScoreViewModel();
-    ko.applyBindings(ScoresViewModel, $('#highscore')[0]);
-    ko.applyBindings(AddScoreViewModel, $('#addScoreModal')[0]);
+        }
 
 
-    function scrolltotop() {
-      document.getElementById( 'game-box' ).scrollIntoView();
-    };
+        var ScoresViewModel = new ScoresViewModel();
+        var AddScoreViewModel = new AddScoreViewModel();
+        ko.applyBindings(ScoresViewModel, $('#highscore')[0]);
+        ko.applyBindings(AddScoreViewModel, $('#addScoreModal')[0]);
 
-    function scrolltohighscore() {
-      document.getElementById( 'highscore' ).scrollIntoView();
-    };
 
-    scrolltotop()
+        function scrolltotop() {
+          document.getElementById( 'game-box' ).scrollIntoView();
+        }
+
+        function scrolltohighscore() {
+          document.getElementById( 'highscore' ).scrollIntoView();
+        }
+
+        scrolltotop();
+
+
+
 
 
   </script>
