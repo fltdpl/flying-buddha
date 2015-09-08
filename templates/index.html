@@ -140,7 +140,7 @@
       <div id="footer">
         <div class="container-footer">
           <p></p>
-          <p class="text-muted">last change on this site: 2015/09/04<br></br>
+          <p class="text-muted">last change on this site: 2015/09/04</br>
               flying buddha source:
               <a href="https://github.com/fltdpl/flying-buddha">https://github.com/fltdpl/flying-buddha</a>
           </p>
@@ -204,16 +204,18 @@
             return $.ajax(request);
           };
 
-          self.ajax(self.scoresURI, 'GET').done(function(data) {
-            for (var i = 0; i < data.scores.length; i++) {
-              self.scores.push({
-                points: ko.observable(data.scores[i].points),
-                name: ko.observable(data.scores[i].name)
-              });
-            }
-            if (data.scores.length > 10) {
-              game.highscore = data.scores[data.scores.length-1].points;
-            }
+          $(document).ready(function(){
+            self.ajax(self.scoresURI, 'GET').done(function(data) {
+              for (var i = 0; i < data.scores.length; i++) {
+                self.scores.push({
+                  points: ko.observable(data.scores[i].points),
+                  name: ko.observable(data.scores[i].name)
+                });
+              }
+              if (data.scores.length > 10) {
+                game.highscore = data.scores[data.scores.length-1].points;
+              }
+            });
           });
 
           self.beginAdd = function() {
@@ -226,24 +228,26 @@
 
 
           self.add = function(score) {
-            try {
-              self.ajax(self.scoresURI, 'POST', score).done(function(data) {
+            $(document).ready(function(){
+              try {
+                self.ajax(self.scoresURI, 'POST', score).done(function(data) {
 
+                  self.scores.removeAll();
+                  for (var i = 0; i < data.scores.length; i++) {
+                    self.scores.push({
+                      points: ko.observable(data.scores[i].points),
+                      name: ko.observable(data.scores[i].name)
+                    });
+                  }
+                  if (data.scores.length > 10) {
+                    game.highscore = data.scores[data.scores.length-1].points;
+                  }
+                });
+              }
+              catch(err) {
                 self.scores.removeAll();
-                for (var i = 0; i < data.scores.length; i++) {
-                  self.scores.push({
-                    points: ko.observable(data.scores[i].points),
-                    name: ko.observable(data.scores[i].name)
-                  });
-                }
-                if (data.scores.length > 10) {
-                  game.highscore = data.scores[data.scores.length-1].points;
-                }
-              });
-            }
-            catch(err) {
-              self.scores.removeAll();
-            }
+              }
+            });
 
           };
 
