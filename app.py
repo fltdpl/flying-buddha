@@ -22,6 +22,10 @@ def not_found(error):
 def index():
     return render_template('index.html')
 
+@app.route('/test')
+def test():
+    return render_template('test.html')
+
 
 @app.route('/buddha/api/highscore', methods=['GET'])
 def get_scores():
