@@ -123,7 +123,7 @@
                       </form>
                   </div>
                   <div class="modal-footer">
-                      <button form="save-name-form" class="btn btn-primary" type="submit">yeahhhhhhhh</button>
+                      <button form="save-name-form" data-bind="click: addScore" class="btn btn-primary" type="submit">yeahhhhhhhh</button>
                       <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                   </div>
               </div>
@@ -179,116 +179,103 @@
     function ScoresViewModel() {
       var self = this;
       self.scoresURI = './buddha/api/highscore';
-      self.usr = "jie993nkvlae83n3n275bvuxy";
-      self.pwd = "xvu22cxytsaaslf8302rvie99";
       self.scores = ko.observableArray();
 
+      console.log( "ScoresViewModel" );
 
-      self.ajax = function(uri, method, data) {
-        var request = {
-            url: uri,
-            type: method,
-            contentType: "application/json; charset=utf-8",
-            accepts: "application/json",
-            cache: false,
-            dataType: 'json',
-            data: JSON.stringify(data),
-            beforeSend: function (xhr) {
-              xhr.setRequestHeader("Authorization",
-                "Basic " + btoa(self.usr + ":" + self.pwd));
-              },
-              error: function(jqXHR) {
-                console.log("ajax error " + jqXHR.status);
-              }
-            };
-            return $.ajax(request);
-          };
-
-          $(document).ready(function(){
-            self.ajax(self.scoresURI, 'GET').done(function(data) {
-              for (var i = 0; i < data.scores.length; i++) {
-                self.scores.push({
-                  points: ko.observable(data.scores[i].points),
-                  name: ko.observable(data.scores[i].name)
-                });
-              }
-              if (data.scores.length > 10) {
-                game.highscore = data.scores[data.scores.length-1].points;
-              }
+      $.ajax({
+        url: self.scoresURI,
+        type: "GET",
+        dataType : "json",
+        success: function( json ) {
+          for (var i = 0; i < json.scores.length; i++) {
+            self.scores.push({
+              points: ko.observable(json.scores[i].points),
+              name: ko.observable(json.scores[i].name)
             });
-          });
-
-          self.beginAdd = function() {
-            $('#addScoreModal').modal('show');
-
-            $('#addScoreModal').on('shown.bs.modal', function() {
-              $(this).find('[autofocus]').focus();
-            });
-          };
-
-
-          self.add = function(score) {
-            $(document).ready(function(){
-              try {
-                self.ajax(self.scoresURI, 'POST', score).done(function(data) {
-
-                  self.scores.removeAll();
-                  for (var i = 0; i < data.scores.length; i++) {
-                    self.scores.push({
-                      points: ko.observable(data.scores[i].points),
-                      name: ko.observable(data.scores[i].name)
-                    });
-                  }
-                  if (data.scores.length > 10) {
-                    game.highscore = data.scores[data.scores.length-1].points;
-                  }
-                });
-              }
-              catch(err) {
-                self.scores.removeAll();
-              }
-            });
-
-          };
-
+          }
+        },
+        error: function( xhr, status, errorThrown ) {
+          alert( "Sorry, there was a problem!" );
+          console.log( "Error: " + errorThrown );
+          console.log( "Status: " + status );
+          console.dir( xhr );
         }
-
-        function AddScoreViewModel() {
-          var self = this;
-          self.name = ko.observable();
-
-          self.addScore = function() {
-            $('#addScoreModal').modal('hide');
-            ScoresViewModel.add({
-              name: self.name(),
-              points: game.score
-            });
-            self.name("");
-          };
-
-          $('.btn-primary').click(function(){
-            self.addScore();
-          });
+      });
 
 
-        }
+      self.beginAdd = function() {
+        $('#addScoreModal').modal('show');
+
+        $('#addScoreModal').on('shown.bs.modal', function() {
+          $(this).find('[autofocus]').focus();
+        });
+
+      };
+
+      self.sendScore = function(score) {
+        $.ajax({
+          url: self.scoresURI,
+          type: "POST",
+          dataType : "json",
+          contentType: 'application/json',
+          data: JSON.stringify(score),
+          success: function( json ) {
+            self.scores.removeAll();
+            for (var i = 0; i < json.scores.length; i++) {
+              self.scores.push({
+                points: ko.observable(json.scores[i].points),
+                name: ko.observable(json.scores[i].name)
+              });
+            }
+          },
+          error: function( xhr, status, errorThrown ) {
+            alert( "Sorry, there was a problem!" );
+            console.log( "Error: " + errorThrown );
+            console.log( "Status: " + status );
+            console.dir( xhr );
+          }
+        });
+
+      }
 
 
-        var ScoresViewModel = new ScoresViewModel();
-        var AddScoreViewModel = new AddScoreViewModel();
-        ko.applyBindings(ScoresViewModel, $('#highscore')[0]);
-        ko.applyBindings(AddScoreViewModel, $('#addScoreModal')[0]);
+    }
+
+    function AddScoreViewModel() {
+      var self = this;
+      self.scoresURI = './buddha/api/highscore';
+      self.name = ko.observable();
+
+      self.addScore = function() {
+        $('#addScoreModal').modal('hide');
+        console.log( "addScoreModal hide" );
+
+        ScoresViewModel.sendScore({
+          name: self.name(),
+          points: game.score
+        });
+      }
 
 
-        function scrolltotop() {
-          document.getElementById( 'game-box' ).scrollIntoView();
-        }
+    }
 
-        function scrolltohighscore() {
-          document.getElementById( 'highscore' ).scrollIntoView();
-        }
 
-        scrolltotop();
+    var ScoresViewModel = new ScoresViewModel();
+    var AddScoreViewModel = new AddScoreViewModel();
+    ko.applyBindings(ScoresViewModel, $('#highscore')[0]);
+    ko.applyBindings(AddScoreViewModel, $('#addScoreModal')[0]);
+
+
+    function scrolltotop() {
+      document.getElementById( 'game-box' ).scrollIntoView();
+    }
+
+    function scrolltohighscore() {
+      document.getElementById( 'highscore' ).scrollIntoView();
+    }
+
+    scrolltotop();
 
 
   </script>
