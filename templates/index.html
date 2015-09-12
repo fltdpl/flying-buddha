@@ -140,7 +140,7 @@
       <div id="footer">
         <div class="container-footer">
           <p></p>
-          <p class="text-muted">last change on this site: 2015/09/04</br>
+          <p class="text-muted">last change on this site: 2015/09/11</br>
               flying buddha source:
               <a href="https://github.com/fltdpl/flying-buddha">https://github.com/fltdpl/flying-buddha</a>
           </p>
@@ -181,8 +181,6 @@
       self.scoresURI = './buddha/api/highscore';
       self.scores = ko.observableArray();
 
-      console.log( "ScoresViewModel" );
-
       $.ajax({
         url: self.scoresURI,
         type: "GET",
@@ -206,11 +204,9 @@
 
       self.beginAdd = function() {
         $('#addScoreModal').modal('show');
-
         $('#addScoreModal').on('shown.bs.modal', function() {
           $(this).find('[autofocus]').focus();
         });
-
       };
 
       self.sendScore = function(score) {
@@ -236,10 +232,7 @@
             console.dir( xhr );
           }
         });
-
       }
-
-
     }
 
     function AddScoreViewModel() {
@@ -249,14 +242,12 @@
 
       self.addScore = function() {
         $('#addScoreModal').modal('hide');
-        console.log( "addScoreModal hide" );
-
         ScoresViewModel.sendScore({
           name: self.name(),
           points: game.score
         });
+        self.name("");
       }
-
 
     }
 
