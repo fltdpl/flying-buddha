@@ -204,7 +204,7 @@ Obstacle.prototype = new Drawable();
  */
 function Pool(maxSize) {
   var size = maxSize; // Max obstacles allowed in the pool
-  var pool = [];
+  var badPool = [];
   this.counter = 0;
 
   // populate the pool array with obstacles
@@ -215,7 +215,7 @@ function Pool(maxSize) {
       var obstacle = new Obstacle(obstacletyp);
       obstacle.init(0, 0, obstacletyp.width,
         obstacletyp.height);
-      pool[i] = obstacle;
+      badPool[i] = obstacle;
     }
   };
 
@@ -224,17 +224,17 @@ function Pool(maxSize) {
    * pushes it to the front of the array.
    */
   this.get = function(x, y, speed) {
-    if (!pool[size - 1].alive) {
-      pool[size - 1].spawn(x, y, speed);
-      pool.unshift(pool.pop());
+    if (!badPool[size - 1].alive) {
+      badPool[size - 1].spawn(x, y, speed);
+      badPool.unshift(badPool.pop());
     }
   };
 
   // Clear Obstacle areas
   this.clearobstscreen = function() {
     for (var i = 0; i < size; i++) {
-      if (pool[i].alive) {
-        pool[i].clearObArea();
+      if (badPool[i].alive) {
+        badPool[i].clearObArea();
       }
     }
   };
@@ -277,25 +277,25 @@ function Pool(maxSize) {
     for (var i = 0; i < size; i++) {
 
       // Only draw until we find a obstacle that is not alive
-      if (pool[i].alive) {
-        if (pool[i].draw()) {
-          pool[i].clear();
-          pool.push((pool.splice(i, 1))[0]);
+      if (badPool[i].alive) {
+        if (badPool[i].draw()) {
+          badPool[i].clear();
+          badPool.push((badPool.splice(i, 1))[0]);
         }
 
-        if (pool[i].handleCollisions()) {
+        if (badPool[i].handleCollisions()) {
           game.hitface = true;
           game.hitfacetime = new Date().getTime();
           if (game.life == 3) {
             ShowStatusLife(2);
             game.life = 2;
-            pool[i].clear();
-            pool.push((pool.splice(i, 1))[0]);
+            badPool[i].clear();
+            badPool.push((badPool.splice(i, 1))[0]);
           } else if (game.life == 2) {
             ShowStatusLife(1);
             game.life = 1;
-            pool[i].clear();
-            pool.push((pool.splice(i, 1))[0]);
+            badPool[i].clear();
+            badPool.push((badPool.splice(i, 1))[0]);
           } else if (game.life == 1) {
             ShowStatusLife(0);
             game.life = 0;
@@ -304,11 +304,11 @@ function Pool(maxSize) {
           }
         }
       } else {
-        var xRand = getRandomInt(0 + pool[i].width / 2,
-          800 - pool[i].width / 2);
+        var xRand = getRandomInt(0 + badPool[i].width / 2,
+          800 - badPool[i].width / 2);
         var yspeed = minspeed + Math.random() * speedrate;
         if (this.counter >= obstacleRate) {
-          if (!pool[size - 1].alive) {
+          if (!badPool[size - 1].alive) {
             this.counter = 0;
             this.get(xRand, 0, yspeed);
           }
