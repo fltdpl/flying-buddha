@@ -92,12 +92,14 @@ function ShowStatusLife(stat) {
  * functions.
  */
 function Drawable () {
-  this.init = function(x, y, width, height) {
+  this.init = function(x, y, width, height, typ) {
     // Defualt variables
     this.x = x;
     this.y = y;
     this.width = width;
     this.height = height;
+    // typ: 0: undefined, 1: buddha, 2: stone, 3: star, 4: heart
+    this.typ = typ;
   };
 
   this.speed = 0;
@@ -203,116 +205,128 @@ Obstacle.prototype = new Drawable();
  * Pool holds obstacles to be managed to prevent garbage collection.
  */
 function Pool(maxSize) {
-  var size = maxSize; // Max obstacles allowed in the pool
-  var badPool = [];
-  var goodPool = [];
-  this.badcounter = 0;
-  this.goodcounter = 0;
+  //var size = maxSize; // Max obstacles allowed in the pool
+  var size = 15;
+  var stonePool = [];
+  var starPool = [];
+  var specialPool = [];
+  this.counter = 0;
 
   // populate the pool array with obstacles
   this.init = function() {
     for (var i = 0; i < size; i++) {
-      // Initalize the obstacle object
-      badObstacleTyp = obstaclePic();
-      goodObstacleTyp = starPic();
-      var badObstacle = new Obstacle(badObstacleTyp);
-      var goodObstacle = new Obstacle(goodObstacleTyp);
-      badObstacle.init(0, 0, badObstacleTyp.width,
-        badObstacleTyp.height);
-      goodObstacle.init(0, 0, goodObstacleTyp.width,
-        goodObstacleTyp.height);
-      badPool[i] = badObstacle;
-      goodPool[i] = goodObstacle;
+      var stonepic = stonePic();
+      var starpic = starPic();
+      var specialpic = specialPic();
+      var stoneObstacle = new Obstacle(stonepic[0]);
+      var starObstacle = new Obstacle(starpic[0]);
+      var specialObstacle = new Obstacle(specialpic[0]);
+      stoneObstacle.init(0, 0, stonepic[0].width, stonepic[0].height, stonepic[1]);
+      starObstacle.init(0, 0, starpic[0].width, starpic[0].height, starpic[1]);
+      specialObstacle.init(0, 0, specialpic[0].width, specialpic[0].height, specialpic[1]);
+      stonePool[i] = stoneObstacle;
+      starPool[i] = starObstacle;
+      specialPool[i] = specialObstacle;
     }
   };
 
-  /*
-   * Initialize new Item
-   */
-  this.getBad = function(x, y, speed) {
-    if (!badPool[size - 1].alive) {
-      badPool[size - 1].spawn(x, y, speed);
-      badPool.unshift(badPool.pop());
+
+  // Initialize new Item
+  this.get = function(speed) {
+    var randnumber = getRandomInt(1, 100);
+    if (randnumber <= 55) {
+      // stone
+      if (!stonePool[size - 1].alive) {
+        x = getRandomInt(0, 800 - stonePool[size - 1].width);
+        stonePool[size - 1].spawn(x, 0, speed);
+        stonePool.unshift(stonePool.pop());
+      }
+    } else if (randnumber > 55 && randnumber <= 98) {
+      // star
+      if (!starPool[size - 1].alive) {
+        x = getRandomInt(0, 800 - starPool[size - 1].width);
+        starPool[size - 1].spawn(x, 0, speed);
+        starPool.unshift(starPool.pop());
+      }
+    } else if (randnumber > 98 && randnumber <= 100) {
+      // special
+      if (!specialPool[size - 1].alive) {
+        x = getRandomInt(0 + specialPool[size - 1].width / 2,
+          800 - specialPool[size - 1].width / 2);
+        specialPool[size - 1].spawn(x, 0, speed);
+        specialPool.unshift(specialPool.pop());
+      }
     }
-  };
-  this.getGood = function(x, y, speed) {
-    if (!goodPool[size - 1].alive) {
-      goodPool[size - 1].spawn(x, y, speed);
-      goodPool.unshift(goodPool.pop());
-    }
+
   };
 
   // Clear Obstacle areas
   this.clearobstscreen = function() {
     for (var i = 0; i < size; i++) {
-      if (badPool[i].alive) {
-        badPool[i].clearObArea();
+      if (stonePool[i].alive) {
+        stonePool[i].clearObArea();
       }
-      if (goodPool[i].alive) {
-        goodPool[i].clearObArea();
+      if (starPool[i].alive) {
+        starPool[i].clearObArea();
+      }
+      if (specialPool[i].alive) {
+        specialPool[i].clearObArea();
       }
     }
   };
 
-  /*
-   * Draws any in use obstacle.
-   */
+  // Draws any in use obstacle.
   this.animate = function() {
-    this.badcounter++;
-    this.goodcounter++;
+    this.counter++;
     var timediv = (new Date().getTime() - game.gamestarttime) / 1000;
-
-    //var speedrate = timediv;
+    var xRand = 0;
+    var yRand = 0;
     var minspeed = 1;
     var speedrate = 3;
-    var badRate = 100;
-    var goodRate = 70;
+    var Rate = 70;
 
     if (timediv >= 60 && timediv < 120) {
       minspeed = 1.5;
       speedrate = 3;
-      badRate = 80;
+      Rate = 60;
     } else if (timediv >= 120 && timediv < 180) {
       minspeed = 2;
       speedrate = 3;
-      badRate = 70;
+      Rate = 50;
     } else if (timediv >= 180 && timediv < 240) {
       minspeed = 2;
       speedrate = 4;
-      badRate = 60;
+      Rate = 40;
     } else if (timediv >= 240 && timediv < 300) {
       minspeed = 3;
       speedrate = 4;
-      badRate = 50;
+      Rate = 30;
     } else if (timediv >= 300) {
       minspeed = 3;
       speedrate = 5;
-      badRate = 40;
+      Rate = 20;
     }
+
 
     // Draw obstacles or create new ones
     for (var i = 0; i < size; i++) {
-
-      // Only draw until we find a obstacle that is not alive
-      if (badPool[i].alive) {
-        if (badPool[i].draw()) {
-          badPool[i].clear();
-          badPool.push((badPool.splice(i, 1))[0]);
+      // stone
+      if (stonePool[i].alive){
+        if (stonePool[i].draw()) {
+          stonePool[i].clear();
+          stonePool.push((stonePool.splice(i, 1))[0]);
         }
-
-        if (badPool[i].handleCollisions()) {
+        if (stonePool[i].handleCollisions()) {
+          stonePool[i].clear();
+          stonePool.push((stonePool.splice(i, 1))[0]);
           game.hitface = true;
           game.hitfacetime = new Date().getTime();
           if (game.life == 3) {
             ShowStatusLife(2);
             game.life = 2;
-            badPool[i].clear();
-            badPool.push((badPool.splice(i, 1))[0]);
           } else if (game.life == 2) {
             ShowStatusLife(1);
             game.life = 1;
-            badPool[i].clear();
-            badPool.push((badPool.splice(i, 1))[0]);
           } else if (game.life == 1) {
             ShowStatusLife(0);
             game.life = 0;
@@ -321,42 +335,57 @@ function Pool(maxSize) {
           }
         }
       } else {
-        var xRand = getRandomInt(0 + badPool[i].width / 2,
-          800 - badPool[i].width / 2);
-        var yspeed = minspeed + Math.random() * speedrate;
-        if (this.badcounter >= badRate) {
-          if (!badPool[size - 1].alive) {
-            this.badcounter = 0;
-            this.getBad(xRand, 0, yspeed);
-          }
-        }
+        break;
       }
+    }
 
-      if (goodPool[i].alive) {
-        if (goodPool[i].draw()) {
-          goodPool[i].clear();
+    for (var i = 0; i < size; i++) {
+      // star
+      if (starPool[i].alive){
+        if (starPool[i].draw()) {
+          starPool[i].clear();
+          starPool.push((starPool.splice(i, 1))[0]);
         }
-
-        if (goodPool[i].handleCollisions()) {
-          goodPool[i].clear();
+        if (starPool[i].handleCollisions()) {
+          starPool[i].clear();
+          starPool.push((starPool.splice(i, 1))[0]);
           game.score += 10;
         }
-
       } else {
-        var xRand = getRandomInt(0 + goodPool[i].width / 2,
-          800 - goodPool[i].width / 2);
-        var yspeed = minspeed + Math.random() * speedrate;
-        if (this.goodcounter >= goodRate) {
-          if (!goodPool[i].alive) {
-            this.goodcounter = 0;
-            this.getGood(xRand, 0, yspeed);
+        break;
+      }
+    }
+
+    for (var i = 0; i < size; i++) {
+      // special
+      if (specialPool[i].alive){
+        if (specialPool[i].draw()) {
+          specialPool[i].clear();
+          specialPool.push((specialPool.splice(i, 1))[0]);
+        }
+        if (specialPool[i].handleCollisions()) {
+          specialPool[i].clear();
+          specialPool.push((specialPool.splice(i, 1))[0]);
+          if (game.life == 1) {
+            ShowStatusLife(2);
+            game.life = 2;
+          } else if (game.life == 2) {
+            ShowStatusLife(3);
+            game.life = 3;
           }
         }
+      } else {
+        break;
       }
-
-
     }
-  };
+
+    if (this.counter >= Rate) {
+      yspeed = minspeed + Math.random() * speedrate;
+      this.counter = 0;
+      this.get(yspeed);
+    }
+
+  }; // animate
 
 }
 
@@ -528,7 +557,7 @@ function Game() {
       this.background.init(0, 0); // Set draw point to 0,0
 
       // Initilize the obstacles object
-      this.obstaclePool = new Pool(30);
+      this.obstaclePool = new Pool(100);
       this.obstaclePool.init();
 
       // Initialize the buddha object
