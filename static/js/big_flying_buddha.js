@@ -235,7 +235,7 @@ function Pool(maxSize) {
   // Initialize new Item
   this.get = function(speed) {
     var border = [];
-    var timediv = (new Date().getTime() - this.gamestarttime) / 1000;
+    var timediv = (new Date().getTime() - game.gamestarttime) / 1000;
     var randnumber = Math.random();
     // border 0<= randnumber < 1: [stones, stars, bigheart, bigstar]
     if (timediv <= 60) {
