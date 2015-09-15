@@ -92,14 +92,12 @@ function ShowStatusLife(stat) {
  * functions.
  */
 function Drawable () {
-  this.init = function(x, y, width, height, typ) {
+  this.init = function(x, y, width, height) {
     // Defualt variables
     this.x = x;
     this.y = y;
     this.width = width;
     this.height = height;
-    // typ: 0: undefined, 1: buddha, 2: stone, 3: star, 4: heart
-    this.typ = typ;
   };
 
   this.speed = 0;
@@ -209,7 +207,8 @@ function Pool(maxSize) {
   var size = 15;
   var stonePool = [];
   var starPool = [];
-  var specialPool = [];
+  var heartObstacle;
+  var bigstarObstacle;
   this.counter = 0;
 
   // populate the pool array with obstacles
@@ -217,44 +216,60 @@ function Pool(maxSize) {
     for (var i = 0; i < size; i++) {
       var stonepic = stonePic();
       var starpic = starPic();
-      var specialpic = specialPic();
-      var stoneObstacle = new Obstacle(stonepic[0]);
-      var starObstacle = new Obstacle(starpic[0]);
-      var specialObstacle = new Obstacle(specialpic[0]);
-      stoneObstacle.init(0, 0, stonepic[0].width, stonepic[0].height, stonepic[1]);
-      starObstacle.init(0, 0, starpic[0].width, starpic[0].height, starpic[1]);
-      specialObstacle.init(0, 0, specialpic[0].width, specialpic[0].height, specialpic[1]);
+      var stoneObstacle = new Obstacle(stonepic);
+      var starObstacle = new Obstacle(starpic);
+      stoneObstacle.init(0, 0, stonepic.width, stonepic.height);
+      starObstacle.init(0, 0, starpic.width, starpic.height);
       stonePool[i] = stoneObstacle;
       starPool[i] = starObstacle;
-      specialPool[i] = specialObstacle;
     }
+    heartObstacle = new Obstacle(imageRepository.bigheart);
+    bigstarObstacle = new Obstacle(imageRepository.bigstar);
+    heartObstacle.init(0, 0, imageRepository.bigheart.width,
+      imageRepository.bigheart.height);
+    bigstarObstacle.init(0, 0, imageRepository.bigstar.width,
+      imageRepository.bigstar.height);
   };
 
 
   // Initialize new Item
   this.get = function(speed) {
-    var randnumber = getRandomInt(1, 100);
-    if (randnumber <= 55) {
+    var border = [];
+    var timediv = (new Date().getTime() - this.gamestarttime) / 1000;
+    var randnumber = Math.random();
+    // border 0<= randnumber < 1: [stones, stars, bigheart, bigstar]
+    if (timediv <= 60) {
+      border = [0.50, 1, 1.1, 1.2];
+    } else if (timediv > 60 && timediv <= 150) {
+      border = [0.49, 0.98, 0.99, 1];
+    } else {
+      border = [0.55, 0.97, 0.98, 1];
+    }
+    if (randnumber <= border[0]) {
       // stone
       if (!stonePool[size - 1].alive) {
         x = getRandomInt(0, 800 - stonePool[size - 1].width);
         stonePool[size - 1].spawn(x, 0, speed);
         stonePool.unshift(stonePool.pop());
       }
-    } else if (randnumber > 55 && randnumber <= 98) {
+    } else if (randnumber > border[0] && randnumber <= border[1]) {
       // star
       if (!starPool[size - 1].alive) {
         x = getRandomInt(0, 800 - starPool[size - 1].width);
         starPool[size - 1].spawn(x, 0, speed);
         starPool.unshift(starPool.pop());
       }
-    } else if (randnumber > 98 && randnumber <= 100) {
+    } else if (randnumber > border[1] && randnumber <= border[2]) {
       // special
-      if (!specialPool[size - 1].alive) {
-        x = getRandomInt(0 + specialPool[size - 1].width / 2,
-          800 - specialPool[size - 1].width / 2);
-        specialPool[size - 1].spawn(x, 0, speed);
-        specialPool.unshift(specialPool.pop());
+      if (!heartObstacle.alive) {
+        x = getRandomInt(0, 800 - heartObstacle.width);
+        heartObstacle.spawn(x, 0, speed);
+      }
+    } else if (randnumber > border[2] && randnumber <= border[3]) {
+      // special
+      if (!bigstarObstacle.alive) {
+        x = getRandomInt(0, 800 - bigstarObstacle.width);
+        bigstarObstacle.spawn(x, 0, speed);
       }
     }
 
@@ -269,8 +284,11 @@ function Pool(maxSize) {
       if (starPool[i].alive) {
         starPool[i].clearObArea();
       }
-      if (specialPool[i].alive) {
-        specialPool[i].clearObArea();
+      if (heartObstacle.alive) {
+        heartObstacle.clearObArea();
+      }
+      if (bigstarObstacle.alive) {
+        bigstarObstacle.clearObArea();
       }
     }
   };
@@ -309,8 +327,8 @@ function Pool(maxSize) {
 
 
     // Draw obstacles or create new ones
+    // stone
     for (var i = 0; i < size; i++) {
-      // stone
       if (stonePool[i].alive){
         if (stonePool[i].draw()) {
           stonePool[i].clear();
@@ -339,8 +357,8 @@ function Pool(maxSize) {
       }
     }
 
+    // star
     for (var i = 0; i < size; i++) {
-      // star
       if (starPool[i].alive){
         if (starPool[i].draw()) {
           starPool[i].clear();
@@ -356,16 +374,13 @@ function Pool(maxSize) {
       }
     }
 
-    for (var i = 0; i < size; i++) {
-      // special
-      if (specialPool[i].alive){
-        if (specialPool[i].draw()) {
-          specialPool[i].clear();
-          specialPool.push((specialPool.splice(i, 1))[0]);
+    // bigheart
+    if (heartObstacle.alive) {
+        if (heartObstacle.draw()) {
+          heartObstacle.clear();
         }
-        if (specialPool[i].handleCollisions()) {
-          specialPool[i].clear();
-          specialPool.push((specialPool.splice(i, 1))[0]);
+        if (heartObstacle.handleCollisions()) {
+          heartObstacle.clear();
           if (game.life == 1) {
             ShowStatusLife(2);
             game.life = 2;
@@ -374,9 +389,17 @@ function Pool(maxSize) {
             game.life = 3;
           }
         }
-      } else {
-        break;
-      }
+    }
+
+    // bigstar
+    if (bigstarObstacle.alive) {
+        if (bigstarObstacle.draw()) {
+          bigstarObstacle.clear();
+        }
+        if (bigstarObstacle.handleCollisions()) {
+          bigstarObstacle.clear();
+          game.score += 100;
+        }
     }
 
     if (this.counter >= Rate) {

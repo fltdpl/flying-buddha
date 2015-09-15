@@ -18,8 +18,9 @@ var imageRepository = new function() {
   this.star04 = new Image();
   this.star05 = new Image();
   this.bigheart = new Image();
+  this.bigstar = new Image();
 
-  var numImages = 17;
+  var numImages = 18;
   var numLoaded = 0;
 
   function imageLoaded() {
@@ -97,6 +98,10 @@ var imageRepository = new function() {
     imageLoaded();
   };
 
+  this.bigstar.onload = function() {
+    imageLoaded();
+  };
+
 
   // Set images src
   this.background.src = 'static/img/starland.png';
@@ -116,42 +121,10 @@ var imageRepository = new function() {
   this.star04.src = 'static/img/star_4.png';
   this.star05.src = 'static/img/star_5.png';
   this.bigheart.src = 'static/img/bigheart.png';
-
+  this.bigstar.src = 'static/img/bigstar.png';
 
 };
 
-function obstPic() {
-  var obstpool = [];
-  var picObject = 0;
-  var picType = 0;
-  // wich kind of obstacle (40%: stone, 40%: good, 20%: special)
-  var pic = getRandomInt(0, 99);
-  if (pic < 45) {
-    // stone
-    obstpool = [imageRepository.obstacle01,
-      imageRepository.obstacle02,
-      imageRepository.obstacle03,
-      imageRepository.obstacle04,
-      imageRepository.obstacle05];
-    picObject = obstpool[getRandomInt(0, obstpool.length - 1)];
-    picType = 2;
-  } else if (pic >= 45 && pic < 90) {
-    // star
-    obstpool = [imageRepository.star01,
-      imageRepository.star02,
-      imageRepository.star03,
-      imageRepository.star04,
-      imageRepository.star05];
-    picObject = obstpool[getRandomInt(0, obstpool.length - 1)];
-    picType = 3;
-  } else {
-    //special
-    obstpool = [imageRepository.bigheart];
-    picObject = obstpool[getRandomInt(0, obstpool.length - 1)];
-    picType = 4;
-  }
-  return [picObject, picType];
-}
 
 function stonePic() {
   var pool = [imageRepository.obstacle01,
@@ -160,7 +133,7 @@ function stonePic() {
     imageRepository.obstacle04,
     imageRepository.obstacle05];
   var pic = getRandomInt(0, pool.length - 1);
-  return [pool[pic], 2];
+  return pool[pic];
 }
 
 function starPic() {
@@ -170,14 +143,7 @@ function starPic() {
     imageRepository.star04,
     imageRepository.star05];
   var pic = getRandomInt(0, pool.length - 1);
-  return [pool[pic], 3];
-}
-
-function specialPic() {
-  var pool = [imageRepository.bigheart];
-  var typ = [4];
-  var pic = getRandomInt(0, pool.length - 1);
-  return [pool[pic], typ[pic]];
+  return pool[pic];
 }
 
 function sprite(options) {
