@@ -19,8 +19,11 @@ var imageRepository = new function() {
   this.star05 = new Image();
   this.bigheart = new Image();
   this.bigstar = new Image();
+  this.imgplus10 = new Image();
+  this.imgplus100 = new Image();
+  this.imgplusheart = new Image();
 
-  var numImages = 18;
+  var numImages = 21;
   var numLoaded = 0;
 
   function imageLoaded() {
@@ -33,72 +36,64 @@ var imageRepository = new function() {
   this.background.onload = function() {
     imageLoaded();
   };
-
   this.buddha.onload = function() {
     imageLoaded();
   };
-
   this.buddhasad.onload = function() {
     imageLoaded();
   };
-
   this.buddhaO.onload = function() {
     imageLoaded();
   };
-
   this.flameright.onload = function() {
     imageLoaded();
   };
-
   this.flameleft.onload = function() {
     imageLoaded();
   };
-
   this.obstacle01.onload = function() {
     imageLoaded();
   };
-
   this.obstacle02.onload = function() {
     imageLoaded();
   };
-
   this.obstacle03.onload = function() {
     imageLoaded();
   };
-
   this.obstacle04.onload = function() {
     imageLoaded();
   };
-
   this.obstacle05.onload = function() {
     imageLoaded();
   };
-
   this.star01.onload = function() {
     imageLoaded();
   };
-
   this.star02.onload = function() {
     imageLoaded();
   };
-
   this.star03.onload = function() {
     imageLoaded();
   };
-
   this.star04.onload = function() {
     imageLoaded();
   };
-
   this.star05.onload = function() {
     imageLoaded();
   };
-
   this.bigheart.onload = function() {
     imageLoaded();
   };
-
   this.bigstar.onload = function() {
+    imageLoaded();
+  };
+  this.imgplus10.onload = function() {
+    imageLoaded();
+  };
+  this.imgplus100.onload = function() {
+    imageLoaded();
+  };
+  this.imgplusheart.onload = function() {
     imageLoaded();
   };
 
@@ -122,6 +117,9 @@ var imageRepository = new function() {
   this.star05.src = 'static/img/star_5.png';
   this.bigheart.src = 'static/img/bigheart.png';
   this.bigstar.src = 'static/img/bigstar.png';
+  this.imgplus10.src = 'static/img/plus10_sprite.png';
+  this.imgplus100.src = 'static/img/plus100_sprite.png';
+  this.imgplusheart.src = 'static/img/plusheart_sprite.png';
 
 };
 
@@ -149,30 +147,41 @@ function starPic() {
 function sprite(options) {
 
   var that = {};
-  frameIndex = 0,
-    tickCount = 0,
-    ticksPerFrame = options.ticksPerFrame || 0,
-    numberOfFrames = options.numberOfFrames || 1;
+  that.frameIndex = 0,
+    that.alive = false,
+    that.x = 0,
+    that.y = 0,
+    that.tickCount = 0,
+    that.ticksPerFrame = options.ticksPerFrame || 0,
+    that.numberOfFrames = options.numberOfFrames || 1;
 
   that.context = options.context;
   that.width = options.width;
   that.height = options.height;
   that.image = options.image;
 
+  that.spawn = function(x, y) {
+    that.x = x;
+    that.y = y;
+    that.alive = true;
+  };
+
   that.update = function() {
-    tickCount += 1;
-    if (tickCount > ticksPerFrame) {
-      tickCount = 0;
+    that.tickCount += 1;
+    if (that.tickCount > that.ticksPerFrame) {
+      that.tickCount = 0;
 
       // If the current frame index is in range
-      if (frameIndex < numberOfFrames - 1) {
+      if (that.frameIndex < that.numberOfFrames - 1) {
         // Go to the next frame
-        frameIndex += 1;
+        that.frameIndex += 1;
       } else {
-        frameIndex = 0;
+        that.frameIndex = 0;
+        return true;
       }
     }
   };
+
 
   that.render = function(x, y) {
     // Clear the canvas
@@ -181,20 +190,20 @@ function sprite(options) {
     // Draw the animation
     that.context.drawImage(
       that.image,
-      frameIndex * that.width / numberOfFrames,
+      that.frameIndex * that.width / that.numberOfFrames,
       0,
-      that.width / numberOfFrames,
+      that.width / that.numberOfFrames,
       that.height,
       x,
       y,
-      that.width / numberOfFrames,
+      that.width / that.numberOfFrames,
       that.height);
   };
 
   that.clear = function(x, y) {
     clearx = x - 1;
     cleary = y - 1;
-    clearwidth = that.width / numberOfFrames + 2;
+    clearwidth = that.width / that.numberOfFrames + 2;
     clearheight = that.height + 2;
     that.context.clearRect(clearx, cleary, clearwidth, clearheight);
   };

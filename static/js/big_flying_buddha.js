@@ -207,6 +207,9 @@ function Pool(maxSize) {
   var size = 15;
   var stonePool = [];
   var starPool = [];
+  var plus10pool = [];
+  var plus100;
+  var plusheart;
   var heartObstacle;
   var bigstarObstacle;
   this.counter = 0;
@@ -222,6 +225,14 @@ function Pool(maxSize) {
       starObstacle.init(0, 0, starpic.width, starpic.height);
       stonePool[i] = stoneObstacle;
       starPool[i] = starObstacle;
+      plus10pool[i] = new sprite({
+        context: game.obstaclesContext,
+        width: 610,
+        height: 35,
+        image: imageRepository.imgplus10,
+        numberOfFrames: 10,
+        ticksPerFrame: 1
+      });
     }
     heartObstacle = new Obstacle(imageRepository.bigheart);
     bigstarObstacle = new Obstacle(imageRepository.bigstar);
@@ -229,6 +240,22 @@ function Pool(maxSize) {
       imageRepository.bigheart.height);
     bigstarObstacle.init(0, 0, imageRepository.bigstar.width,
       imageRepository.bigstar.height);
+    plus100 = new sprite({
+      context: game.obstaclesContext,
+      width: 880,
+      height: 35,
+      image: imageRepository.imgplus100,
+      numberOfFrames: 10,
+      ticksPerFrame: 1
+    });
+    plusheart = new sprite({
+      context: game.obstaclesContext,
+      width: 510,
+      height: 35,
+      image: imageRepository.imgplusheart,
+      numberOfFrames: 10,
+      ticksPerFrame: 1
+    });
   };
 
 
@@ -290,6 +317,15 @@ function Pool(maxSize) {
       if (bigstarObstacle.alive) {
         bigstarObstacle.clearObArea();
       }
+      if (plus10pool[i].alive) {
+        plus10pool[i].clear(plus10pool[i].x, plus10pool[i].y);
+      }
+      if (plus100.alive) {
+        plus100.clear(plus100.x, plus100.y);
+      }
+      if (plusheart.alive) {
+        plusheart.clear(plusheart.x, plusheart.y);
+      }
     }
   };
 
@@ -302,6 +338,7 @@ function Pool(maxSize) {
     var minspeed = 1;
     var speedrate = 3;
     var Rate = 70;
+    var i;
 
     if (timediv >= 60 && timediv < 120) {
       minspeed = 1.5;
@@ -328,7 +365,7 @@ function Pool(maxSize) {
 
     // Draw obstacles or create new ones
     // stone
-    for (var i = 0; i < size; i++) {
+    for (i = 0; i < size; i++) {
       if (stonePool[i].alive){
         if (stonePool[i].draw()) {
           stonePool[i].clear();
@@ -358,19 +395,34 @@ function Pool(maxSize) {
     }
 
     // star
-    for (var i = 0; i < size; i++) {
+    for (i = 0; i < size; i++) {
       if (starPool[i].alive){
         if (starPool[i].draw()) {
           starPool[i].clear();
           starPool.push((starPool.splice(i, 1))[0]);
         }
         if (starPool[i].handleCollisions()) {
+          var xplus10 = starPool[i].x;
+          var yplus10 = starPool[i].y;
           starPool[i].clear();
           starPool.push((starPool.splice(i, 1))[0]);
+          plus10pool[size - 1].spawn(xplus10, yplus10);
+          plus10pool.unshift(plus10pool.pop());
           game.score += 10;
         }
       } else {
         break;
+      }
+    }
+    // animation +10
+    for (i = 0; i < size; i++) {
+      if (plus10pool[i].alive){
+        if (!plus10pool[i].update()) {
+          plus10pool[i].render(plus10pool[i].x, plus10pool[i].y);
+        } else {
+          plus10pool[i].alive = false;
+          plus10pool.push((plus10pool.splice(i, 1))[0]);
+        }
       }
     }
 
@@ -380,6 +432,9 @@ function Pool(maxSize) {
           heartObstacle.clear();
         }
         if (heartObstacle.handleCollisions()) {
+          var xplusheart = heartObstacle.x;
+          var yplusheart = heartObstacle.y;
+          plusheart.spawn(xplusheart, yplusheart);
           heartObstacle.clear();
           if (game.life == 1) {
             ShowStatusLife(2);
@@ -390,6 +445,14 @@ function Pool(maxSize) {
           }
         }
     }
+    // animation +heart
+    if (plusheart.alive){
+      if (!plusheart.update()) {
+        plusheart.render(plusheart.x, plusheart.y);
+      } else {
+        plusheart.alive = false;
+      }
+    }
 
     // bigstar
     if (bigstarObstacle.alive) {
@@ -397,11 +460,23 @@ function Pool(maxSize) {
           bigstarObstacle.clear();
         }
         if (bigstarObstacle.handleCollisions()) {
+          var xplus100 = bigstarObstacle.x;
+          var yplus100 = bigstarObstacle.y;
+          plus100.spawn(xplus100, yplus100);
           bigstarObstacle.clear();
           game.score += 100;
         }
     }
+    // animation +100
+    if (plus100.alive){
+      if (!plus100.update()) {
+        plus100.render(plus100.x, plus100.y);
+      } else {
+        plus100.alive = false;
+      }
+    }
 
+    // spawn new obstacles
     if (this.counter >= Rate) {
       yspeed = minspeed + Math.random() * speedrate;
       this.counter = 0;
@@ -420,7 +495,7 @@ function Pool(maxSize) {
 function Buddha() {
   this.speed = 5;
   this.omt = false;
-  this.flameleft = sprite({
+  this.flameleft = new sprite({
     context: game.buddhaContext,
     width: 243,
     height: 45,
@@ -428,7 +503,7 @@ function Buddha() {
     numberOfFrames: 3,
     ticksPerFrame: 12
   });
-  this.flameright = sprite({
+  this.flameright = new sprite({
     context: game.buddhaContext,
     width: 243,
     height: 45,
@@ -580,7 +655,7 @@ function Game() {
       this.background.init(0, 0); // Set draw point to 0,0
 
       // Initilize the obstacles object
-      this.obstaclePool = new Pool(100);
+      this.obstaclePool = new Pool(30);
       this.obstaclePool.init();
 
       // Initialize the buddha object
