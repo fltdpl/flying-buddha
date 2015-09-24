@@ -117,7 +117,7 @@
                   <div class="modal-body">
                       <form id="save-name-form" accept-charset="UTF-8">
                         <div class=class="form-group">
-                          <label class="control-label" for="inputName">Your name for the highscore list:</label>
+                          <label class="control-label" for="inputName" >Your name for the highscore list:</label>
                           <input data-bind="value: name" type="text" class="form-control" id="inputScore" placeholder="Rosa" maxlength="20" autofocus style="width: 150px;">
                         </div>
                       </form>
@@ -178,6 +178,7 @@
 
     function ScoresViewModel() {
       var self = this;
+      self.highscore = 0;
       self.scoresURI = './buddha/api/highscore';
       self.scores = ko.observableArray();
 
@@ -192,6 +193,9 @@
               name: ko.observable(json.scores[i].name)
             });
           }
+          if (json.scores.length >= 10) {
+            self.highscore = json.scores[json.scores.length-1].points;
+          }
         },
         error: function( xhr, status, errorThrown ) {
           alert( "Sorry, there was a problem!" );
@@ -203,10 +207,12 @@
 
 
       self.beginAdd = function() {
-        $('#addScoreModal').modal('show');
-        $('#addScoreModal').on('shown.bs.modal', function() {
-          $(this).find('[autofocus]').focus();
-        });
+        if (self.highscore < game.score) {
+          $('#addScoreModal').modal('show');
+          $('#addScoreModal').on('shown.bs.modal', function() {
+            $(this).find('[autofocus]').focus();
+          });
+        }
       };
 
       self.sendScore = function(score) {
@@ -241,14 +247,19 @@
       self.name = ko.observable();
 
       self.addScore = function() {
-        $('#addScoreModal').modal('hide');
-        ScoresViewModel.sendScore({
-          name: self.name(),
-          points: game.score
-        });
-        self.name("");
-      }
+        if (!self.name()) {
+          alert("Please enter your name or press cancel.");
+          $('#addScoreModal').find('[autofocus]').focus();
+        } else {
+          $('#addScoreModal').modal('hide');
+          ScoresViewModel.sendScore({
+            name: self.name(),
+            points: game.score
+          });
+          self.name("");
+        }
 
+      }
     }
 
 

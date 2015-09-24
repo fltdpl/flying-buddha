@@ -104,11 +104,6 @@ canvas {
   margin-left: auto;
 }
 
-#addScoreModal {
-  display: none;
-}
-
-
 .content-footer {
   .make-row();
 }

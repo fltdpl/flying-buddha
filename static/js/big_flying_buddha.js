@@ -110,7 +110,7 @@ function Drawable () {
   this.move = function() {};
 }
 
-/**
+/*
  * Background object
  */
 function Background() {
@@ -266,11 +266,9 @@ function Pool(maxSize) {
     var randnumber = Math.random();
     // border 0<= randnumber < 1: [stones, stars, bigheart, bigstar]
     if (timediv <= 60) {
-      border = [0.50, 1, 1.1, 1.2];
-    } else if (timediv > 60 && timediv <= 150) {
-      border = [0.49, 0.98, 0.99, 1];
+      border = [0.40, 1, 1.1, 1.2];
     } else {
-      border = [0.55, 0.97, 0.98, 1];
+      border = [0.40, 0.96, 0.98, 1];
     }
     if (randnumber <= border[0]) {
       // stone
@@ -288,7 +286,7 @@ function Pool(maxSize) {
       }
     } else if (randnumber > border[1] && randnumber <= border[2]) {
       // special
-      if (!heartObstacle.alive) {
+      if (!heartObstacle.alive && game.life < 3) {
         x = getRandomInt(0, 800 - heartObstacle.width);
         heartObstacle.spawn(x, 0, speed);
       }
@@ -344,24 +342,27 @@ function Pool(maxSize) {
       minspeed = 1.5;
       speedrate = 3;
       Rate = 60;
-    } else if (timediv >= 120 && timediv < 180) {
+    } else if (timediv >= 90 && timediv < 120) {
       minspeed = 2;
       speedrate = 3;
       Rate = 50;
+    } else if (timediv >= 120 && timediv < 180) {
+      minspeed = 2;
+      speedrate = 3;
+      Rate = 40;
     } else if (timediv >= 180 && timediv < 240) {
       minspeed = 2;
-      speedrate = 4;
-      Rate = 40;
+      speedrate = 3;
+      Rate = 30;
     } else if (timediv >= 240 && timediv < 300) {
-      minspeed = 3;
-      speedrate = 4;
+      minspeed = 2;
+      speedrate = 3;
       Rate = 30;
     } else if (timediv >= 300) {
       minspeed = 3;
-      speedrate = 5;
+      speedrate = 3;
       Rate = 20;
     }
-
 
     // Draw obstacles or create new ones
     // stone
@@ -670,7 +671,6 @@ function Game() {
       this.gamestarttime = new Date().getTime();
       this.playtime = 0;
       this.score = 0;
-      this.highscore = 0;
       this.life = 3;
       this.ingame = false;
       this.gameover = false;
@@ -722,10 +722,8 @@ function Game() {
       imageRepository.buddhasad.width, imageRepository.buddhasad.height);
     this.buddhaO.drawsimple();
 
-    if (this.score > this.highscore) {
-      // Modal for highscore list
-      ScoresViewModel.beginAdd();
-    }
+    // Modal for highscore list
+    ScoresViewModel.beginAdd();
 
   };
 
@@ -785,7 +783,7 @@ function animate() {
       if (game.played === false) {
         game.startbutton();
       } else {
-        if (game.score < highscore) {
+        if (document.getElementById('addScoreModal').style.display == 'none') {
           game.restart();
         }
       }
