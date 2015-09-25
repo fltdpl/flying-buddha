@@ -67,7 +67,7 @@
         <div id="game-over">
           <img src="{{ url_for('static', filename='img/gameover.png') }}" alt="game over">
           <p>
-            <span onclick="game.restart()">
+            <span onclick="game.startbutton()">
               <img src="{{ url_for('static', filename='img/restart.png') }}" alt="restart the game">
             </span>
           </p>
@@ -207,12 +207,10 @@
 
 
       self.beginAdd = function() {
-        if (self.highscore < game.score) {
-          $('#addScoreModal').modal('show');
-          $('#addScoreModal').on('shown.bs.modal', function() {
-            $(this).find('[autofocus]').focus();
-          });
-        }
+        $('#addScoreModal').modal('show');
+        $('#addScoreModal').on('shown.bs.modal', function() {
+          $(this).find('[autofocus]').focus();
+        });
       };
 
       self.sendScore = function(score) {

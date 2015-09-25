@@ -702,12 +702,18 @@ function Game() {
     this.playtime = 0;
     this.score = 0;
     this.ingame = true;
+
+    document.getElementById('game-over').style.display = 'none';
+    this.life = 3;
+    ShowStatusLife(this.life);
+    this.obstaclePool.init();
+    this.hitface = false;
+    this.hitfacetime = 0;
   };
 
   // Game over
   this.gameOver = function() {
     document.getElementById('game-over').style.display = 'block';
-    document.getElementById('addScoreModal').style.display = 'block';
     this.ingame = false;
     this.gameover = false;
     this.played = true;
@@ -723,25 +729,9 @@ function Game() {
     this.buddhaO.drawsimple();
 
     // Modal for highscore list
-    ScoresViewModel.beginAdd();
-
-  };
-
-  // Restart the game
-  this.restart = function() {
-    window.scrollTo(0, 0);
-    document.getElementById('game-over').style.display = 'none';
-
-    this.life = 3;
-    ShowStatusLife(this.life);
-    this.obstaclePool.init();
-    this.gamestarttime = new Date().getTime();
-    this.timedivB = 0;
-    this.playtime = 0;
-    this.score = 0;
-    this.hitface = false;
-    this.hitfacetime = 0;
-    this.ingame = true;
+    if (ScoresViewModel.highscore < this.score) {
+      ScoresViewModel.beginAdd();
+    }
 
   };
 
@@ -783,8 +773,8 @@ function animate() {
       if (game.played === false) {
         game.startbutton();
       } else {
-        if (document.getElementById('addScoreModal').style.display == 'none') {
-          game.restart();
+        if (!(document.getElementById('addScoreModal').style.display === 'block')) {
+          game.startbutton();
         }
       }
     }
