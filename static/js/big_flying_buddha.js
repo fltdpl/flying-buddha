@@ -274,7 +274,7 @@ function Pool(maxSize) {
     } else if (timediv > 240 && timediv <= 300) {
       border = [0.55, 0.96, 0.98, 1];
     } else {
-      border = [0.60, 0.96, 0.98, 1];
+      border = [0.60, 0.93, 0.95, 1];
     }
     if (randnumber <= border[0]) {
       // stone
@@ -359,15 +359,15 @@ function Pool(maxSize) {
     } else if (timediv >= 180 && timediv < 240) {
       minspeed = 2;
       speedrate = 3;
-      Rate = 30;
+      Rate = 35;
     } else if (timediv >= 240 && timediv < 300) {
       minspeed = 2;
       speedrate = 3;
       Rate = 30;
     } else if (timediv >= 300) {
-      minspeed = 3;
+      minspeed = 2;
       speedrate = 3;
-      Rate = 25;
+      Rate = 28;
     }
 
     // Draw obstacles or create new ones
