@@ -21,113 +21,120 @@
 
     <div class="content-main">
 
-      <div class="game-box" id="game-box">
-
-        <canvas id="backgroundID" width="800" height="600">
-          Your browser does not support canvas. Please try again with a different browser.
-        </canvas>
-        <canvas id="buddhaID" width="800" height="600">
-        </canvas>
-        <canvas id="obstaclesID" width="800" height="600">
-        </canvas>
-
-        <div id="gameheader">
-          <div id="scoreblock" class="scoreblock">
-            <div id="timescoreclass" class="timescore">Zeit: <span id="timescore"></span></div>
-            <div id="scoreclass" class="score">Score: <span id="score"></span></div>
-          </div>
-          <div id="statuslife3full" class="statuslife">
-            <img src="{{ url_for('static', filename='img/3hearts3full.png') }}" alt="lifes">
-          </div>
-          <div id="statuslife2full" class="statuslife">
-            <img src="{{ url_for('static', filename='img/3hearts2full.png') }}" alt="lifes">
-          </div>
-          <div id="statuslife1full" class="statuslife">
-            <img src="{{ url_for('static', filename='img/3hearts1full.png') }}" alt="lifes">
-          </div>
-          <div id="statuslife0full" class="statuslife">
-            <img src="{{ url_for('static', filename='img/3heartsempty.png') }}" alt="lifes">
-          </div>
-        </div>
-
-        <div id="gametitle">
-          <img src="{{ url_for('static', filename='img/flybu.png') }}" alt="the mighty flying buddha">
-          <p>
-            <span onclick="game.startbutton()">
-              <img src="{{ url_for('static', filename='img/start.png') }}" alt="start the game">
-            </span>
-          </p>
-          <p>
-            <span onclick="scrolltohighscore()">
-              <img src="{{ url_for('static', filename='img/highscore.png') }}" alt="show highscore">
-            </span>
-          </p>
-        </div>
-
-        <div id="game-over">
-          <img src="{{ url_for('static', filename='img/gameover.png') }}" alt="game over">
-          <p>
-            <span onclick="game.startbutton()">
-              <img src="{{ url_for('static', filename='img/restart.png') }}" alt="restart the game">
-            </span>
-          </p>
-          <p>
-            <span onclick="scrolltohighscore()">
-              <img src="{{ url_for('static', filename='img/highscore.png') }}" alt="show highscore">
-            </span>
-          </p>
-        </div>
-
+      <div id="loading">
+        <span>
+          <img src="{{ url_for('static', filename='img/laden.gif') }}" alt="loading.">
+        </span>
       </div>
 
-    </div>
+      <div id="finished-loading">
+
+        <div class="game-box" id="game-box">
+
+          <canvas id="backgroundID" width="800" height="600">
+            Your browser does not support canvas. Please try  again with a different browser.
+          </canvas>
+          <canvas id="buddhaID" width="800" height="600">
+          </canvas>
+          <canvas id="obstaclesID" width="800" height="600">
+          </canvas>
+
+          <div id="gameheader">
+            <div id="scoreblock" class="scoreblock">
+              <div id="timescoreclass" class="timescore">Zeit:  <span id="timescore"></span></div>
+              <div id="scoreclass" class="score">Score: <span   id="score"></span></div>
+            </div>
+            <div id="statuslife3full" class="statuslife">
+              <img src="{{ url_for('static',  filename='img/3hearts3full.png') }}"  alt="lifes">
+            </div>
+            <div id="statuslife2full" class="statuslife">
+              <img src="{{ url_for('static',  filename='img/3hearts2full.png') }}"  alt="lifes">
+            </div>
+            <div id="statuslife1full" class="statuslife">
+              <img src="{{ url_for('static',  filename='img/3hearts1full.png') }}"  alt="lifes">
+            </div>
+            <div id="statuslife0full" class="statuslife">
+              <img src="{{ url_for('static',  filename='img/3heartsempty.png') }}"  alt="lifes">
+            </div>
+          </div>
+
+          <div id="gametitle">
+            <img src="{{ url_for('static',  filename='img/flybu.png') }}" alt="the mighty   flying buddha">
+            <p>
+              <span onclick="game.startbutton()">
+                <img src="{{ url_for('static',  filename='img/start.png') }}" alt="start the  game">
+              </span>
+            </p>
+            <p>
+              <span onclick="scrolltohighscore()">
+                <img src="{{ url_for('static',  filename='img/highscore.png') }}" alt="show   highscore">
+              </span>
+            </p>
+          </div>
+
+          <div id="game-over">
+            <img src="{{ url_for('static',  filename='img/gameover.png') }}" alt="game over">
+            <p>
+              <span onclick="game.startbutton()">
+                <img src="{{ url_for('static',  filename='img/restart.png') }}" alt="restart  the game">
+              </span>
+            </p>
+            <p>
+              <span onclick="scrolltohighscore()">
+                <img src="{{ url_for('static',  filename='img/highscore.png') }}" alt="show   highscore">
+              </span>
+            </p>
+          </div>
+
+        </div>
 
 
-    <div class="content-below">
 
-      <div id="highscore">
-          <h2>Highscore</h2>
+        <div id="highscore">
+            <h2>Highscore</h2>
 
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th>Points</th>
-                <th>Name</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- ko foreach: scores -->
-              <tr>
-                <td><b data-bind="text: points"></b></td>
-                <td><b data-bind="text: name"></b></td>
-              </tr>
-              <!-- /ko -->
-            </tbody>
-          </table>
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Points</th>
+                  <th>Name</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- ko foreach: scores -->
+                <tr>
+                  <td><b data-bind="text: points"></b></td>
+                  <td><b data-bind="text: name"></b></td>
+                </tr>
+                <!-- /ko -->
+              </tbody>
+            </table>
 
-      </div>
+          </div>
 
-      <div id="addScoreModal" class="modal fade" role="dialog" tabindex="-1" aria-labelledby="addDialogLabel" aria-hidden="true">
-          <div class="modal-dialog">
-              <div class="modal-content">
-                  <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                      <h3 id="addDialogLabel">You are on the highscore list!</h3>
-                  </div>
-                  <div class="modal-body">
-                      <form id="save-name-form" accept-charset="UTF-8">
+          <div id="addScoreModal" class="modal fade"  role="dialog" tabindex="-1"   aria-labelledby="addDialogLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close"   data-dismiss="modal"  aria-label="Close"><span  aria-hidden="true">&times;</span></butto  n>
+                        <h3 id="addDialogLabel">You are on the  highscore list!</h3>
+                    </div>
+                    <div class="modal-body">
+                      <form id="save-name-form"   accept-charset="UTF-8">
                         <div class=class="form-group">
-                          <label class="control-label" for="inputName" >Your name for the highscore list:</label>
-                          <input data-bind="value: name" type="text" class="form-control" id="inputScore" placeholder="Rosa" maxlength="20" autofocus style="width: 150px;">
+                          <label class="control-label"  for="inputName" >Your name for the  highscore list:</label>
+                          <input data-bind="value: name"  type="text" class="form-control"  id="inputScore" placeholder="Rosa"  maxlength="20" autofocus  style="width: 150px;">
                         </div>
                       </form>
-                  </div>
-                  <div class="modal-footer">
-                      <button form="save-name-form" data-bind="click: addScore" class="btn btn-primary" type="submit">yeahhhhhhhh</button>
-                      <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                  </div>
-              </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button form="save-name-form"   data-bind="click: addScore" class="btn  btn-primary"  type="submit">yeahhhhhhhh</button>
+                      <button type="button" class="btn  btn-default"  data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
           </div>
+
       </div>
 
 
@@ -176,6 +183,22 @@
   <!-- Communication with the backend for highscore -->
   <script type="text/javascript" charset="UTF-8">
 
+    function Loading() {
+      this.loadPic = false;
+      this.loadHS = false;
+
+      this.ready = function() {
+        if (this.loadPic === true && this.loadHS === true) {
+          setTimeout(function() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('finished-loading').style.display = 'block';
+            scrolltotop();
+          }, 1000);
+        }
+      }
+    }
+    var loading = new Loading();
+
     function ScoresViewModel() {
       var self = this;
       self.highscore = 0;
@@ -196,13 +219,15 @@
           if (json.scores.length >= 10) {
             self.highscore = json.scores[json.scores.length-1].points;
           }
+          loading.loadHS = true;
+          loading.ready();
         },
         error: function( xhr, status, errorThrown ) {
           alert( "Sorry, there was a problem!" );
           console.log( "Error: " + errorThrown );
           console.log( "Status: " + status );
           console.dir( xhr );
-        }
+        },
       });
 
 
@@ -274,8 +299,6 @@
     function scrolltohighscore() {
       document.getElementById( 'highscore' ).scrollIntoView();
     }
-
-    scrolltotop();
 
 
   </script>

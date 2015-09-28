@@ -10,6 +10,19 @@
   .make-row();
 }
 
+/* Loading */
+#loading {
+  margin-top: 300px;
+  margin-bottom: 300px;
+  text-align: center;
+  position: relative;
+  display: block;
+}
+
+#finished-loading {
+  display: none;
+}
+
 /* Game related */
 .game-box {
   width: 801px;

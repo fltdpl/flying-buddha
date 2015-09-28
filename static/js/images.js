@@ -30,6 +30,8 @@ var imageRepository = new function() {
     numLoaded++;
     if (numLoaded === numImages) {
       window.init();
+      loading.loadPic = true;
+      loading.ready();
     }
   }
 
