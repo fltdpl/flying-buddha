@@ -134,11 +134,96 @@ function Background() {
 Background.prototype = new Drawable();
 
 /**
+ * Background story object
+ */
+ function BGObstacle(obstacle) {
+   this.alive = false;
+   this.obstacle = obstacle;
+   this.speed = 1;
+
+   // Sets the obstacle values
+   this.spawn = function(x, y, speedx, speedy) {
+     this.x = x;
+     this.y = y;
+     this.speedx = speedx;
+     this.speedy = speedy;
+     this.alive = true;
+   };
+
+   this.draw = function() {
+     this.x += this.speedx;
+     this.y += this.speedy;
+
+     this.context.drawImage(this.obstacle, this.x, this.y);
+     return [this.x, this.y]
+
+   };
+ }
+ BGObstacle.prototype = new Drawable();
+
+ /*
+  * Holds Background obstacles
+  */
+function BGPool() {
+
+  this.init = function() {
+    enterpriseL = new BGObstacle(imageRepository.imgenterpriseL);
+    enterpriseL.init(this.canvasWidth, this.canvasHeight/2,
+      imageRepository.imgenterpriseL.width,
+      imageRepository.imgenterpriseL.height);
+    enterpriseR = new BGObstacle(imageRepository.imgenterpriseR);
+    enterpriseR.init(0-imageRepository.imgenterpriseR.width, 300,
+      imageRepository.imgenterpriseR.width,
+      imageRepository.imgenterpriseR.height);
+    warbirdR = new BGObstacle(imageRepository.imgwarbirdR);
+    warbirdR.init(0-imageRepository.imgwarbirdR.width, 300,
+      imageRepository.imgwarbirdR.width,
+      imageRepository.imgwarbirdR.height);
+  };
+
+  this.animate = function() {
+
+    if (game.gametime >= 10 && game.bgstory === 0) {
+      if (enterpriseL.alive === false) {
+        enterpriseL.spawn(800, 300, -1, 0);
+      } else {
+        var position = enterpriseL.draw();
+        if (position[0] <= 0-imageRepository.imgenterpriseL.width) {
+          enterpriseL.alive = false;
+          game.bgstory = 1;
+        }
+      }
+    }
+
+    if (game.gametime >= 30 && game.bgstory === 1) {
+      if (enterpriseR.alive === false) {
+        enterpriseR.spawn(0-imageRepository.imgenterpriseR.width , 300, 2, 0);
+      } else {
+        enterpriseR.draw();
+      }
+
+      if (warbirdR.alive === false) {
+        warbirdR.spawn(0-imageRepository.imgenterpriseR.width-600 , 300, 2, 0);
+      } else {
+        position = warbirdR.draw();
+        if (position[0] >= 800) {
+          enterpriseR.alive = false;
+          warbirdR.alive = false;
+          game.bgstory = 2;
+        }
+      }
+    }
+
+
+  };
+
+}
+
+/**
  * Obstacle object
  */
 function Obstacle(obstacle) {
   this.alive = false; // Is true if the obstacle is currently in use
-  //this.obstacle = imageRepository.obstacle01;
   this.obstacle = obstacle;
   this.speed = 2;
 
@@ -262,7 +347,7 @@ function Pool(maxSize) {
   // Initialize new Item
   this.get = function(speed) {
     var border = [];
-    var timediv = (new Date().getTime() - game.gamestarttime) / 1000;
+    var timediv = game.gametime;
     var randnumber = Math.random();
     // border 0<= randnumber < 1: [stones, stars, bigheart, bigstar]
     if (timediv <= 60) {
@@ -336,7 +421,7 @@ function Pool(maxSize) {
   // Draws any in use obstacle.
   this.animate = function() {
     this.counter++;
-    var timediv = (new Date().getTime() - game.gamestarttime) / 1000;
+    var timediv = game.gametime;
     var xRand = 0;
     var yRand = 0;
     var minspeed = 1;
@@ -645,9 +730,14 @@ function Game() {
 
       // Initialize objects to contain their context and canvas
       // information
+
       Background.prototype.context = this.backgroundContext;
       Background.prototype.canvasWidth = this.backgroundCanvas.width;
       Background.prototype.canvasHeight = this.backgroundCanvas.height;
+
+      BGObstacle.prototype.context = this.backgroundContext;
+      BGObstacle.prototype.canvasWidth = this.backgroundCanvas.width;
+      BGObstacle.prototype.canvasHeight = this.backgroundCanvas.height;
 
       Buddha.prototype.context = this.buddhaContext;
       Buddha.prototype.canvasWidth = this.buddhaCanvas.width;
@@ -660,6 +750,10 @@ function Game() {
       // Initialize the background object
       this.background = new Background();
       this.background.init(0, 0); // Set draw point to 0,0
+
+      // Initialize the enterprise
+      this.backgroundPool = new BGPool();
+      this.backgroundPool.init();
 
       // Initilize the obstacles object
       this.obstaclePool = new Pool(30);
@@ -675,6 +769,8 @@ function Game() {
         imageRepository.buddha.width, imageRepository.buddha.height);
 
       this.gamestarttime = new Date().getTime();
+      this.gametime = 0;
+      this.bgstory = 0;
       this.playtime = 0;
       this.score = 0;
       this.life = 3;
@@ -703,7 +799,9 @@ function Game() {
     document.getElementById('timescoreclass').style.display = 'block';
     document.getElementById('scoreclass').style.display = 'block';
     this.gamestarttime = new Date().getTime();
+    this.gametime = 0;
     ShowStatusLife(this.life);
+    this.bgstory = 0;
     this.timedivB = 5;
     this.playtime = 0;
     this.score = 0;
@@ -763,8 +861,10 @@ function animate() {
   }
 
   if (game.ingame === true) {
+    game.gametime = (new Date().getTime() - game.gamestarttime) / 1000;
     requestAnimFrame(animate);
     game.background.draw();
+    game.backgroundPool.animate();
     game.buddhaO.move();
     game.obstaclePool.clearobstscreen();
     game.obstaclePool.animate();
