@@ -183,7 +183,7 @@ function BGPool() {
 
   this.animate = function() {
 
-    if (game.gametime >= 10 && game.bgstory === 0) {
+    if (game.gametime >= 60 && game.bgstory === 0) {
       if (enterpriseL.alive === false) {
         enterpriseL.spawn(800, 300, -1, 0);
       } else {
@@ -195,7 +195,7 @@ function BGPool() {
       }
     }
 
-    if (game.gametime >= 30 && game.bgstory === 1) {
+    if (game.gametime >= 120 && game.bgstory === 1) {
       if (enterpriseR.alive === false) {
         enterpriseR.spawn(0-imageRepository.imgenterpriseR.width , 300, 2, 0);
       } else {
