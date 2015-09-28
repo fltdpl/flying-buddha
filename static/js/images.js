@@ -22,8 +22,11 @@ var imageRepository = new function() {
   this.imgplus10 = new Image();
   this.imgplus100 = new Image();
   this.imgplusheart = new Image();
+  this.imgenterpriseL = new Image();
+  this.imgenterpriseR = new Image();
+  this.imgwarbirdR = new Image();
 
-  var numImages = 21;
+  var numImages = 24;
   var numLoaded = 0;
 
   function imageLoaded() {
@@ -98,6 +101,15 @@ var imageRepository = new function() {
   this.imgplusheart.onload = function() {
     imageLoaded();
   };
+  this.imgenterpriseL.onload = function() {
+    imageLoaded();
+  };
+  this.imgenterpriseR.onload = function() {
+    imageLoaded();
+  };
+  this.imgwarbirdR.onload = function() {
+    imageLoaded();
+  };
 
 
   // Set images src
@@ -122,6 +134,9 @@ var imageRepository = new function() {
   this.imgplus10.src = 'static/img/plus10_sprite.png';
   this.imgplus100.src = 'static/img/plus100_sprite.png';
   this.imgplusheart.src = 'static/img/plusheart_sprite.png';
+  this.imgenterpriseL.src = 'static/img/enterpriseLinks.png';
+  this.imgenterpriseR.src = 'static/img/enterpriseRechts.png';
+  this.imgwarbirdR.src = 'static/img/warbirdRechts.png';
 
 };
 
