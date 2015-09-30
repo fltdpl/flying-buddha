@@ -25,8 +25,11 @@ var imageRepository = new function() {
   this.imgenterpriseL = new Image();
   this.imgenterpriseR = new Image();
   this.imgwarbirdR = new Image();
+  this.imgpodR = new Image();
+  this.imgpodL = new Image();
+  this.imgRosetta = new Image();
 
-  var numImages = 24;
+  var numImages = 27;
   var numLoaded = 0;
 
   function imageLoaded() {
@@ -110,6 +113,15 @@ var imageRepository = new function() {
   this.imgwarbirdR.onload = function() {
     imageLoaded();
   };
+  this.imgpodR.onload = function() {
+    imageLoaded();
+  };
+  this.imgpodL.onload = function() {
+    imageLoaded();
+  };
+  this.imgRosetta.onload = function() {
+    imageLoaded();
+  };
 
 
   // Set images src
@@ -137,6 +149,9 @@ var imageRepository = new function() {
   this.imgenterpriseL.src = 'static/img/enterpriseLinks.png';
   this.imgenterpriseR.src = 'static/img/enterpriseRechts.png';
   this.imgwarbirdR.src = 'static/img/warbirdRechts.png';
+  this.imgpodR.src = 'static/img/podRechts.png';
+  this.imgpodL.src = 'static/img/podLinks.png';
+  this.imgRosetta.src = 'static/img/rosetta.png';
 
 };
 

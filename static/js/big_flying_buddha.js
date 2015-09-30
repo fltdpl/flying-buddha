@@ -168,7 +168,7 @@ function BGPool() {
 
   this.init = function() {
     enterpriseL = new BGObstacle(imageRepository.imgenterpriseL);
-    enterpriseL.init(this.canvasWidth, this.canvasHeight/2,
+    enterpriseL.init(800, 300,
       imageRepository.imgenterpriseL.width,
       imageRepository.imgenterpriseL.height);
     enterpriseR = new BGObstacle(imageRepository.imgenterpriseR);
@@ -179,37 +179,98 @@ function BGPool() {
     warbirdR.init(0-imageRepository.imgwarbirdR.width, 300,
       imageRepository.imgwarbirdR.width,
       imageRepository.imgwarbirdR.height);
+    podL = new BGObstacle(imageRepository.imgpodL);
+    podL.init(800, 450,
+      imageRepository.imgpodL.width,
+      imageRepository.imgpodL.height);
+    podR = new BGObstacle(imageRepository.imgpodR);
+    podR.init(0-imageRepository.imgpodR.width, 250,
+      imageRepository.imgpodR.width,
+      imageRepository.imgpodR.height);
+    rosetta = new BGObstacle(imageRepository.imgRosetta);
+    rosetta.init(0-imageRepository.imgRosetta.width, 250,
+      imageRepository.imgRosetta.width,
+      imageRepository.imgRosetta.height);
   };
 
   this.animate = function() {
+    var position;
 
-    if (game.gametime >= 60 && game.bgstory === 0) {
-      if (enterpriseL.alive === false) {
-        enterpriseL.spawn(800, 300, -1, 0);
+    if (game.gametime >= 20 && game.bgstory === 0) {
+      if (rosetta.alive === false) {
+        rosetta.spawn(0-imageRepository.imgRosetta.width, 100, 0.5, -0.1);
       } else {
-        var position = enterpriseL.draw();
-        if (position[0] <= 0-imageRepository.imgenterpriseL.width) {
-          enterpriseL.alive = false;
+        position = rosetta.draw();
+        if (position[0] >= 800) {
+          rosetta.alive = false;
           game.bgstory = 1;
         }
       }
     }
 
-    if (game.gametime >= 120 && game.bgstory === 1) {
+    if (game.gametime >= 60 && game.bgstory === 1) {
+      if (podL.alive === false) {
+        podL.spawn(800, 400, -0.5, -0.3);
+      } else {
+        position = podL.draw();
+        if (position[0] <= 0-imageRepository.imgpodL.width) {
+          podL.alive = false;
+          game.bgstory = 2;
+        }
+      }
+    }
+
+    if (game.gametime >= 120 && game.bgstory === 2) {
+      if (enterpriseL.alive === false) {
+        enterpriseL.spawn(800, 300, -1, 0);
+      } else {
+        position = enterpriseL.draw();
+        if (position[0] <= 0-imageRepository.imgenterpriseL.width) {
+          enterpriseL.alive = false;
+          game.bgstory = 3;
+        }
+      }
+    }
+
+    if (game.gametime >= 150 && game.bgstory === 3) {
       if (enterpriseR.alive === false) {
-        enterpriseR.spawn(0-imageRepository.imgenterpriseR.width , 300, 2, 0);
+        enterpriseR.spawn(0-imageRepository.imgenterpriseR.width , 200, 2, 0);
       } else {
         enterpriseR.draw();
       }
 
       if (warbirdR.alive === false) {
-        warbirdR.spawn(0-imageRepository.imgenterpriseR.width-600 , 300, 2, 0);
+        warbirdR.spawn(0-imageRepository.imgenterpriseR.width-600 , 200, 2.3, 0);
       } else {
         position = warbirdR.draw();
         if (position[0] >= 800) {
           enterpriseR.alive = false;
           warbirdR.alive = false;
-          game.bgstory = 2;
+          game.bgstory = 4;
+        }
+      }
+    }
+
+    if (game.gametime >= 210 && game.bgstory === 4) {
+      if (podR.alive === false) {
+        podR.spawn(0-imageRepository.imgpodR.width, 300, 0.5, 0.1);
+      } else {
+        position = podR.draw();
+        if (position[0] >= 800) {
+          podR.alive = false;
+          game.bgstory = 5;
+        }
+      }
+    }
+
+    if (game.gametime >= 300 && game.bgstory === 5) {
+      if (rosetta.alive === false) {
+        rosetta.spawn(800, 200, -0.5, 0.1);
+      } else {
+        position = rosetta.draw();
+        if (position[0] <=  0-imageRepository.imgRosetta.width) {
+          rosetta.alive = false;
+          game.bgstory = 6;
         }
       }
     }
@@ -425,34 +486,42 @@ function Pool(maxSize) {
     var xRand = 0;
     var yRand = 0;
     var minspeed = 1;
-    var speedrate = 3;
+    var speedrate = 2;
     var Rate = 70;
     var i;
 
     if (timediv >= 60 && timediv < 120) {
-      minspeed = 1.5;
-      speedrate = 3;
+      minspeed = 1;
+      speedrate = 2;
       Rate = 60;
     } else if (timediv >= 90 && timediv < 120) {
-      minspeed = 2;
-      speedrate = 3;
-      Rate = 50;
+      minspeed = 1;
+      speedrate = 2;
+      Rate = 55;
     } else if (timediv >= 120 && timediv < 180) {
+      minspeed = 1.5;
+      speedrate = 2;
+      Rate = 50;
+    } else if (timediv >= 180 && timediv < 240) {
+      minspeed = 1.5;
+      speedrate = 3;
+      Rate = 45;
+    } else if (timediv >= 240 && timediv < 300) {
+      minspeed = 1.5;
+      speedrate = 3;
+      Rate = 40;
+    } else if (timediv >= 300 && timediv < 360) {
+      minspeed = 1.5;
+      speedrate = 3;
+      Rate = 45;
+    } else if (timediv >= 360 && timediv < 420) {
       minspeed = 2;
       speedrate = 3;
       Rate = 40;
-    } else if (timediv >= 180 && timediv < 240) {
+    } else if (timediv >= 420 && timediv < 480) {
       minspeed = 2;
       speedrate = 3;
       Rate = 35;
-    } else if (timediv >= 240 && timediv < 300) {
-      minspeed = 2;
-      speedrate = 3;
-      Rate = 30;
-    } else if (timediv >= 300) {
-      minspeed = 2;
-      speedrate = 3;
-      Rate = 28;
     }
 
     // Draw obstacles or create new ones
