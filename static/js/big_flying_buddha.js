@@ -359,6 +359,7 @@ function Pool(maxSize) {
   var heartObstacle;
   var bigstarObstacle;
   this.counter = 0;
+  this.starfieldtime;
 
   // populate the pool array with obstacles
   this.init = function() {
@@ -382,10 +383,13 @@ function Pool(maxSize) {
     }
     heartObstacle = new Obstacle(imageRepository.bigheart);
     bigstarObstacle = new Obstacle(imageRepository.bigstar);
+    starfieldObstacle = new Obstacle(imageRepository.imgstarfield);
     heartObstacle.init(0, 0, imageRepository.bigheart.width,
       imageRepository.bigheart.height);
     bigstarObstacle.init(0, 0, imageRepository.bigstar.width,
       imageRepository.bigstar.height);
+    starfieldObstacle.init(0, 0, imageRepository.imgstarfield.width,
+      imageRepository.imgstarfield.height);
     plus100 = new sprite({
       context: game.obstaclesContext,
       width: 880,
@@ -410,18 +414,29 @@ function Pool(maxSize) {
     var border = [];
     var timediv = game.gametime;
     var randnumber = Math.random();
-    // border 0<= randnumber < 1: [stones, stars, bigheart, bigstar]
+    // border 0<= randnumber < 1: [stones, stars, bigheart, bigstar, starfield]
+    //border = [0, 0, 0, 0, 1.3];
     if (timediv <= 60) {
-      border = [0.40, 1, 1.1, 1.2];
+      border = [0.40, 1, 1.1, 1.2, 1.3];
     } else if (timediv > 60 && timediv <= 180) {
-      border = [0.40, 0.96, 0.98, 1];
+      border = [0.40, 0.96, 0.98, 1, 1.1];
     } else if (timediv > 180 && timediv <= 240) {
-      border = [0.50, 0.96, 0.98, 1];
+      border = [0.40, 0.96, 0.98, 1, 1.1];
     } else if (timediv > 240 && timediv <= 300) {
-      border = [0.55, 0.96, 0.98, 1];
+      border = [0.45, 0.96, 0.98, 1, 1.1];
+    } else if (timediv > 300 && timediv <= 330) {
+      border = [0.50, 0.93, 0.95, 0.99, 1];
+    } else if (timediv > 330 && timediv <= 360) {
+      border = [0.55, 0.93, 0.95, 0.99, 1];
+    } else if (timediv > 330 && timediv <= 360) {
+      border = [0.60, 0.90, 0.92, 0.99, 1];
     } else {
-      border = [0.60, 0.93, 0.95, 1];
+      border = [0.65, 0.90, 0.92, 0.99, 1];
     }
+    if (game.starfield === true) {
+      border = [0, 0.8, 0.9, 1, 1.1];
+    }
+
     if (randnumber <= border[0]) {
       // stone
       if (!stonePool[size - 1].alive) {
@@ -435,6 +450,13 @@ function Pool(maxSize) {
         x = getRandomInt(0, 800 - starPool[size - 1].width);
         starPool[size - 1].spawn(x, 0, speed);
         starPool.unshift(starPool.pop());
+        if (game.starfield === true) {
+          game.starfieldcounter += 1;
+          if (game.starfieldcounter >= 100) {
+            game.starfield = false;
+            game.starfieldcounter = 0;
+          }
+        }
       }
     } else if (randnumber > border[1] && randnumber <= border[2]) {
       // special
@@ -447,6 +469,12 @@ function Pool(maxSize) {
       if (!bigstarObstacle.alive) {
         x = getRandomInt(0, 800 - bigstarObstacle.width);
         bigstarObstacle.spawn(x, 0, speed);
+      }
+    } else if (randnumber > border[3] && randnumber <= border[4]) {
+      // special
+      if (!starfieldObstacle.alive) {
+        x = getRandomInt(0, 800 - starfieldObstacle.width);
+        starfieldObstacle.spawn(x, 0, speed);
       }
     }
 
@@ -461,21 +489,24 @@ function Pool(maxSize) {
       if (starPool[i].alive) {
         starPool[i].clearObArea();
       }
-      if (heartObstacle.alive) {
-        heartObstacle.clearObArea();
-      }
-      if (bigstarObstacle.alive) {
-        bigstarObstacle.clearObArea();
-      }
       if (plus10pool[i].alive) {
         plus10pool[i].clear(plus10pool[i].x, plus10pool[i].y);
       }
-      if (plus100.alive) {
-        plus100.clear(plus100.x, plus100.y);
-      }
-      if (plusheart.alive) {
-        plusheart.clear(plusheart.x, plusheart.y);
-      }
+    }
+    if (heartObstacle.alive) {
+      heartObstacle.clearObArea();
+    }
+    if (bigstarObstacle.alive) {
+      bigstarObstacle.clearObArea();
+    }
+    if (starfieldObstacle.alive) {
+      starfieldObstacle.clearObArea();
+    }
+    if (plus100.alive) {
+      plus100.clear(plus100.x, plus100.y);
+    }
+    if (plusheart.alive) {
+      plusheart.clear(plusheart.x, plusheart.y);
     }
   };
 
@@ -485,12 +516,16 @@ function Pool(maxSize) {
     var timediv = game.gametime;
     var xRand = 0;
     var yRand = 0;
-    var minspeed = 1;
-    var speedrate = 2;
-    var Rate = 70;
+    var minspeed;
+    var speedrate;
+    var Rate;
     var i;
 
-    if (timediv >= 60 && timediv < 120) {
+    if (timediv < 60) {
+      minspeed = 1;
+      speedrate = 2;
+      Rate = 70;
+    } else if (timediv >= 60 && timediv < 90) {
       minspeed = 1;
       speedrate = 2;
       Rate = 60;
@@ -498,30 +533,38 @@ function Pool(maxSize) {
       minspeed = 1;
       speedrate = 2;
       Rate = 55;
-    } else if (timediv >= 120 && timediv < 180) {
+    } else if (timediv >= 120 && timediv < 150) {
       minspeed = 1.5;
       speedrate = 2;
       Rate = 50;
-    } else if (timediv >= 180 && timediv < 240) {
+    } else if (timediv >= 150 && timediv < 180) {
       minspeed = 1.5;
       speedrate = 3;
       Rate = 45;
-    } else if (timediv >= 240 && timediv < 300) {
+    } else if (timediv >= 180 && timediv < 210) {
       minspeed = 1.5;
       speedrate = 3;
       Rate = 40;
-    } else if (timediv >= 300 && timediv < 360) {
+    } else if (timediv >= 210 && timediv < 240) {
       minspeed = 1.5;
       speedrate = 3;
       Rate = 45;
-    } else if (timediv >= 360 && timediv < 420) {
+    } else if (timediv >= 240 && timediv < 270) {
       minspeed = 2;
       speedrate = 3;
       Rate = 40;
-    } else if (timediv >= 420 && timediv < 480) {
+    } else if (timediv >= 270 && timediv < 300) {
       minspeed = 2;
       speedrate = 3;
       Rate = 35;
+    } else {
+      minspeed = 2;
+      speedrate = 3;
+      Rate = 30;
+    }
+
+    if (game.starfield === true) {
+      Rate = 15;
     }
 
     // Draw obstacles or create new ones
@@ -637,8 +680,29 @@ function Pool(maxSize) {
       }
     }
 
+    // starfield
+    if (starfieldObstacle.alive) {
+        if (starfieldObstacle.draw()) {
+          starfieldObstacle.clear();
+        }
+        if (starfieldObstacle.handleCollisions()) {
+          var xplus100 = starfieldObstacle.x;
+          var yplus100 = starfieldObstacle.y;
+          starfieldObstacle.clear();
+          game.starfield = true;
+          this.starfieldtime = timediv;
+          game.starfieldwaitflag = true;
+        }
+    }
+
     // spawn new obstacles
-    if (this.counter >= Rate) {
+    if (game.starfieldwaitflag === true) {
+      if (timediv - this.starfieldtime >= 3) {
+        game.starfieldwaitflag = false;
+      }
+    }
+
+    if (game.starfieldwaitflag === false && this.counter >= Rate) {
       yspeed = minspeed + Math.random() * speedrate;
       this.counter = 0;
       this.get(yspeed);
@@ -847,6 +911,9 @@ function Game() {
       this.gameover = false;
       this.played = false;
       this.hitface = false;
+      this.starfield = false;
+      this.starfieldcounter = 0;
+      this.starfieldwaitflag = false;
       this.hitfacetime = 0;
 
       return true;
@@ -881,6 +948,9 @@ function Game() {
     ShowStatusLife(this.life);
     this.obstaclePool.init();
     this.hitface = false;
+    this.starfield = false;
+    this.starfieldcounter = 0;
+    this.starfieldwaitflag = false;
     this.hitfacetime = 0;
   };
 

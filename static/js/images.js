@@ -28,8 +28,9 @@ var imageRepository = new function() {
   this.imgpodR = new Image();
   this.imgpodL = new Image();
   this.imgRosetta = new Image();
+  this.imgstarfield = new Image();
 
-  var numImages = 27;
+  var numImages = 28;
   var numLoaded = 0;
 
   function imageLoaded() {
@@ -122,6 +123,9 @@ var imageRepository = new function() {
   this.imgRosetta.onload = function() {
     imageLoaded();
   };
+  this.imgstarfield.onload = function() {
+    imageLoaded();
+  };
 
 
   // Set images src
@@ -152,6 +156,7 @@ var imageRepository = new function() {
   this.imgpodR.src = 'static/img/podRechts.png';
   this.imgpodL.src = 'static/img/podLinks.png';
   this.imgRosetta.src = 'static/img/rosetta.png';
+  this.imgstarfield.src = 'static/img/starfield.png';
 
 };
 
