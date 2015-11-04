@@ -791,7 +791,8 @@ function Buddha() {
         if (this.x >= this.canvasWidth - this.width)
           this.x = this.canvasWidth - this.width;
 
-      } else if (KEY_STATUS.up) {
+      }
+      if (KEY_STATUS.up) {
         this.y -= this.speed;
         if (this.y <= this.canvasHeight / 3)
           this.y = this.canvasHeight / 3;
