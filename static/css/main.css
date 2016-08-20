@@ -1,10 +1,48 @@
+
 .wrapper {
   .make-row();
+  margin-top: 16px;
   margin-right: auto;
   margin-left: auto;
   width: 800px;
 }
+/*Christian > font & bootstrap workaround*/
+@font-face {
+    font-family: 'Satzkorn'; /*a name to be used later*/
+    src:url('Satzkorn.ttf'); /*URL to font*/
+}
 
+
+h2{
+  font-family:'Satzkorn';
+  font-size: 64px;
+  text-align: center;
+  color: #2276de;
+  margin-bottom:16px;
+}
+table{
+  border:8px solid #ddd;
+  border-bottom: 8px solid #ddd;
+  font-size: 16px;
+
+}
+thead{
+  border-bottom: 8px solid #ddd;
+}
+
+th{
+  text-align: center;
+  border:8px;
+}
+
+td{
+  text-align:center;
+  border:8px solid #ddd;
+}
+
+p{
+margin: 0 0 8px;
+}box
 
 .content-main {
   .make-row();
@@ -12,14 +50,15 @@
 
 /* Loading */
 #loading {
-  margin-top: 300px;
-  margin-bottom: 300px;
+  margin-top: 0px;
+  margin-bottom: 0px;
   text-align: center;
   position: relative;
   display: block;
 }
 
 #finished-loading {
+
   display: none;
 }
 
@@ -50,8 +89,9 @@ canvas {
 /* Title screen */
 #gametitle {
   position: relative;
+  top: 48px;
+  height: 480px;
   text-align: center;
-  top: 340px;
   cursor: default;
 }
 .gametitle p {
@@ -61,46 +101,63 @@ canvas {
 /* Game over screen */
 #game-over {
   position: relative;
-  top: 350px;
+  top: 120px;
+  height: 440px;
+  margin-left: 112px;
+  margin-right: 112px;
   text-align: center;
   cursor: default;
   display: none;
 }
 .game-over p {
   position: relative;
+    cursor: pointer;
 }
 
 /* Game header */
 #gameheader {
   position: relative;
-  margin-top: 10px;
-  margin-right: auto;
-  margin-left: auto;
-  width: 780px;
+  margin-right: 8px;
+  margin-left: 8px;
+  width: 784px;
 }
-.scoreblock {
+
+.statuslife {
   position: relative;
-  float: left;
+  float: right;
+  display: none;
 }
+
+.content-below {
+  .make-row();
+}
+
+#gamefooter {
+  position: absolute;
+  top: 524px;
+  margin-right: 8px;
+  margin-left: auto;
+  width: 792px;
+}
+
 .timescore {
   position: relative;
-  text-align:left;
-  color: #4e4e4e;
-  font-family: Helvetica, sans-serif;
+  float:right;
+  text-align:right;
+  color: #421d6f;
+  font-family: 'Satzkorn';
+  font-size: 64px;
   cursor: default;
   display: none;
 }
 .score {
-  position: relative;
+  position: absolute;
+  bottom:zero;
   text-align:left;
-  color: #4e4e4e;
-  font-family: Helvetica, sans-serif;
+  color: #421d6f;
+  font-family: 'Satzkorn';
+  font-size: 64px;
   cursor: default;
-  display: none;
-}
-.statuslife {
-  position: relative;
-  float: right;
   display: none;
 }
 
@@ -111,10 +168,12 @@ canvas {
 
 /* High score */
 #highscore {
-  margin-top: 120px;
+  position: relative;
+  top: 64px;
   width: 400px;
   margin-right: auto;
   margin-left: auto;
+  margin-bottom: 128px;
 }
 
 .content-footer {
@@ -123,11 +182,12 @@ canvas {
 
 #footer {
   margin-top: 40px;
+  width: 400px;
+  margin-right: auto;
+  margin-left: auto;
   border-top: thin solid #cfcfcf;
 }
 
 .container-footer {
-  width: 780px;
-  margin-right: auto;
-  margin-left: auto;
+
 }

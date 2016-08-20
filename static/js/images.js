@@ -2,6 +2,7 @@
 var imageRepository = new function() {
   // Define images
   this.background = new Image();
+  this.background_static = new Image();
   this.buddha = new Image();
   this.buddhasad = new Image();
   this.buddhaO = new Image();
@@ -22,15 +23,21 @@ var imageRepository = new function() {
   this.imgplus10 = new Image();
   this.imgplus100 = new Image();
   this.imgplusheart = new Image();
-  this.imgenterpriseL = new Image();
-  this.imgenterpriseR = new Image();
-  this.imgwarbirdR = new Image();
-  this.imgpodR = new Image();
-  this.imgpodL = new Image();
-  this.imgRosetta = new Image();
   this.imgstarfield = new Image();
+//new ghosts:
+  this.ghostoldbuddha = new Image();
+  this.ghosteye = new Image();
+  this.ghostcat = new Image();
+  this.ghostskull = new Image();
+  this.ghostnative = new Image();
+  this.ghoststier = new Image();
+  this.ghostpastafari = new Image();
+  this.ghostlol = new Image();
+  this.ghostclippy = new Image();
+  this.ghostpac = new Image();
+  this.ghostthisman = new Image();
 
-  var numImages = 28;
+  var numImages = 34;
   var numLoaded = 0;
 
   function imageLoaded() {
@@ -43,6 +50,9 @@ var imageRepository = new function() {
   }
 
   this.background.onload = function() {
+    imageLoaded();
+  };
+  this.background_static.onload = function() {
     imageLoaded();
   };
   this.buddha.onload = function() {
@@ -105,31 +115,48 @@ var imageRepository = new function() {
   this.imgplusheart.onload = function() {
     imageLoaded();
   };
-  this.imgenterpriseL.onload = function() {
-    imageLoaded();
-  };
-  this.imgenterpriseR.onload = function() {
-    imageLoaded();
-  };
-  this.imgwarbirdR.onload = function() {
-    imageLoaded();
-  };
-  this.imgpodR.onload = function() {
-    imageLoaded();
-  };
-  this.imgpodL.onload = function() {
-    imageLoaded();
-  };
-  this.imgRosetta.onload = function() {
-    imageLoaded();
-  };
   this.imgstarfield.onload = function() {
     imageLoaded();
   };
+  this.ghostoldbuddha.onload = function() {
+    imageLoaded();
+  };
+  this.ghosteye.onload = function() {
+    imageLoaded();
+  };
+  this.ghostcat.onload = function() {
+    imageLoaded();
+  };
+  this.ghostskull.onload = function() {
+    imageLoaded();
+  };
+  this.ghostnative.onload = function() {
+    imageLoaded();
+  };
+  this.ghoststier.onload = function() {
+    imageLoaded();
+  };
+  this.ghostpastafari.onload = function() {
+    imageLoaded();
+  };
+  this.ghostlol.onload = function() {
+    imageLoaded();
+  };
+  this.ghostclippy.onload = function() {
+    imageLoaded();
+  };
+  this.ghostpac.onload = function() {
+    imageLoaded();
+  };
+  this.ghostthisman.onload = function() {
+    imageLoaded();
+  };
+
 
 
   // Set images src
   this.background.src = 'static/img/starland.png';
+  this.background_static.src = 'static/img/bg_static.png'
   this.buddha.src = 'static/img/buddhaface.png';
   this.buddhasad.src = 'static/img/buddhaface_sad.png';
   this.buddhaO.src = 'static/img/buddhaface_O.png';
@@ -150,13 +177,18 @@ var imageRepository = new function() {
   this.imgplus10.src = 'static/img/plus10_sprite.png';
   this.imgplus100.src = 'static/img/plus100_sprite.png';
   this.imgplusheart.src = 'static/img/plusheart_sprite.png';
-  this.imgenterpriseL.src = 'static/img/enterpriseLinks.png';
-  this.imgenterpriseR.src = 'static/img/enterpriseRechts.png';
-  this.imgwarbirdR.src = 'static/img/warbirdRechts.png';
-  this.imgpodR.src = 'static/img/podRechts.png';
-  this.imgpodL.src = 'static/img/podLinks.png';
-  this.imgRosetta.src = 'static/img/rosetta.png';
   this.imgstarfield.src = 'static/img/starfield.png';
+  this.ghostoldbuddha.src = 'static/img/ghost_00_oldbuddha.png';
+  this.ghosteye.src = 'static/img/ghost_01_eye.png';
+  this.ghostcat.src = 'static/img/ghost_02_cat.png';
+  this.ghostskull.src = 'static/img/ghost_03_skull.png';
+  this.ghostnative.src = 'static/img/ghost_04_native.png';
+  this.ghoststier.src = 'static/img/ghost_05_stier.png';
+  this.ghostpastafari.src = 'static/img/ghost_06_pastafari.png';
+  this.ghostlol.src = 'static/img/ghost_07_lol.png';
+  this.ghostclippy.src = 'static/img/ghost_08_clippy.png';
+  this.ghostpac.src = 'static/img/ghost_09_pac.png';
+  this.ghostthisman.src = 'static/img/ghost_10_thisman.png';
 
 };
 

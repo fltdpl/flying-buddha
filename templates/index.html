@@ -21,7 +21,7 @@
 
     <div class="content-main">
 
-      <div id="loading">
+      <div id="loading" >
         <span>
           <img src="{{ url_for('static', filename='img/laden.gif') }}" alt="loading.">
         </span>
@@ -40,10 +40,8 @@
           </canvas>
 
           <div id="gameheader">
-            <div id="scoreblock" class="scoreblock">
-              <div id="timescoreclass" class="timescore">Zeit:  <span id="timescore"></span></div>
-              <div id="scoreclass" class="score">Score: <span   id="score"></span></div>
-            </div>
+            <div id="lifeblock" class="lifeblock">
+
             <div id="statuslife3full" class="statuslife">
               <img src="{{ url_for('static',  filename='img/3hearts3full.png') }}"  alt="lifes">
             </div>
@@ -57,17 +55,16 @@
               <img src="{{ url_for('static',  filename='img/3heartsempty.png') }}"  alt="lifes">
             </div>
           </div>
+          <div id="gamefooter">
+            <div id="timescoreclass" class="timescore"><span id="timescore"></span></div>
+            <div id="scoreclass" class="score"><font color=#ffc900>+</font><span   id="score"></span></div>
+          </div>
 
           <div id="gametitle">
-            <img src="{{ url_for('static',  filename='img/flybu.png') }}" alt="the mighty   flying buddha">
+            <img src="{{ url_for('static',  filename='img/flybu.png') }}" alt="the mighty flying buddha">
             <p>
-              <span onclick="game.startbutton()">
-                <img src="{{ url_for('static',  filename='img/start.png') }}" alt="start the  game">
-              </span>
-            </p>
-            <p>
-              <span onclick="scrolltohighscore()">
-                <img src="{{ url_for('static',  filename='img/highscore.png') }}" alt="show   highscore">
+              <span onclick="game.startbutton()" style="position:absolute; margin-left: -64px; bottom:0px; cursor:pointer;">
+                <img src="{{ url_for('static',  filename='img/start.png') }}" alt="start the game">
               </span>
             </p>
           </div>
@@ -75,29 +72,32 @@
           <div id="game-over">
             <img src="{{ url_for('static',  filename='img/gameover.png') }}" alt="game over">
             <p>
-              <span onclick="game.startbutton()">
-                <img src="{{ url_for('static',  filename='img/restart.png') }}" alt="restart  the game">
+              <span onclick="game.startbutton()"
+                    style="position:absolute; margin-left: -120px; bottom:72px;cursor:pointer;">
+                    <img src="{{ url_for('static',  filename='img/restart.png') }}" alt="restart  the game">
               </span>
             </p>
             <p>
-              <span onclick="scrolltohighscore()">
-                <img src="{{ url_for('static',  filename='img/highscore.png') }}" alt="show   highscore">
+              <span onclick="scrolltohighscore()"
+                    style="position:absolute; margin-left: -112px; bottom:0px;cursor:pointer;">
+                    <img src="{{ url_for('static',  filename='img/highscore.png') }}" alt="show highscore">
               </span>
             </p>
           </div>
 
         </div>
-
+        </div>
+</div>
 
 
         <div id="highscore">
-            <h2>Highscore</h2>
+            <h2>hall oF Fame</h2>
 
-            <table class="table table-striped">
+            <table class="table highscore">
               <thead>
                 <tr>
-                  <th>Points</th>
-                  <th>Name</th>
+                  <th>SCORE</th>
+                  <th>NAME</th>
                 </tr>
               </thead>
               <tbody>
@@ -126,7 +126,7 @@
                       <form id="save-name-form"   accept-charset="UTF-8">
                         <div class=class="form-group">
                           <label class="control-label"  for="inputName" >Your name for the  highscore list:</label>
-                          <input data-bind="value: name"  type="text" class="form-control"  id="inputScore" placeholder="Rosa"  maxlength="20" autofocus  style="width: 150px;">
+                          <input data-bind="value: name"  type="text" class="form-control"  id="inputScore" placeholder="Rosa"  maxlength="20"  style="width: 150px;">
                         </div>
                       </form>
                     </div>
@@ -150,9 +150,11 @@
       <div id="footer">
         <div class="container-footer">
           <p></p>
-          <p class="text-muted">last change on this site: 2015/09/11</br>
+          <p class="text-muted">last change on this site: 2016/7/21</br>
+        
               flying buddha source:
               <a href="https://github.com/fltdpl/flying-buddha">https://github.com/fltdpl/flying-buddha</a>
+
           </p>
         </div>
       </div>
@@ -195,7 +197,9 @@
           setTimeout(function() {
             document.getElementById('loading').style.display = 'none';
             document.getElementById('finished-loading').style.display = 'block';
-            scrolltotop();
+          //  scrolltotop();
+          //* annoying
+
           }, 1000);
         }
       }

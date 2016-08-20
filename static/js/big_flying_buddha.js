@@ -110,21 +110,28 @@ function Drawable () {
   this.move = function() {};
 }
 
+
+function Background_static() {this.draw = function(){
+   this.context.drawImage(imageRepository.background_static, this.x, this.y);}
+   }
 /*
  * Background object
+this.context.clearRect(0, 0, this.backgroundCanvas.width, this.backgroundCanvas.height);
+
  */
 function Background() {
-  this.speed = 1; // Redefine speed of the background for panning
 
+  this.speed = 1; // Redefine speed of the background for panning
   // Implement abstract function
   this.draw = function() {
+    this.context.clearRect(0,0,800,600);
+    this.context.drawImage(imageRepository.background_static,0,0);
     // Pan background
     this.y += this.speed;
     this.context.drawImage(imageRepository.background, this.x, this.y);
 
     // Draw another image at the top edge of the first image
     this.context.drawImage(imageRepository.background, this.x, this.y - this.canvasHeight);
-
     // If the image scrolled off the screen, reset
     if (this.y >= this.canvasHeight)
       this.y = 0;
@@ -164,121 +171,228 @@ Background.prototype = new Drawable();
  /*
   * Holds Background obstacles
   */
-function BGPool() {
+  function BGPool() {
 
   this.init = function() {
-    enterpriseL = new BGObstacle(imageRepository.imgenterpriseL);
-    enterpriseL.init(800, 300,
-      imageRepository.imgenterpriseL.width,
-      imageRepository.imgenterpriseL.height);
-    enterpriseR = new BGObstacle(imageRepository.imgenterpriseR);
-    enterpriseR.init(0-imageRepository.imgenterpriseR.width, 300,
-      imageRepository.imgenterpriseR.width,
-      imageRepository.imgenterpriseR.height);
-    warbirdR = new BGObstacle(imageRepository.imgwarbirdR);
-    warbirdR.init(0-imageRepository.imgwarbirdR.width, 300,
-      imageRepository.imgwarbirdR.width,
-      imageRepository.imgwarbirdR.height);
-    podL = new BGObstacle(imageRepository.imgpodL);
-    podL.init(800, 450,
-      imageRepository.imgpodL.width,
-      imageRepository.imgpodL.height);
-    podR = new BGObstacle(imageRepository.imgpodR);
-    podR.init(0-imageRepository.imgpodR.width, 250,
-      imageRepository.imgpodR.width,
-      imageRepository.imgpodR.height);
-    rosetta = new BGObstacle(imageRepository.imgRosetta);
-    rosetta.init(0-imageRepository.imgRosetta.width, 250,
-      imageRepository.imgRosetta.width,
-      imageRepository.imgRosetta.height);
-  };
+  //  old objects
+  //  enterpriseL = new BGObstacle(imageRepository.imgenterpriseL);
+  //    enterpriseL.init(800, 300,
+  //      imageRepository.imgenterpriseL.width,
+  //      imageRepository.imgenterpriseL.height);
+  //    enterpriseR = new BGObstacle(imageRepository.imgenterpriseR);
+  //    enterpriseR.init(0-imageRepository.imgenterpriseR.width, 300,
+  //      imageRepository.imgenterpriseR.width,
+  //      imageRepository.imgenterpriseR.height);
+  //    warbirdR = new BGObstacle(imageRepository.imgwarbirdR);
+  //    warbirdR.init(300, 300,
+  //      imageRepository.imgwarbirdR.width,
+  //      imageRepository.imgwarbirdR.height);
+  //    podL = new BGObstacle(imageRepository.imgpodL);
+  //    podL.init(800, 450,
+  //      imageRepository.imgpodL.width,
+  //      imageRepository.imgpodL.height);
+  //    podR = new BGObstacle(imageRepository.imgpodR);
+  //    podR.init(0-imageRepository.imgpodR.width, 300,
+  //      imageRepository.imgpodR.width,
+  //      imageRepository.imgpodR.height);
+  //    rosetta = new BGObstacle(imageRepository.imgRosetta);
+  //    rosetta.init(0-imageRepository.imgRosetta.width, 300,
+  //      imageRepository.imgRosetta.width,
+  //      imageRepository.imgRosetta.height);
 
-  this.animate = function() {
-    var position;
+  //gametime 20 bg 0
+      oldbuddha = new BGObstacle(imageRepository.ghostoldbuddha);
+      oldbuddha.init(800, 300,
+      imageRepository.ghostoldbuddha.width,
+      imageRepository.ghostoldbuddha.height);
+  //gametime 50 bg 1
+      eye = new BGObstacle(imageRepository.ghosteye);
+      eye.init(0-imageRepository.ghosteye.width, 300,
+      imageRepository.ghosteye.width,
+      imageRepository.ghosteye.height);
+  //gametime 80 bg 2
+      cat = new BGObstacle(imageRepository.ghostcat);
+      cat.init(0-imageRepository.ghostcat.width, 300,
+      imageRepository.ghostcat.width,
+      imageRepository.ghostcat.height);
+  //gametime 110 bg 3
+      skull = new BGObstacle(imageRepository.ghostskull);
+      skull.init(800, 300,
+      imageRepository.ghostskull.width,
+      imageRepository.ghostskull.height);
+  //gametime 140 bg 4
+      native = new BGObstacle(imageRepository.ghostnative);
+      native.init(0-imageRepository.ghostnative.width, 300,
+      imageRepository.ghostnative.width,
+      imageRepository.ghostnative.height);
+  //gametime 170 bg 5
+      stier = new BGObstacle(imageRepository.ghoststier);
+      stier.init(800, 300,
+      imageRepository.ghoststier.width,
+      imageRepository.ghoststier.height);
+  //gametime 200 bg 6
+      pastafari = new BGObstacle(imageRepository.ghostpastafari);
+      pastafari.init(0-imageRepository.ghostpastafari.width, 300,
+      imageRepository.ghostpastafari.width,
+      imageRepository.ghostpastafari.height);
+  //gametime 230 bg 7
+      lol = new BGObstacle(imageRepository.ghostlol);
+      lol.init(0-imageRepository.ghostlol.width, 300,
+      imageRepository.ghostlol.width,
+      imageRepository.ghostlol.height);
+  //gametime 260 bg 8
+      clippy = new BGObstacle(imageRepository.ghostclippy);
+      clippy.init(800, 300,
+      imageRepository.ghostclippy.width,
+      imageRepository.ghostclippy.height);
+  //gametime 290 bg 9
+      pac = new BGObstacle(imageRepository.ghostpac);
+      pac.init(0-imageRepository.ghostpac.width, 300,
+      imageRepository.ghostpac.width,
+      imageRepository.ghostpac.height);
+  //gametime 310 until forever bg 10
+      thisman = new BGObstacle(imageRepository.ghostthisman);
+      thisman.init(800, 300,
+      imageRepository.ghostthisman.width,
+      imageRepository.ghostthisman.height);
 
-    if (game.gametime >= 20 && game.bgstory === 0) {
-      if (rosetta.alive === false) {
-        rosetta.spawn(0-imageRepository.imgRosetta.width, 100, 0.5, -0.1);
-      } else {
-        position = rosetta.draw();
-        if (position[0] >= 800) {
-          rosetta.alive = false;
-          game.bgstory = 1;
+
+    };
+
+    this.animate = function() {
+      var position;
+
+      if (game.gametime >= 20 && game.bgstory === 0) {
+        if (oldbuddha.alive === false) {
+          oldbuddha.spawn(800, 450, -0.5, -0.3);
+        } else {
+          position = oldbuddha.draw();
+          if (position[0] <= 0-imageRepository.ghostoldbuddha.width) {
+            oldbuddha.alive = false;
+            game.bgstory = 1;
+          }
         }
       }
-    }
 
-    if (game.gametime >= 60 && game.bgstory === 1) {
-      if (podL.alive === false) {
-        podL.spawn(800, 400, -0.5, -0.3);
-      } else {
-        position = podL.draw();
-        if (position[0] <= 0-imageRepository.imgpodL.width) {
-          podL.alive = false;
-          game.bgstory = 2;
+      if (game.gametime >= 55 && game.bgstory === 1) {
+        if (eye.alive === false) {
+          eye.spawn(0-imageRepository.ghosteye.width, 300, 0.5, -0.1);
+        } else {
+          position = eye.draw();
+          if (position[0] >= 800) {
+            eye.alive = false;
+            game.bgstory = 2;
+          }
         }
       }
-    }
 
-    if (game.gametime >= 120 && game.bgstory === 2) {
-      if (enterpriseL.alive === false) {
-        enterpriseL.spawn(800, 300, -1, 0);
-      } else {
-        position = enterpriseL.draw();
-        if (position[0] <= 0-imageRepository.imgenterpriseL.width) {
-          enterpriseL.alive = false;
-          game.bgstory = 3;
+      if (game.gametime >= 80 && game.bgstory === 2) {
+        if (cat.alive === false) {
+          cat.spawn(0-imageRepository.ghostcat.width, 300, 0.5, -0.1);
+        } else {
+          position = cat.draw();
+          if (position[0] >= 800) {
+            cat.alive = false;
+            game.bgstory = 3;
+          }
         }
       }
-    }
 
-    if (game.gametime >= 150 && game.bgstory === 3) {
-      if (enterpriseR.alive === false) {
-        enterpriseR.spawn(0-imageRepository.imgenterpriseR.width , 200, 2, 0);
-      } else {
-        enterpriseR.draw();
-      }
-
-      if (warbirdR.alive === false) {
-        warbirdR.spawn(0-imageRepository.imgenterpriseR.width-600 , 200, 2.3, 0);
-      } else {
-        position = warbirdR.draw();
-        if (position[0] >= 800) {
-          enterpriseR.alive = false;
-          warbirdR.alive = false;
+      if (game.gametime >= 105 && game.bgstory === 3) {
+        if (skull.alive === false) {
+          skull.spawn(800, 300, -1, -0.3);
+        } else {
+          position = skull.draw();
+          if (position[0] <= 0-imageRepository.ghostskull.width) {
+          skull.alive = false;
           game.bgstory = 4;
+
         }
       }
     }
 
-    if (game.gametime >= 210 && game.bgstory === 4) {
-      if (podR.alive === false) {
-        podR.spawn(0-imageRepository.imgpodR.width, 300, 0.5, 0.1);
-      } else {
-        position = podR.draw();
-        if (position[0] >= 800) {
-          podR.alive = false;
-          game.bgstory = 5;
+    if (game.gametime >= 130 && game.bgstory === 4) {
+        if (native.alive === false) {
+          native.spawn(0-imageRepository.ghostnative.width, 200, 1.6, -0.3);
+        } else {
+          position = native.draw();
+          if (position[0] >= 800) {
+            native.alive = false;
+            game.bgstory = 5;
+          }
         }
       }
-    }
 
-    if (game.gametime >= 300 && game.bgstory === 5) {
-      if (rosetta.alive === false) {
-        rosetta.spawn(800, 200, -0.5, 0.1);
-      } else {
-        position = rosetta.draw();
-        if (position[0] <=  0-imageRepository.imgRosetta.width) {
-          rosetta.alive = false;
-          game.bgstory = 6;
+      if (game.gametime >= 155 && game.bgstory === 5) {
+        if (stier.alive === false) {
+          stier.spawn(800, 400, -0.5, -0.5);
+        } else {
+          position = stier.draw();
+          if (position[0] <= 0-imageRepository.ghoststier.width) {
+            stier.alive = false;
+            game.bgstory = 6;
+          }
         }
       }
-    }
 
+      if (game.gametime >= 180 && game.bgstory === 6) {
+        if (pastafari.alive === false) {
+          pastafari.spawn(0-imageRepository.ghostpastafari.width, 200, 0.4, -0.2);
+        } else {
+          position = pastafari.draw();
+          if (position[0] >=  800) {
+            pastafari.alive = false;
+            game.bgstory = 7;
+          }
+        }
+      }
+      if (game.gametime >= 205 && game.bgstory === 7) {
+        if (lol.alive === false) {
+          lol.spawn(0-imageRepository.ghostlol.width, 250, 0.5, -0.3);
+        } else {
+          position = lol.draw();
+          if (position[0] >=  800) {
+            lol.alive = false;
+            game.bgstory = 8;
+          }
+        }
+      }
+      if (game.gametime >= 230 && game.bgstory === 8) {
+        if (clippy.alive === false) {
+          clippy.spawn(800, 300, -0.25, -0.1);
+        } else {
+          position = clippy.draw();
+          if (position[0] <=  0-imageRepository.ghostclippy.width) {
+            clippy.alive = false;
+            game.bgstory = 9;
+          }
+        }
+      }
+      if (game.gametime >= 255 && game.bgstory === 9) {
+        if (pac.alive === false) {
+          pac.spawn(0-imageRepository.ghostpac.width, 300, 4, -0.3);
+        } else {
+          position = pac.draw();
+          if (position[0] >=  800) {
+            pac.alive = false;
+            game.bgstory = 10;
+          }
+        }
+      }
 
-  };
-
-}
+      if (game.gametime >= 280 && game.bgstory === 10) {
+        if (thisman.alive === false) {
+          thisman.spawn(800, 300, -0.5, -0.3);
+        } else {
+          position = thisman.draw();
+          if (position[0] <= 0-imageRepository.ghostthisman.width) {
+            thisman.alive = false;
+            game.bgstory = 0;
+          }
+        }
+      }
+    };
+  }
 
 /**
  * Obstacle object
@@ -291,7 +405,7 @@ function Obstacle(obstacle) {
   // Sets the obstacle values
   this.spawn = function(x, y, speed) {
     this.x = x;
-    this.y = y;
+    this.y = -100;
     this.speed = speed;
     this.alive = true;
   };
@@ -374,8 +488,8 @@ function Pool(maxSize) {
       starPool[i] = starObstacle;
       plus10pool[i] = new sprite({
         context: game.obstaclesContext,
-        width: 610,
-        height: 35,
+        width: 720,
+        height: 24,
         image: imageRepository.imgplus10,
         numberOfFrames: 10,
         ticksPerFrame: 1
@@ -392,16 +506,16 @@ function Pool(maxSize) {
       imageRepository.imgstarfield.height);
     plus100 = new sprite({
       context: game.obstaclesContext,
-      width: 880,
-      height: 35,
+      width: 1040,
+      height: 24,
       image: imageRepository.imgplus100,
       numberOfFrames: 10,
       ticksPerFrame: 1
     });
     plusheart = new sprite({
       context: game.obstaclesContext,
-      width: 510,
-      height: 35,
+      width: 560,
+      height: 24,
       image: imageRepository.imgplusheart,
       numberOfFrames: 10,
       ticksPerFrame: 1
@@ -722,19 +836,19 @@ function Buddha() {
   this.omt = false;
   this.flameleft = new sprite({
     context: game.buddhaContext,
-    width: 243,
-    height: 45,
+    width: 240,
+    height: 40,
     image: imageRepository.flameleft,
     numberOfFrames: 3,
-    ticksPerFrame: 12
+    ticksPerFrame: 5
   });
   this.flameright = new sprite({
     context: game.buddhaContext,
-    width: 243,
-    height: 45,
+    width: 240,
+    height: 40,
     image: imageRepository.flameright,
     numberOfFrames: 3,
-    ticksPerFrame: 12
+    ticksPerFrame: 5
   });
 
   this.draw = function() {
@@ -746,12 +860,12 @@ function Buddha() {
 
     if (this.fleft) {
       this.flameleft.update();
-      this.flameleft.render(this.x + 168, this.y + 80);
+      this.flameleft.render(this.x + 200, this.y + 80);
       this.omt = true;
       this.start = new Date().getTime();
     } else if (this.fright) {
       this.flameright.update();
-      this.flameright.render(this.x - 55, this.y + 72);
+      this.flameright.render(this.x - 88, this.y + 80);
       this.omt = true;
       this.start = new Date().getTime();
     }
@@ -770,8 +884,8 @@ function Buddha() {
     if (KEY_STATUS.left || KEY_STATUS.right ||
       KEY_STATUS.down || KEY_STATUS.up) {
       // Erase it's current image
-      this.flameleft.clear(this.x + 168, this.y + 80);
-      this.flameright.clear(this.x - 55, this.y + 72);
+      this.flameleft.clear(this.x + 200, this.y + 80);
+      this.flameright.clear(this.x - 88, this.y + 80);
       this.context.clearRect(this.x, this.y, this.width, this.height);
 
       // Update x and y according to the direction to move and
@@ -781,26 +895,26 @@ function Buddha() {
         this.fleft = true;
         this.fright = false;
         this.x -= this.speed;
-        if (this.x <= 0) // Keep player within the screen
-          this.x = 0;
+        if (this.x <= 8) // Keep player within the screen
+          this.x = 8;
 
       } else if (KEY_STATUS.right) {
         this.fleft = false;
         this.fright = true;
         this.x += this.speed;
-        if (this.x >= this.canvasWidth - this.width)
-          this.x = this.canvasWidth - this.width;
+        if (this.x >= this.canvasWidth - this.width-8)
+          this.x = this.canvasWidth - this.width-8;
 
       }
       if (KEY_STATUS.up) {
         this.y -= this.speed;
-        if (this.y <= this.canvasHeight / 3)
-          this.y = this.canvasHeight / 3;
+        if (this.y <= 40)
+          this.y = 40;
 
       } else if (KEY_STATUS.down) {
         this.y += this.speed;
-        if (this.y >= this.canvasHeight - this.height)
-          this.y = this.canvasHeight - this.height;
+        if (this.y >= this.canvasHeight - this.height-8)
+          this.y = this.canvasHeight - this.height-8;
 
       }
 
@@ -813,8 +927,8 @@ function Buddha() {
       var diff = (end - this.start);
       if (diff >= 50) {
         this.omt = false;
-        this.flameleft.clear(this.x + 168, this.y + 80);
-        this.flameright.clear(this.x - 55, this.y + 72);
+        this.flameleft.clear(this.x + 200, this.y + 80);
+        this.flameright.clear(this.x - 88, this.y + 80);
         if (game.hitface === true) {
           this.context.drawImage(imageRepository.buddhaO , this.x, this.y);
         } else {
@@ -865,6 +979,7 @@ function Game() {
       // Initialize objects to contain their context and canvas
       // information
 
+
       Background.prototype.context = this.backgroundContext;
       Background.prototype.canvasWidth = this.backgroundCanvas.width;
       Background.prototype.canvasHeight = this.backgroundCanvas.height;
@@ -881,9 +996,13 @@ function Game() {
       Obstacle.prototype.canvasWidth = this.obstaclesCanvas.width;
       Obstacle.prototype.canvasHeight = this.obstaclesCanvas.height;
 
+
+
+
       // Initialize the background object
       this.background = new Background();
       this.background.init(0, 0); // Set draw point to 0,0
+
 
       // Initialize the enterprise
       this.backgroundPool = new BGPool();
@@ -898,7 +1017,7 @@ function Game() {
 
       this.buddhaStartX = this.buddhaCanvas.width / 2 - imageRepository.buddha
         .width / 2;
-      this.buddhaStartY = this.buddhaCanvas.height / 3;
+      this.buddhaStartY = 272;
       this.buddhaO.init(this.buddhaStartX, this.buddhaStartY,
         imageRepository.buddha.width, imageRepository.buddha.height);
 
@@ -925,7 +1044,7 @@ function Game() {
 
   // Start the animation loop
   this.start = function() {
-    this.buddhaO.draw();
+   this.buddhaO.draw();
     animate();
   };
 
