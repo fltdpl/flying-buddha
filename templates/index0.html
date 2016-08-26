@@ -10,7 +10,7 @@
   <!-- Bootstrap -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
   <!-- Main CSS -->
-  <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/main0.css') }}" rel="stylesheet">
 
 
 </head>
@@ -21,9 +21,9 @@
 
     <div class="content-main">
 
-      <div id="loading" >
+      <div id="loading">
         <span>
-          <img src="{{ url_for('static', filename='img/laden.gif') }}" alt="loading.">
+          <img src="{{ url_for('static', filename='img0/laden.gif') }}" alt="loading.">
         </span>
       </div>
 
@@ -40,64 +40,64 @@
           </canvas>
 
           <div id="gameheader">
-            <div id="lifeblock" class="lifeblock">
-
+            <div id="scoreblock" class="scoreblock">
+              <div id="timescoreclass" class="timescore">Zeit:  <span id="timescore"></span></div>
+              <div id="scoreclass" class="score">Score: <span   id="score"></span></div>
+            </div>
             <div id="statuslife3full" class="statuslife">
-              <img src="{{ url_for('static',  filename='img/3hearts3full.png') }}"  alt="lifes">
+              <img src="{{ url_for('static',  filename='img0/3hearts3full.png') }}"  alt="lifes">
             </div>
             <div id="statuslife2full" class="statuslife">
-              <img src="{{ url_for('static',  filename='img/3hearts2full.png') }}"  alt="lifes">
+              <img src="{{ url_for('static',  filename='img0/3hearts2full.png') }}"  alt="lifes">
             </div>
             <div id="statuslife1full" class="statuslife">
-              <img src="{{ url_for('static',  filename='img/3hearts1full.png') }}"  alt="lifes">
+              <img src="{{ url_for('static',  filename='img0/3hearts1full.png') }}"  alt="lifes">
             </div>
             <div id="statuslife0full" class="statuslife">
-              <img src="{{ url_for('static',  filename='img/3heartsempty.png') }}"  alt="lifes">
+              <img src="{{ url_for('static',  filename='img0/3heartsempty.png') }}"  alt="lifes">
             </div>
-          </div>
-          <div id="gamefooter">
-            <div id="timescoreclass" class="timescore"><span id="timescore"></span></div>
-            <div id="scoreclass" class="score"><font color=#ffc900>+</font><span   id="score"></span></div>
           </div>
 
           <div id="gametitle">
-            <img src="{{ url_for('static',  filename='img/flybu.png') }}" alt="the mighty flying buddha">
+            <img src="{{ url_for('static',  filename='img0/flybu.png') }}" alt="the mighty   flying buddha">
             <p>
-              <span onclick="game.startbutton()" style="position:absolute; margin-left: -64px; bottom:0px; cursor:pointer;">
-                <img src="{{ url_for('static',  filename='img/start.png') }}" alt="start the game">
+              <span onclick="game.startbutton()">
+                <img src="{{ url_for('static',  filename='img0/start.png') }}" alt="start the  game">
+              </span>
+            </p>
+            <p>
+              <span onclick="scrolltohighscore()">
+                <img src="{{ url_for('static',  filename='img0/highscore.png') }}" alt="show   highscore">
               </span>
             </p>
           </div>
 
           <div id="game-over">
-            <img src="{{ url_for('static',  filename='img/gameover.png') }}" alt="game over">
+            <img src="{{ url_for('static',  filename='img0/gameover.png') }}" alt="game over">
             <p>
-              <span onclick="game.startbutton()"
-                    style="position:absolute; margin-left: -120px; bottom:72px;cursor:pointer;">
-                    <img src="{{ url_for('static',  filename='img/restart.png') }}" alt="restart  the game">
+              <span onclick="game.startbutton()">
+                <img src="{{ url_for('static',  filename='img0/restart.png') }}" alt="restart  the game">
               </span>
             </p>
             <p>
-              <span onclick="scrolltohighscore()"
-                    style="position:absolute; margin-left: -112px; bottom:0px;cursor:pointer;">
-                    <img src="{{ url_for('static',  filename='img/highscore.png') }}" alt="show highscore">
+              <span onclick="scrolltohighscore()">
+                <img src="{{ url_for('static',  filename='img0/highscore.png') }}" alt="show   highscore">
               </span>
             </p>
           </div>
 
         </div>
-        </div>
-</div>
+
 
 
         <div id="highscore">
-            <h2>hall oF Fame</h2>
+            <h2>Highscore</h2>
 
-            <table class="table highscore">
+            <table class="table table-striped">
               <thead>
                 <tr>
-                  <th>SCORE</th>
-                  <th>NAME</th>
+                  <th>Points</th>
+                  <th>Name</th>
                 </tr>
               </thead>
               <tbody>
@@ -126,7 +126,7 @@
                       <form id="save-name-form"   accept-charset="UTF-8">
                         <div class=class="form-group">
                           <label class="control-label"  for="inputName" >Your name for the  highscore list:</label>
-                          <input data-bind="value: name"  type="text" class="form-control"  id="inputScore" placeholder="Rosa"  maxlength="20"  style="width: 150px;">
+                          <input data-bind="value: name"  type="text" class="form-control"  id="inputScore" placeholder="Rosa"  maxlength="20" autofocus  style="width: 150px;">
                         </div>
                       </form>
                     </div>
@@ -151,12 +151,11 @@
         <div class="container-footer">
           <p></p>
           <p class="text-muted">
-            last change on this site: 2016/7/21</br>
+            last change on this site: 2015/09/11</br>
             flying buddha source:
             <a href="https://github.com/fltdpl/flying-buddha">https://github.com/fltdpl/flying-buddha</a>
             </br>
-            <a href="{{ url_for('void') }}">old version</a>
-
+            <a href="{{ url_for('index') }}">back to pixels</a>
           </p>
         </div>
       </div>
@@ -183,9 +182,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.3.0/knockout-min.js"></script>
 
   <!-- Game data -->
-  <script charset="UTF-8" src="{{ url_for('static', filename='js/images.js') }}"></script>
-  <script charset="UTF-8" src="{{ url_for('static', filename='js/coll.js') }}"></script>
-  <script charset="UTF-8" src="{{ url_for('static', filename='js/big_flying_buddha.js') }}"></script>
+  <script charset="UTF-8" src="{{ url_for('static', filename='js/images0.js') }}"></script>
+  <script charset="UTF-8" src="{{ url_for('static', filename='js/coll0.js') }}"></script>
+  <script charset="UTF-8" src="{{ url_for('static', filename='js/big_flying_buddha0.js') }}"></script>
 
   <!-- Communication with the backend for highscore -->
   <script type="text/javascript" charset="UTF-8">
@@ -199,9 +198,7 @@
           setTimeout(function() {
             document.getElementById('loading').style.display = 'none';
             document.getElementById('finished-loading').style.display = 'block';
-          //  scrolltotop();
-          //* annoying
-
+            scrolltotop();
           }, 1000);
         }
       }

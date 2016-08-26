@@ -23,6 +23,11 @@ def index():
     return render_template('index.html')
 
 
+@app.route('/void')
+def void():
+    return render_template('index0.html')
+
+
 @app.route('/buddha/api/highscore', methods=['GET'])
 def get_scores():
     scores = highscore.printHighscore()
@@ -39,10 +44,10 @@ def create_score():
     newName = request.json['name']
     newPoints = request.json['points']
     highscore.newHighscore(newName, newPoints)
-    newscore = {
-        'name': newName,
-        'points': newPoints,
-    }
+#    newscore = {
+#        'name': newName,
+#        'points': newPoints,
+#    }
     scores = highscore.printHighscore()
     if len(scores) == 0:
         abort(404)
