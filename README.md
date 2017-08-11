@@ -5,15 +5,9 @@ little browser game
 saves the highscore list in highscore.txt on the server
 
 #### dependencies
-written in python 2.7. needs (pip install):
-+ flask
-+ flask-httpauth
-+ jinja2
-+ werkzeug
-+ argparse
-+ distribute
-+ flup
-+ wsgiref
+written in python 3.5.
+install requirements via
+pip install -r requirements.txt
 
 
 #### to do

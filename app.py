@@ -1,6 +1,4 @@
-#!/usr/bin/env python2.7
-# -*- coding: utf8 -*-
-
+#!/usr/bin/env python3
 from flask import Flask, render_template, jsonify, request
 from flask import abort, make_response
 import highscore
@@ -11,6 +9,7 @@ app.config.update(
   DEBUG=True,
   SECRET_KEY='ub1jvg94jd9ghz490'
 )
+
 
 @app.errorhandler(404)
 def not_found(error):
@@ -39,7 +38,7 @@ def get_scores():
 
 @app.route('/buddha/api/highscore', methods=['POST'])
 def create_score():
-    if not request.json or not 'name' in request.json:
+    if not request.json or 'name' not in request.json:
         abort(400)
     newName = request.json['name']
     newPoints = request.json['points']
