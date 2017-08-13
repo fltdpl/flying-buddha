@@ -96,15 +96,17 @@
             <table class="table highscore">
               <thead>
                 <tr>
-                  <th>SCORE</th>
                   <th>NAME</th>
+                  <th>SCORE</th>
+                  <th>TIME</th>
                 </tr>
               </thead>
               <tbody>
                 <!-- ko foreach: scores -->
                 <tr>
-                  <td><b data-bind="text: points"></b></td>
                   <td><b data-bind="text: name"></b></td>
+                  <td><b data-bind="text: points"></b></td>
+                  <td><b data-bind="text: playtime"></b></td>
                 </tr>
                 <!-- /ko -->
               </tbody>
@@ -190,6 +192,40 @@
   <!-- Communication with the backend for highscore -->
   <script type="text/javascript" charset="UTF-8">
 
+    var SessionID
+
+    function AuthScore() {
+      this.SetSessonID = function() {
+        // Game session ID for authentication of score
+        SessionID = Math.random().toString(36).substr(2, 12);
+        console.log( "ID: " + SessionID);
+      }
+
+      this.sendStartFlag = function() {
+        var self = this;
+        self.scoresURI = './buddha/api/session';
+        console.log(JSON.stringify({SessionID: SessionID}))
+        $.ajax({
+          url: self.scoresURI,
+          type: "POST",
+          dataType : "json",
+          contentType: 'application/json',
+          data: JSON.stringify({SessionID: SessionID, StartTime: 1234}),
+          error: function( xhr, status, errorThrown ) {
+            console.log( "Error: " + errorThrown );
+            console.log( "Status: " + status );
+            console.dir( xhr );
+          }
+        });
+      }
+
+    }
+
+    var authscore = new AuthScore();
+    
+    
+
+
     function Loading() {
       this.loadPic = false;
       this.loadHS = false;
@@ -222,7 +258,8 @@
           for (var i = 0; i < json.scores.length; i++) {
             self.scores.push({
               points: ko.observable(json.scores[i].points),
-              name: ko.observable(json.scores[i].name)
+              name: ko.observable(json.scores[i].name),
+              playtime: ko.observable(json.scores[i].playtime)
             });
           }
           if (json.scores.length >= 10) {
@@ -259,7 +296,8 @@
             for (var i = 0; i < json.scores.length; i++) {
               self.scores.push({
                 points: ko.observable(json.scores[i].points),
-                name: ko.observable(json.scores[i].name)
+                name: ko.observable(json.scores[i].name),
+                playtime: ko.observable(json.scores[i].playtime)
               });
             }
           },
@@ -285,8 +323,10 @@
         } else {
           $('#addScoreModal').modal('hide');
           ScoresViewModel.sendScore({
+            SessionID: SessionID,
             name: self.name(),
-            points: game.score
+            points: game.score,
+            playtime: game.playtime
           });
           self.name("");
         }

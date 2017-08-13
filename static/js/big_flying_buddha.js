@@ -1050,6 +1050,8 @@ function Game() {
 
   // startbutton
   this.startbutton = function() {
+    authscore.SetSessonID();
+    authscore.sendStartFlag();
     window.scrollTo(0, 0);
     document.getElementById('gametitle').style.display = 'none';
     document.getElementById('timescoreclass').style.display = 'block';
