@@ -1,6 +1,15 @@
-def append2list(filename, name, points, time):
+# -*- coding: utf-8 -*-
+
+import os
+
+path = os.getcwd()
+sessionsFile = path + '/sessions.txt'
+highscoreFile = path + '/highscore.txt'
+
+
+def append2list(name, points, time):
     # append the new highscore to the end of the list
-    highscorefile = open(filename, 'a')
+    highscorefile = open(highscoreFile, 'a')
     highscorefile.write(name + ' ' + str(points) + ' ' + str(time) + '\n')
     highscorefile.close()
 
@@ -39,10 +48,8 @@ def refreshfile(filename, datatupel):
 
 
 def printHighscore():
-    scores_file = "highscore.txt"
-
     # reading highscore data
-    points, names, times = separate(scores_file)
+    points, names, times = separate(highscoreFile)
 
     # form a tupel from data
     Data = []
@@ -70,7 +77,6 @@ def printHighscore():
 
 
 def newHighscore(newName, newPoints, newTime):
-    scores_file = "highscore.txt"
     scores_max = 300
 
     # format of time
@@ -78,10 +84,10 @@ def newHighscore(newName, newPoints, newTime):
     newTime = int(timeitem[0]) * 60 + int(timeitem[1])
 
     # appending the new score to the highscore file
-    append2list(scores_file, newName, newPoints, newTime)
+    append2list(newName, newPoints, newTime)
 
     # reading highscore data
-    points, names, times = separate(scores_file)
+    points, names, times = separate(highscoreFile)
 
     # form a tupel from data
     Data = []
@@ -97,18 +103,18 @@ def newHighscore(newName, newPoints, newTime):
         Data = Data[0:scores_max]
 
     # refresh the file
-    refreshfile(scores_file, Data)
+    refreshfile(highscoreFile, Data)
 
 
-def append2sessionlist(filename, sessionid, starttime):
+def append2sessionlist(sessionid, starttime):
     # append the new session to the end of the list
-    sessionfile = open(filename, 'a')
+    sessionfile = open(sessionsFile, 'a')
     sessionfile.write(sessionid + ' ' + str(starttime) + '\n')
     sessionfile.close()
 
 
 def timecheck(session, newTime, timeEnd):
-    sessionfile = open("sessions.txt", "r+")
+    sessionfile = open(sessionsFile, "r+")
     d = sessionfile.readlines()
     sessionfile.seek(0)
 

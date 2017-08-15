@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 from flask import Flask, render_template, jsonify, request
 from flask import abort, make_response
 import highscore
@@ -66,7 +68,7 @@ def create_session():
     newSession = request.json['SessionID']
     t = time.localtime()
     timeStart = t[5] + t[4]*60
-    highscore.append2sessionlist('sessions.txt', newSession, timeStart)
+    highscore.append2sessionlist(newSession, timeStart)
 
     return jsonify({'session': newSession})
 

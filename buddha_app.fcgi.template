@@ -1,13 +1,16 @@
-#!/home/fltdpl/buddha/bin/python3.5
-import os
-import sys
-from flup.server.fcgi import WSGIServer
-from app import app
-
+#!/home/fltdpl/buddha2/bin/python3.5
+# -*- coding: utf8 -*-
 
 RELATIVE_WEB_URL_PATH = '/buddha'
+
+import os
 LOCAL_APPLICATION_PATH = os.path.expanduser('~') + '/buddha/buddha_app'
+
+import sys
 sys.path.insert(0, LOCAL_APPLICATION_PATH)
+
+from flup.server.fcgi import WSGIServer
+from app import app
 
 
 class ScriptNamePatch(object):
