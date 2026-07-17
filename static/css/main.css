@@ -128,9 +128,10 @@ canvas {
 /* Game header */
 #gameheader {
   position: relative;
-  margin-right: 8px;
-  margin-left: 8px;
-  width: 784px;
+  top: 26px;
+  margin-right: 34px;
+  margin-left: 34px;
+  width: 732px;
 }
 
 .statuslife {
@@ -145,10 +146,9 @@ canvas {
 
 #gamefooter {
   position: absolute;
-  top: 524px;
-  margin-right: 8px;
-  margin-left: auto;
-  width: 792px;
+  top: 460px;
+  left: 34px;
+  right: 34px;
 }
 
 .timescore {
@@ -162,8 +162,8 @@ canvas {
   display: none;
 }
 .score {
-  position: absolute;
-  bottom:zero;
+  position: relative;
+  float: left;
   text-align:left;
   color: #421d6f;
   font-family: 'Satzkorn';
@@ -177,16 +177,6 @@ canvas {
   color: #ffc900;
   font-size: 40px;
   margin-left: 12px;
-}
-
-/* dash-ready indicator (dims while on cooldown) */
-.dashready {
-  position: absolute;
-  bottom: 8px;
-  left: 50%;
-  font-size: 40px;
-  cursor: default;
-  transition: opacity 0.1s linear;
 }
 
 /* danger pulse on the last life */

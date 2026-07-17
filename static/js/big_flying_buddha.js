@@ -1398,16 +1398,12 @@ function applyJuice() {
 }
 
 /**
- * Small HUD extras: combo multiplier and dash-ready indicator.
+ * Small HUD extra: combo multiplier next to the score.
  */
 function updateHud() {
   var c = document.getElementById('combo');
   if (c) {
     c.innerHTML = (game.comboMult() > 1) ? ('x' + game.comboMult()) : '';
-  }
-  var d = document.getElementById('dash');
-  if (d) {
-    d.style.opacity = (game.buddhaO.dashCd === 0) ? '1' : '0.25';
   }
 }
 
