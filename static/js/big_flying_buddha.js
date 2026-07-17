@@ -1242,6 +1242,7 @@ function Game() {
       this.invulnUntil = 0;
       this.shakeFrames = 0;
       this.hitstop = 0;
+      this.enteringName = false;
 
       return true;
     } else {
@@ -1287,6 +1288,7 @@ function Game() {
     this.hitstop = 0;
     this.buddhaO.dashCd = 0;
     this.buddhaO.dashTime = 0;
+    this.enteringName = false;
   };
 
   // Game over
@@ -1311,8 +1313,10 @@ function Game() {
       imageRepository.buddhasad.width, imageRepository.buddhasad.height);
     this.buddhaO.drawsimple();
 
-    // Modal for highscore list
+    // Modal for highscore list — block the space-to-restart until the name
+    // prompt is closed (set synchronously here, no race with Bootstrap's show)
     if (ScoresViewModel.highscore < this.score) {
+      this.enteringName = true;
       ScoresViewModel.beginAdd();
     }
 
@@ -1399,10 +1403,8 @@ function animate() {
     if (KEY_STATUS.space) {
       if (game.played === false) {
         game.startbutton();
-      } else {
-        if (!(document.getElementById('addScoreModal').style.display === 'block')) {
-          game.startbutton();
-        }
+      } else if (!game.enteringName) {
+        game.startbutton();
       }
     }
   }

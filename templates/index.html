@@ -342,6 +342,13 @@
     ko.applyBindings(ScoresViewModel, $('#highscore')[0]);
     ko.applyBindings(AddScoreViewModel, $('#addScoreModal')[0]);
 
+    // once the name prompt is closed (submitted or cancelled), allow restart again
+    $('#addScoreModal').on('hidden.bs.modal', function() {
+      if (typeof game !== 'undefined') {
+        game.enteringName = false;
+      }
+    });
+
 
     function scrolltotop() {
       document.getElementById( 'game-box' ).scrollIntoView();
