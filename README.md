@@ -12,3 +12,7 @@ FLASK_DEBUG=1 ~/venvs/flying-buddha/bin/python app.py
 ```
 
 Dann http://127.0.0.1:5000/ öffnen. Die alte Version liegt unter `legacy/`.
+
+## Deployment
+
+Siehe [DEPLOY.md](DEPLOY.md).

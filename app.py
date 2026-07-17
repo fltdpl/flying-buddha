@@ -64,5 +64,21 @@ def create_session():
     return jsonify({'session': newSession})
 
 
+# Serve the app under a URL prefix (e.g. /flying-buddha) when URL_PREFIX is set.
+# Local development leaves it unset, so the app stays at /.
+url_prefix = os.environ.get('URL_PREFIX', '').rstrip('/')
+if url_prefix:
+    inner_wsgi_app = app.wsgi_app
+
+    def prefixed_wsgi_app(environ, start_response):
+        environ['SCRIPT_NAME'] = url_prefix
+        path = environ.get('PATH_INFO', '')
+        if path.startswith(url_prefix):
+            environ['PATH_INFO'] = path[len(url_prefix):]
+        return inner_wsgi_app(environ, start_response)
+
+    app.wsgi_app = prefixed_wsgi_app
+
+
 if __name__ == '__main__':
     app.run()
