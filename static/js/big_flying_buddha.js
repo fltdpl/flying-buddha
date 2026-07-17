@@ -6,7 +6,7 @@ var DIFFICULTY_SCALE = 1.6;   // compress the difficulty curve -> shorter, punch
 var DASH_FRAMES = 8;          // how long a dash lasts (frames)
 var DASH_SPEED = 22;          // px per frame during a dash
 var DASH_COOLDOWN = 55;       // frames until the dash is ready again (~0.9s)
-var INVULN_MS = 500;          // i-frames after a dash / grace after a hit
+var INVULN_MS = 500;          // brief grace after a hit (prevents instant multi-death)
 var GHOST_WARN_FRAMES = 30;   // ~0.5s danger warning before a chaser appears
 var GHOST_SPEED = 1.7;        // chaser speed (below Buddha's 5 -> escapable)
 var GHOST_LIFETIME = 9;       // seconds a chaser hunts before giving up (relief)
@@ -975,7 +975,7 @@ function Pool(maxSize) {
     } else if (chaser.alive) {
       if (chaser.handleCollisions()) {
         chaser.reset();
-        game.hit();
+        game.hit(true); // ghosts hurt even mid-dash (i-frames don't protect)
       } else {
         chaser.update();
         if (!chaser.alive) {
@@ -1056,7 +1056,7 @@ function Buddha() {
       this.dashDir = KEY_STATUS.left ? -1 : (KEY_STATUS.right ? 1 : this.lastDir);
       this.dashTime = DASH_FRAMES;
       this.dashCd = DASH_COOLDOWN;
-      game.invulnUntil = (new Date().getTime()) + INVULN_MS; // i-frames while rolling
+      // no i-frames: dashing into a stone or ghost still costs a life
     }
     if (this.dashTime > 0) {
       // clear a wide band so the trailing afterimages don't smear
@@ -1340,8 +1340,8 @@ function Game() {
 
   // shared damage entry for stones and ghosts; respects i-frames.
   // returns true when damage was actually taken.
-  this.hit = function() {
-    if (this.isInvuln()) {
+  this.hit = function(ignoreInvuln) {
+    if (!ignoreInvuln && this.isInvuln()) {
       return false;
     }
     this.combo = 0;
