@@ -138,15 +138,19 @@ function Background() {
   this.draw = function() {
     this.context.clearRect(0,0,800,600);
     this.context.drawImage(imageRepository.background_static,0,0);
-    // Pan background
-    this.y += this.speed;
+    // Pan background — speeds up with difficulty so the world visibly accelerates
+    var panSpeed = this.speed;
+    if (game.ingame) {
+      panSpeed += Math.min(game.gametime * DIFFICULTY_SCALE / 60, 5);
+    }
+    this.y += panSpeed;
     this.context.drawImage(imageRepository.background, this.x, this.y);
 
     // Draw another image at the top edge of the first image
     this.context.drawImage(imageRepository.background, this.x, this.y - this.canvasHeight);
-    // If the image scrolled off the screen, reset
+    // If the image scrolled off the screen, wrap seamlessly
     if (this.y >= this.canvasHeight)
-      this.y = 0;
+      this.y -= this.canvasHeight;
   };
 }
 
@@ -489,6 +493,8 @@ function ChaserGhost() {
   this.height = 0;
   this.x = 0;
   this.y = 0;
+  this.vx = 0; // current movement direction (kept when flying off after the hunt)
+  this.vy = 0;
   this.entryX = 0;
   this.entryY = 0;
   var pool = null;
@@ -535,6 +541,8 @@ function ChaserGhost() {
   this.spawn = function() {
     this.x = this.entryX;
     this.y = this.entryY;
+    this.vx = 0;
+    this.vy = 0;
     this.hunt = Math.round(GHOST_LIFETIME * 60);
     this.warning = false;
     this.alive = true;
@@ -546,20 +554,28 @@ function ChaserGhost() {
   };
 
   this.update = function() {
-    // steer toward the Buddha
-    var bx = game.buddhaO.x + game.buddhaO.width / 2;
-    var by = game.buddhaO.y + game.buddhaO.height / 2;
-    var cx = this.x + this.width / 2;
-    var cy = this.y + this.height / 2;
-    var dx = bx - cx;
-    var dy = by - cy;
-    var dist = Math.sqrt(dx * dx + dy * dy) || 1;
-    this.x += (dx / dist) * GHOST_SPEED;
-    this.y += (dy / dist) * GHOST_SPEED;
+    if (this.hunt > 0) {
+      // still hunting: steer toward the Buddha and remember the direction
+      var bx = game.buddhaO.x + game.buddhaO.width / 2;
+      var by = game.buddhaO.y + game.buddhaO.height / 2;
+      var cx = this.x + this.width / 2;
+      var cy = this.y + this.height / 2;
+      var dx = bx - cx;
+      var dy = by - cy;
+      var dist = Math.sqrt(dx * dx + dy * dy) || 1;
+      this.vx = (dx / dist) * GHOST_SPEED;
+      this.vy = (dy / dist) * GHOST_SPEED;
+      this.hunt--;
+    }
+    // move (hunting updates vx/vy every frame; afterwards it keeps the last one
+    // and just flies off the screen in that direction)
+    this.x += this.vx;
+    this.y += this.vy;
     game.obstaclesContext.drawImage(this.image, this.x, this.y);
-    this.hunt--;
-    if (this.hunt <= 0) {
-      this.alive = false;
+    if (this.hunt <= 0 &&
+        (this.x + this.width < 0 || this.x > 800 ||
+         this.y + this.height < 0 || this.y > 600)) {
+      this.alive = false; // gone once it has fully left the screen
     }
   };
 
@@ -1043,12 +1059,25 @@ function Buddha() {
       game.invulnUntil = (new Date().getTime()) + INVULN_MS; // i-frames while rolling
     }
     if (this.dashTime > 0) {
-      this.context.clearRect(this.x, this.y, this.width, this.height);
+      // clear a wide band so the trailing afterimages don't smear
+      var band = DASH_SPEED * 5;
+      this.context.clearRect(this.x - band, this.y - 2,
+        this.width + band * 2, this.height + 4);
       this.x += this.dashDir * DASH_SPEED;
       if (this.x <= 8) this.x = 8;
       if (this.x >= this.canvasWidth - this.width - 8)
         this.x = this.canvasWidth - this.width - 8;
       this.dashTime--;
+      if (this.dashTime > 0) {
+        // fading afterimages behind the dash direction (last frame stays clean)
+        var dimg = (game.hitface) ? imageRepository.buddhaO : imageRepository.buddha;
+        this.context.save();
+        for (var t = 3; t >= 1; t--) {
+          this.context.globalAlpha = 0.10 * t;
+          this.context.drawImage(dimg, this.x - this.dashDir * (t * 16), this.y);
+        }
+        this.context.restore();
+      }
       this.draw();
     }
 
@@ -1394,7 +1423,14 @@ function applyJuice() {
       box.style.transform = '';
     }
   }
-  box.className = (game.life === 1) ? 'game-box lastlife' : 'game-box';
+  // danger pulse (last life) takes priority over the combo glow
+  if (game.life === 1) {
+    box.className = 'game-box lastlife';
+  } else if (game.comboMult() >= 3) {
+    box.className = 'game-box combohot';
+  } else {
+    box.className = 'game-box';
+  }
 }
 
 /**

@@ -12,5 +12,7 @@ pip-delete-this-directory.txt
 
 buddha.db
 .claude/
+venv/
+.venv/
 .htmlhintrc
 notizen
