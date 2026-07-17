@@ -4,13 +4,14 @@
 from flask import Flask, render_template, jsonify, request
 from flask import abort, make_response
 import highscore
+import os
 import time
 
 
 app = Flask(__name__)
 app.config.update(
-  DEBUG=True,
-  SECRET_KEY='ub1jvg94jd9ghz490'
+  DEBUG=os.environ.get('FLASK_DEBUG') == '1',
+  SECRET_KEY=os.environ.get('SECRET_KEY', 'dev-only-not-secret')
 )
 
 
@@ -25,28 +26,21 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/void')
-def void():
-    return render_template('index0.html')
-
-
 @app.route('/buddha/api/highscore', methods=['GET'])
 def get_scores():
-    scores = highscore.printHighscore()
-    if len(scores) == 0:
-        abort(404)
-    else:
-        return jsonify({'scores': scores})
+    return jsonify({'scores': highscore.printHighscore()})
 
 
 @app.route('/buddha/api/highscore', methods=['POST'])
 def create_score():
-    if not request.json or 'name' not in request.json:
+    data = request.get_json(silent=True) or {}
+    required = ('SessionID', 'name', 'points', 'playtime')
+    if not all(key in data for key in required):
         abort(400)
-    session = request.json['SessionID']
-    newName = request.json['name']
-    newPoints = request.json['points']
-    newTime = request.json['playtime']
+    session = data['SessionID']
+    newName = data['name']
+    newPoints = data['points']
+    newTime = data['playtime']
 
     t = time.localtime()
     timeEnd = t[5] + t[4]*60
@@ -54,18 +48,15 @@ def create_score():
     if timediff <= 60:
         highscore.newHighscore(newName, newPoints, newTime)
 
-    scores = highscore.printHighscore()
-    if len(scores) == 0:
-        abort(404)
-    else:
-        return jsonify({'scores': scores})
+    return jsonify({'scores': highscore.printHighscore()})
 
 
 @app.route('/buddha/api/session', methods=['POST'])
 def create_session():
-    if not request.json or 'SessionID' not in request.json:
+    data = request.get_json(silent=True) or {}
+    if 'SessionID' not in data:
         abort(400)
-    newSession = request.json['SessionID']
+    newSession = data['SessionID']
     t = time.localtime()
     timeStart = t[5] + t[4]*60
     highscore.append2sessionlist(newSession, timeStart)

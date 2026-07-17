@@ -1,18 +1,14 @@
-### flying-buddha
+# flying-buddha
 
-little browser game
+Kleines Browser-Game (Canvas/JS) mit Flask-Backend für die Highscore-Liste.
+Scores liegen in `buddha.db` (SQLite, wird beim ersten Start angelegt).
 
-saves the highscore list in highscore.txt on the server
+## Lokal starten
 
-#### dependencies
-written in python 3.5.
-install requirements via
-pip install -r requirements.txt
+```bash
+python3 -m venv ~/venvs/flying-buddha
+~/venvs/flying-buddha/bin/pip install -r requirements.txt
+FLASK_DEBUG=1 ~/venvs/flying-buddha/bin/python app.py
+```
 
-
-#### to do
-+ match website background with game
-+ make it more difficult
-+ sounds
-+ httpauth for highscore
-+ check if highscore.txt exists, if not: create
+Dann http://127.0.0.1:5000/ öffnen. Die alte Version liegt unter `legacy/`.

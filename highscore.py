@@ -1,137 +1,92 @@
 # -*- coding: utf-8 -*-
 
 import os
+import sqlite3
 
-path = os.getcwd()
-sessionsFile = path + '/sessions.txt'
-highscoreFile = path + '/highscore.txt'
+DB_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'buddha.db')
 
-
-def append2list(name, points, time):
-    # append the new highscore to the end of the list
-    highscorefile = open(highscoreFile, 'a')
-    highscorefile.write(name + ' ' + str(points) + ' ' + str(time) + '\n')
-    highscorefile.close()
+MAX_STORED = 300   # keep at most this many scores
+TOP_N = 10         # scores returned to the client
 
 
-def separate(filename):
-    # Function for reading the highscore file and seperate strgs and ints
-    points = []
-    names = []
-    times = []
-    with open(filename) as myfile:
-        for line in myfile:
-            item = line.split(' ')
-            namesvalue = item[0]
-            pointsvalue = int(item[1])
-            timesvalue = int(item[2])
-
-            points.append(pointsvalue)
-            names.append(namesvalue)
-            times.append(timesvalue)
-
-    return points, names, times
+def _connect():
+    conn = sqlite3.connect(DB_FILE)
+    conn.row_factory = sqlite3.Row
+    return conn
 
 
-def deleteContent(fName):
-    # delete the content of a file
-    with open(fName, "w"):
-        pass
+def init_db():
+    # create tables on first use (replaces the old highscore.txt/sessions.txt)
+    with _connect() as conn:
+        conn.execute(
+            'CREATE TABLE IF NOT EXISTS highscore ('
+            ' id INTEGER PRIMARY KEY AUTOINCREMENT,'
+            ' name TEXT NOT NULL,'
+            ' points INTEGER NOT NULL,'
+            ' playtime INTEGER NOT NULL)'  # seconds
+        )
+        conn.execute(
+            'CREATE TABLE IF NOT EXISTS sessions ('
+            ' sessionid TEXT PRIMARY KEY,'
+            ' starttime INTEGER NOT NULL)'  # minute-of-hour in seconds
+        )
 
 
-def refreshfile(filename, datatupel):
-    # refresh the data in the highscore file
-    deleteContent(filename)
-    highscorefile = open(filename, 'a')
-    highscorefile.write('\n'.join('%s %s %s' % x for x in datatupel) + '\n')
-    highscorefile.close()
+def _parse_playtime(playtime):
+    # client sends "MM:SS"; store as whole seconds
+    minutes, seconds = playtime.split(':')
+    return int(minutes) * 60 + int(seconds)
 
 
 def printHighscore():
-    # reading highscore data
-    points, names, times = separate(highscoreFile)
-
-    # form a tupel from data
-    Data = []
-    for a in range(len(points)):
-        tmp = [(names[a], points[a], times[a])]
-        Data.extend(tmp)
-
-    # sort data by points, begin with the highest
-    Data = sorted(Data, key=lambda Data: Data[1], reverse=True)
-
-    # limit the data for printing
-    if len(Data) >= (11):
-        Data = Data[0:10]
-
-    # building some json
-    JData = []
-    for a in range(len(Data)):
-        tmp = Data[a]
-        nme = tmp[0]
-        pnt = tmp[1]
-        tme = tmp[2]
-        JData.append({'name': nme, 'points': pnt, 'playtime': tme})
-
-    return(JData)
+    # top scores, highest first, as a list of dicts for jsonify
+    with _connect() as conn:
+        rows = conn.execute(
+            'SELECT name, points, playtime FROM highscore'
+            ' ORDER BY points DESC LIMIT ?', (TOP_N,)
+        ).fetchall()
+    return [{'name': r['name'], 'points': r['points'],
+             'playtime': r['playtime']} for r in rows]
 
 
 def newHighscore(newName, newPoints, newTime):
-    scores_max = 300
-
-    # format of time
-    timeitem = newTime.split(':')
-    newTime = int(timeitem[0]) * 60 + int(timeitem[1])
-
-    # appending the new score to the highscore file
-    append2list(newName, newPoints, newTime)
-
-    # reading highscore data
-    points, names, times = separate(highscoreFile)
-
-    # form a tupel from data
-    Data = []
-    for a in range(len(points)):
-        tmp = [(names[a], points[a], times[a])]
-        Data.extend(tmp)
-
-    # sort data by points, begin with the highest
-    Data = sorted(Data, key=lambda Data: Data[1], reverse=True)
-
-    # limit the data to scores_max
-    if len(Data) >= (scores_max + 1):
-        Data = Data[0:scores_max]
-
-    # refresh the file
-    refreshfile(highscoreFile, Data)
+    with _connect() as conn:
+        conn.execute(
+            'INSERT INTO highscore (name, points, playtime) VALUES (?, ?, ?)',
+            (newName, int(newPoints), _parse_playtime(newTime))
+        )
+        # trim to the best MAX_STORED entries
+        conn.execute(
+            'DELETE FROM highscore WHERE id NOT IN ('
+            ' SELECT id FROM highscore ORDER BY points DESC LIMIT ?)',
+            (MAX_STORED,)
+        )
 
 
 def append2sessionlist(sessionid, starttime):
-    # append the new session to the end of the list
-    sessionfile = open(sessionsFile, 'a')
-    sessionfile.write(sessionid + ' ' + str(starttime) + '\n')
-    sessionfile.close()
+    with _connect() as conn:
+        conn.execute(
+            'INSERT OR REPLACE INTO sessions (sessionid, starttime)'
+            ' VALUES (?, ?)', (sessionid, int(starttime))
+        )
 
 
 def timecheck(session, newTime, timeEnd):
-    sessionfile = open(sessionsFile, "r+")
-    d = sessionfile.readlines()
-    sessionfile.seek(0)
+    # compare server-measured play duration with the client's claim;
+    # returns the absolute difference in seconds. Unknown session -> rejected.
+    with _connect() as conn:
+        row = conn.execute(
+            'SELECT starttime FROM sessions WHERE sessionid = ?', (session,)
+        ).fetchone()
+        if row is None:
+            return 10 ** 9  # no matching session -> never accept the score
+        # one-shot: consume the session so it can't be replayed
+        conn.execute('DELETE FROM sessions WHERE sessionid = ?', (session,))
 
-    # deleting old stuff
-    if len(d) > 40:
-        d = d[int(round(len(d)/2)):len(d)]
+    clientTime = _parse_playtime(newTime)
+    serverTime = int(timeEnd) - int(row['starttime'])
+    return abs(serverTime - clientTime)
 
-    for line in d:
-        item = line.split(' ')
-        if item[0] == session:
-            timeitem = newTime.split(':')
-            clientTime = int(timeitem[0]) * 60 + int(timeitem[1])
-            serverTime = int(timeEnd) - int(item[1])
-            diff = abs(serverTime - clientTime)
-            return diff
-        else:
-            sessionfile.write(line)
 
-    sessionfile.truncate()
-    sessionfile.close()
+# make sure the database exists as soon as the module is imported
+init_db()

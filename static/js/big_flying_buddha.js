@@ -1,6 +1,18 @@
 //Initialize the Game and starts it.
 var game = new Game();
 
+// --- Gameplay tuning (new features) ---
+var DIFFICULTY_SCALE = 1.6;   // compress the difficulty curve -> shorter, punchier runs
+var DASH_FRAMES = 8;          // how long a dash lasts (frames)
+var DASH_SPEED = 22;          // px per frame during a dash
+var DASH_COOLDOWN = 55;       // frames until the dash is ready again (~0.9s)
+var INVULN_MS = 500;          // i-frames after a dash / grace after a hit
+var GHOST_WARN_FRAMES = 30;   // ~0.5s danger warning before a chaser appears
+var GHOST_SPEED = 1.7;        // chaser speed (below Buddha's 5 -> escapable)
+var GHOST_LIFETIME = 9;       // seconds a chaser hunts before giving up (relief)
+var COMBO_PER_STEP = 5;       // collected stars per +1 multiplier
+var COMBO_MAX = 5;            // highest reachable multiplier
+
 function init() {
   if (game.init())
     game.start();
@@ -403,15 +415,17 @@ function Obstacle(obstacle) {
   this.speed = 2;
 
   // Sets the obstacle values
-  this.spawn = function(x, y, speed) {
+  this.spawn = function(x, y, speed, speedx) {
     this.x = x;
     this.y = -100;
     this.speed = speed;
+    this.speedx = speedx || 0; // sideways drift (0 = classic straight fall)
     this.alive = true;
   };
 
   this.draw = function() {
     this.y += this.speed;
+    this.x += this.speedx || 0;
 
     if (this.y >= this.canvasHeight) {
       this.y = 0;
@@ -460,6 +474,120 @@ Obstacle.prototype = new Drawable();
 
 
 /**
+ * Chasing ghost. Re-uses the existing ghost sprites, but instead of drifting
+ * across the background it hunts the Buddha. Announced by a warning flash
+ * (~0.5s) and gives up after GHOST_LIFETIME seconds (breather / rhythm).
+ * Draws on the obstacles canvas so it collides like a stone.
+ */
+function ChaserGhost() {
+  this.alive = false;
+  this.warning = false;
+  this.warnCount = 0;
+  this.hunt = 0; // frames left to hunt
+  this.image = null;
+  this.width = 0;
+  this.height = 0;
+  this.x = 0;
+  this.y = 0;
+  this.entryX = 0;
+  this.entryY = 0;
+  var pool = null;
+
+  this.startWarning = function() {
+    if (pool === null) {
+      pool = [imageRepository.ghostskull, imageRepository.ghostpac,
+        imageRepository.ghostthisman, imageRepository.ghostlol,
+        imageRepository.ghostclippy, imageRepository.ghoststier];
+    }
+    this.image = pool[getRandomInt(0, pool.length - 1)];
+    this.width = this.image.width;
+    this.height = this.image.height;
+    // enter from a random side edge, roughly at Buddha's height
+    this.entryX = (Math.random() < 0.5) ? 0 - this.width : 800;
+    this.entryY = getRandomInt(60, 460);
+    this.warning = true;
+    this.warnCount = GHOST_WARN_FRAMES;
+    this.alive = false;
+  };
+
+  this.warnX = function() {
+    return this.entryX < 0 ? 4 : 800 - 40;
+  };
+
+  this.drawWarning = function() {
+    var ctx = game.obstaclesContext;
+    var wx = this.warnX();
+    ctx.clearRect(wx - 2, this.entryY - 2, 48, 52);
+    if (Math.floor(this.warnCount / 5) % 2 === 0) {
+      ctx.save();
+      ctx.fillStyle = 'rgba(255,40,40,0.9)';
+      ctx.font = 'bold 44px sans-serif';
+      ctx.fillText('!', wx + 8, this.entryY + 40);
+      ctx.restore();
+    }
+    this.warnCount--;
+    if (this.warnCount <= 0) {
+      ctx.clearRect(wx - 2, this.entryY - 2, 48, 52);
+      this.spawn();
+    }
+  };
+
+  this.spawn = function() {
+    this.x = this.entryX;
+    this.y = this.entryY;
+    this.hunt = Math.round(GHOST_LIFETIME * 60);
+    this.warning = false;
+    this.alive = true;
+  };
+
+  this.clearArea = function() {
+    game.obstaclesContext.clearRect(
+      this.x - 1, this.y - 1, this.width + 2, this.height + 2);
+  };
+
+  this.update = function() {
+    // steer toward the Buddha
+    var bx = game.buddhaO.x + game.buddhaO.width / 2;
+    var by = game.buddhaO.y + game.buddhaO.height / 2;
+    var cx = this.x + this.width / 2;
+    var cy = this.y + this.height / 2;
+    var dx = bx - cx;
+    var dy = by - cy;
+    var dist = Math.sqrt(dx * dx + dy * dy) || 1;
+    this.x += (dx / dist) * GHOST_SPEED;
+    this.y += (dy / dist) * GHOST_SPEED;
+    game.obstaclesContext.drawImage(this.image, this.x, this.y);
+    this.hunt--;
+    if (this.hunt <= 0) {
+      this.alive = false;
+    }
+  };
+
+  this.handleCollisions = function() {
+    var bwidth = imageRepository.buddha.width;
+    var fit = 40;
+    var bx = game.buddhaO.x + bwidth / 2;
+    var by = game.buddhaO.y + imageRepository.buddha.height / 2;
+    var ox = this.x + this.width / 2;
+    var oy = this.y + this.height / 2;
+    return collisionTest(ox, oy, this.width - fit, bx, by, bwidth - fit);
+  };
+
+  this.reset = function() {
+    if (this.alive || this.warning) {
+      this.clearArea();
+      game.obstaclesContext.clearRect(
+        this.warnX() - 2, this.entryY - 2, 48, 52);
+    }
+    this.alive = false;
+    this.warning = false;
+    this.warnCount = 0;
+    this.hunt = 0;
+  };
+}
+
+
+/**
  * Pool holds obstacles to be managed to prevent garbage collection.
  */
 function Pool(maxSize) {
@@ -472,11 +600,15 @@ function Pool(maxSize) {
   var plusheart;
   var heartObstacle;
   var bigstarObstacle;
+  var chaser = new ChaserGhost();
+  var ghostNextTime;
   this.counter = 0;
   this.starfieldtime;
 
   // populate the pool array with obstacles
   this.init = function() {
+    chaser.reset();
+    ghostNextTime = 25; // first chaser after ~25s, then re-scheduled with gaps
     for (var i = 0; i < size; i++) {
       var stonepic = stonePic();
       var starpic = starPic();
@@ -526,24 +658,24 @@ function Pool(maxSize) {
   // Initialize new Item
   this.get = function(speed) {
     var border = [];
-    var timediv = game.gametime;
+    var timediv = game.gametime * DIFFICULTY_SCALE;
     var randnumber = Math.random();
     // border 0<= randnumber < 1: [stones, stars, bigheart, bigstar, starfield]
     //border = [0, 0, 0, 0, 1.3];
     if (timediv <= 60) {
       border = [0.40, 1, 1.1, 1.2, 1.3];
-    } else if (timediv > 60 && timediv <= 180) {
+    } else if (timediv <= 180) {
       border = [0.40, 0.96, 0.98, 1, 1.1];
-    } else if (timediv > 180 && timediv <= 240) {
+    } else if (timediv <= 240) {
       border = [0.40, 0.96, 0.98, 1, 1.1];
-    } else if (timediv > 240 && timediv <= 300) {
+    } else if (timediv <= 300) {
       border = [0.45, 0.96, 0.98, 1, 1.1];
-    } else if (timediv > 300 && timediv <= 330) {
+    } else if (timediv <= 330) {
       border = [0.50, 0.93, 0.95, 0.99, 1];
-    } else if (timediv > 330 && timediv <= 360) {
+    } else if (timediv <= 360) {
       border = [0.55, 0.93, 0.95, 0.99, 1];
-    } else if (timediv > 330 && timediv <= 360) {
-      border = [0.60, 0.90, 0.92, 0.99, 1];
+    } else if (timediv <= 420) {
+      border = [0.60, 0.90, 0.92, 0.99, 1]; // was dead code before the bugfix
     } else {
       border = [0.65, 0.90, 0.92, 0.99, 1];
     }
@@ -555,7 +687,12 @@ function Pool(maxSize) {
       // stone
       if (!stonePool[size - 1].alive) {
         x = getRandomInt(0, 800 - stonePool[size - 1].width);
-        stonePool[size - 1].spawn(x, 0, speed);
+        // after a while some stones drift sideways across the screen
+        var drift = 0;
+        if (timediv > 90 && Math.random() < 0.35) {
+          drift = (1 + Math.random() * 1.5) * (x > 400 ? -1 : 1);
+        }
+        stonePool[size - 1].spawn(x, 0, speed, drift);
         stonePool.unshift(stonePool.pop());
       }
     } else if (randnumber > border[0] && randnumber <= border[1]) {
@@ -622,12 +759,15 @@ function Pool(maxSize) {
     if (plusheart.alive) {
       plusheart.clear(plusheart.x, plusheart.y);
     }
+    if (chaser.alive) {
+      chaser.clearArea();
+    }
   };
 
   // Draws any in use obstacle.
   this.animate = function() {
     this.counter++;
-    var timediv = game.gametime;
+    var timediv = game.gametime * DIFFICULTY_SCALE;
     var xRand = 0;
     var yRand = 0;
     var minspeed;
@@ -672,9 +812,10 @@ function Pool(maxSize) {
       speedrate = 3;
       Rate = 35;
     } else {
-      minspeed = 2;
+      // no plateau any more: keep ramping so skilled runs still end
+      minspeed = 2 + Math.min((timediv - 300) / 150, 1.8);
       speedrate = 3;
-      Rate = 30;
+      Rate = Math.max(18, 30 - Math.floor((timediv - 300) / 30) * 2);
     }
 
     if (game.starfield === true) {
@@ -692,20 +833,8 @@ function Pool(maxSize) {
         if (stonePool[i].handleCollisions()) {
           stonePool[i].clear();
           stonePool.push((stonePool.splice(i, 1))[0]);
-          game.hitface = true;
-          game.hitfacetime = new Date().getTime();
-          if (game.life == 3) {
-            ShowStatusLife(2);
-            game.life = 2;
-          } else if (game.life == 2) {
-            ShowStatusLife(1);
-            game.life = 1;
-          } else if (game.life == 1) {
-            ShowStatusLife(0);
-            game.life = 0;
-            game.gameover = true;
-            break;
-          }
+          game.hit();
+          if (game.gameover) break;
         }
       } else {
         break;
@@ -726,7 +855,8 @@ function Pool(maxSize) {
           starPool.push((starPool.splice(i, 1))[0]);
           plus10pool[size - 1].spawn(xplus10, yplus10);
           plus10pool.unshift(plus10pool.pop());
-          game.score += 10;
+          game.combo += 1;
+          game.score += 10 * game.comboMult();
         }
       } else {
         break;
@@ -782,7 +912,8 @@ function Pool(maxSize) {
           var yplus100 = bigstarObstacle.y;
           plus100.spawn(xplus100, yplus100);
           bigstarObstacle.clear();
-          game.score += 100;
+          game.combo += 1;
+          game.score += 100 * game.comboMult();
         }
     }
     // animation +100
@@ -822,6 +953,24 @@ function Pool(maxSize) {
       this.get(yspeed);
     }
 
+    // --- chasing ghost (rhythm: never during the starfield relief) ---
+    if (chaser.warning) {
+      chaser.drawWarning();
+    } else if (chaser.alive) {
+      if (chaser.handleCollisions()) {
+        chaser.reset();
+        game.hit();
+      } else {
+        chaser.update();
+        if (!chaser.alive) {
+          chaser.clearArea();
+        }
+      }
+    } else if (game.starfield === false && game.gametime >= ghostNextTime) {
+      chaser.startWarning();
+      ghostNextTime = game.gametime + getRandomInt(20, 32); // calm gap before next
+    }
+
   }; // animate
 
 }
@@ -834,6 +983,10 @@ function Pool(maxSize) {
 function Buddha() {
   this.speed = 5;
   this.omt = false;
+  this.dashCd = 0;    // frames until dash ready
+  this.dashTime = 0;  // frames left in the current dash
+  this.dashDir = 1;   // -1 left, 1 right
+  this.lastDir = 1;   // last horizontal facing, used when dashing without steering
   this.flameleft = new sprite({
     context: game.buddhaContext,
     width: 240,
@@ -880,6 +1033,25 @@ function Buddha() {
     this.fleft = false;
     this.fright = false;
 
+    // --- dash / dodge roll (spacebar) ---
+    if (this.dashCd > 0) this.dashCd--;
+    if (KEY_STATUS.space && game.ingame &&
+        this.dashTime === 0 && this.dashCd === 0) {
+      this.dashDir = KEY_STATUS.left ? -1 : (KEY_STATUS.right ? 1 : this.lastDir);
+      this.dashTime = DASH_FRAMES;
+      this.dashCd = DASH_COOLDOWN;
+      game.invulnUntil = (new Date().getTime()) + INVULN_MS; // i-frames while rolling
+    }
+    if (this.dashTime > 0) {
+      this.context.clearRect(this.x, this.y, this.width, this.height);
+      this.x += this.dashDir * DASH_SPEED;
+      if (this.x <= 8) this.x = 8;
+      if (this.x >= this.canvasWidth - this.width - 8)
+        this.x = this.canvasWidth - this.width - 8;
+      this.dashTime--;
+      this.draw();
+    }
+
     // Determine if the action is move action
     if (KEY_STATUS.left || KEY_STATUS.right ||
       KEY_STATUS.down || KEY_STATUS.up) {
@@ -895,6 +1067,7 @@ function Buddha() {
         this.fleft = true;
         this.fright = false;
         this.x -= this.speed;
+        this.lastDir = -1;
         if (this.x <= 8) // Keep player within the screen
           this.x = 8;
 
@@ -902,6 +1075,7 @@ function Buddha() {
         this.fleft = false;
         this.fright = true;
         this.x += this.speed;
+        this.lastDir = 1;
         if (this.x >= this.canvasWidth - this.width-8)
           this.x = this.canvasWidth - this.width-8;
 
@@ -1035,6 +1209,10 @@ function Game() {
       this.starfieldcounter = 0;
       this.starfieldwaitflag = false;
       this.hitfacetime = 0;
+      this.combo = 0;
+      this.invulnUntil = 0;
+      this.shakeFrames = 0;
+      this.hitstop = 0;
 
       return true;
     } else {
@@ -1074,6 +1252,12 @@ function Game() {
     this.starfieldcounter = 0;
     this.starfieldwaitflag = false;
     this.hitfacetime = 0;
+    this.combo = 0;
+    this.invulnUntil = 0;
+    this.shakeFrames = 0;
+    this.hitstop = 0;
+    this.buddhaO.dashCd = 0;
+    this.buddhaO.dashTime = 0;
   };
 
   // Game over
@@ -1082,6 +1266,11 @@ function Game() {
     this.ingame = false;
     this.gameover = false;
     this.played = true;
+    this.shakeFrames = 0;
+    this.hitstop = 0;
+    var box = document.getElementById('game-box');
+    box.style.transform = '';
+    box.className = 'game-box';
 
     this.backgroundContext.clearRect(
       0, 0, this.backgroundCanvas.width, this.backgroundCanvas.height);
@@ -1110,6 +1299,42 @@ function Game() {
     }
   };
 
+  // combo multiplier from consecutive star pickups (x1..xCOMBO_MAX)
+  this.comboMult = function() {
+    return Math.min(1 + Math.floor(this.combo / COMBO_PER_STEP), COMBO_MAX);
+  };
+
+  // i-frames: true while dashing or during the grace period after a hit
+  this.isInvuln = function() {
+    return (new Date().getTime()) < this.invulnUntil;
+  };
+
+  // shared damage entry for stones and ghosts; respects i-frames.
+  // returns true when damage was actually taken.
+  this.hit = function() {
+    if (this.isInvuln()) {
+      return false;
+    }
+    this.combo = 0;
+    this.invulnUntil = (new Date().getTime()) + INVULN_MS; // brief grace after a hit
+    this.shakeFrames = 10; // screenshake
+    this.hitstop = 6;      // short freeze for impact
+    this.hitface = true;
+    this.hitfacetime = new Date().getTime();
+    if (this.life == 3) {
+      ShowStatusLife(2);
+      this.life = 2;
+    } else if (this.life == 2) {
+      ShowStatusLife(1);
+      this.life = 1;
+    } else if (this.life == 1) {
+      ShowStatusLife(0);
+      this.life = 0;
+      this.gameover = true;
+    }
+    return true;
+  };
+
 }
 
 
@@ -1127,9 +1352,15 @@ function animate() {
     game.background.draw();
     game.backgroundPool.animate();
     game.buddhaO.move();
-    game.obstaclePool.clearobstscreen();
-    game.obstaclePool.animate();
+    if (game.hitstop > 0) {
+      game.hitstop--; // freeze the obstacle layer for a few frames on impact
+    } else {
+      game.obstaclePool.clearobstscreen();
+      game.obstaclePool.animate();
+    }
     game.funcscore();
+    applyJuice();
+    updateHud();
     document.getElementById('timescore').innerHTML = game.playtime;
     document.getElementById('score').innerHTML = game.score;
   } else {
@@ -1145,6 +1376,38 @@ function animate() {
         }
       }
     }
+  }
+}
+
+/**
+ * Visual "juice": screenshake on impact and a danger pulse on the last life.
+ */
+function applyJuice() {
+  var box = document.getElementById('game-box');
+  if (game.shakeFrames > 0) {
+    var m = game.shakeFrames;
+    var dx = (Math.random() * 2 - 1) * m;
+    var dy = (Math.random() * 2 - 1) * m;
+    box.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
+    game.shakeFrames--;
+    if (game.shakeFrames <= 0) {
+      box.style.transform = '';
+    }
+  }
+  box.className = (game.life === 1) ? 'game-box lastlife' : 'game-box';
+}
+
+/**
+ * Small HUD extras: combo multiplier and dash-ready indicator.
+ */
+function updateHud() {
+  var c = document.getElementById('combo');
+  if (c) {
+    c.innerHTML = (game.comboMult() > 1) ? ('x' + game.comboMult()) : '';
+  }
+  var d = document.getElementById('dash');
+  if (d) {
+    d.style.opacity = (game.buddhaO.dashCd === 0) ? '1' : '0.25';
   }
 }
 

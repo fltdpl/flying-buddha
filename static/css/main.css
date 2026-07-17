@@ -86,6 +86,17 @@ canvas {
   z-index: 0;
 }
 
+/* decorative hand-drawn outer frame, overlaid on top of the play area */
+.gameframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 800px;
+  height: 600px;
+  pointer-events: none;
+  z-index: 2;
+}
+
 /* Title screen */
 #gametitle {
   position: relative;
@@ -159,6 +170,41 @@ canvas {
   font-size: 64px;
   cursor: default;
   display: none;
+}
+
+/* combo multiplier next to the score */
+.combo {
+  color: #ffc900;
+  font-size: 40px;
+  margin-left: 12px;
+}
+
+/* dash-ready indicator (dims while on cooldown) */
+.dashready {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  font-size: 40px;
+  cursor: default;
+  transition: opacity 0.1s linear;
+}
+
+/* danger pulse on the last life */
+.game-box.lastlife::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 800px;
+  height: 600px;
+  pointer-events: none;
+  z-index: 1;
+  animation: lastlife-pulse 0.7s ease-in-out infinite;
+}
+@keyframes lastlife-pulse {
+  0%   { box-shadow: inset 0 0 0 rgba(255, 0, 0, 0); }
+  50%  { box-shadow: inset 0 0 90px rgba(255, 0, 0, 0.55); }
+  100% { box-shadow: inset 0 0 0 rgba(255, 0, 0, 0); }
 }
 
 

@@ -10,7 +10,7 @@ pip-delete-this-directory.txt
 
 *.log
 
-highscore.txt
-sessions.txt
+buddha.db
+.claude/
 .htmlhintrc
 notizen

@@ -40,6 +40,8 @@
           <canvas id="obstaclesID" width="800" height="600">
           </canvas>
 
+          <img id="gameframe" class="gameframe" src="{{ url_for('static', filename='img/frame.png') }}" alt="">
+
           <div id="gameheader">
             <div id="lifeblock" class="lifeblock">
 
@@ -58,7 +60,8 @@
           </div>
           <div id="gamefooter">
             <div id="timescoreclass" class="timescore"><span id="timescore"></span></div>
-            <div id="scoreclass" class="score"><font color=#ffc900>+</font><span   id="score"></span></div>
+            <div id="scoreclass" class="score"><font color=#ffc900>+</font><span   id="score"></span><span id="combo" class="combo"></span></div>
+            <div id="dash" class="dashready" title="Leertaste: Dash / Ausweichrolle">⚡</div>
           </div>
 
           <div id="gametitle">
@@ -155,9 +158,6 @@
             last change on this site: 2016/7/21</br>
             flying buddha source:
             <a href="https://github.com/fltdpl/flying-buddha">https://github.com/fltdpl/flying-buddha</a>
-            </br>
-            <a href="{{ url_for('void') }}">old version</a>
-
           </p>
         </div>
       </div>
