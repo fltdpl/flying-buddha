@@ -8,7 +8,7 @@
   <title>-_-</title>
 
   <!-- Bootstrap -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+  <link href="{{ url_for('static', filename='vendor/css/bootstrap.min.css') }}" rel="stylesheet">
   <!-- Main CSS -->
   <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
 
@@ -182,9 +182,9 @@
 
 
   <!-- jQuery, Bootstrap and Knockout -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.3.0/knockout-min.js"></script>
+  <script src="{{ url_for('static', filename='vendor/js/jquery.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/js/bootstrap.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/js/knockout-min.js') }}"></script>
 
   <!-- Game data -->
   <script charset="UTF-8" src="{{ url_for('static', filename='js/images.js') }}"></script>
