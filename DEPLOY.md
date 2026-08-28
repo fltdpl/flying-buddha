@@ -1,9 +1,16 @@
 # Deployment (Uberspace 7)
 
-Die App läuft als Daemon (supervisord) hinter gunicorn und wird per Web-Backend
-unter dem Pfad `/flying-buddha` geroutet. `PORT` ist frei wählbar (1024–65535),
-hier `8000`. Der Pfad-Präfix wird über die Env-Variable `URL_PREFIX` gesetzt —
-Flask erzeugt damit alle Asset-/Link-URLs korrekt unter `/flying-buddha`.
+Die App läuft als Daemon (supervisord) hinter gunicorn auf Port `8000` und
+liegt seit 2026-08-28 unter der eigenen Subdomain **`buddha.fltdpl.de`**.
+
+**`URL_PREFIX` wird nicht mehr gesetzt.** Die Middleware in `app.py` bleibt als
+Möglichkeit erhalten, ist aber unbenutzt: unter einer eigenen Domain beginnt
+jede Route bei `/`, und ein gesetzter Präfix ließe sämtliche erzeugten URLs ins
+Leere zeigen.
+
+**Ein Port pro Backend.** Diese App hält `8000`, das Schwester-Projekt `wetter`
+läuft auf `8001`. Zwei Programme auf einem Port heißt: das zweite stirbt und
+supervisord startet es endlos neu. Vorher `uberspace web backend list`.
 
 ## Einmalig einrichten
 
@@ -16,6 +23,7 @@ cd ~ && git clone https://github.com/fltdpl/flying-buddha.git
 cd ~/flying-buddha
 
 # venv + Abhängigkeiten (gunicorn nur auf dem Server nötig)
+ls /usr/bin/python3.1*        # vorhandene Interpreter zeigen
 python3.11 -m venv ~/venvs/flying-buddha
 ~/venvs/flying-buddha/bin/pip install -r requirements.txt gunicorn
 ```
@@ -26,24 +34,61 @@ Daemon-Konfiguration nach `~/etc/services.d/flying-buddha.ini`:
 [program:flying-buddha]
 command=%(ENV_HOME)s/venvs/flying-buddha/bin/gunicorn -b 0.0.0.0:8000 app:app
 directory=%(ENV_HOME)s/flying-buddha
-environment=SECRET_KEY="bitte-ein-eigenes-secret-setzen",URL_PREFIX="/flying-buddha"
+environment=SECRET_KEY="bitte-ein-eigenes-secret-setzen"
 autostart=true
 autorestart=true
 ```
 
-Daemon registrieren und Domain-Root auf den Port routen:
+`0.0.0.0`, nie `127.0.0.1` — auf Uberspace ist ein an localhost gebundenes
+Backend stillschweigend unerreichbar, der Prozess sieht dabei gesund aus.
+
+`SECRET_KEY` wird derzeit von nichts benutzt: `flask.session` wird nirgends
+importiert, die `SessionID` ist eine eigene Kennung in SQLite und kein
+signiertes Cookie. Trotzdem einen eigenen Wert setzen — sobald irgendwo
+`session` oder `flash` dazukommt, wäre der Platzhalter aus einem öffentlichen
+Repository der Schlüssel.
+
+Daemon registrieren und die Subdomain auf den Port routen:
 
 ```bash
 supervisorctl reread && supervisorctl update
 supervisorctl status flying-buddha
 
-uberspace web backend set /flying-buddha --http --port 8000
+uberspace web domain add buddha.fltdpl.de
+uberspace web backend set buddha.fltdpl.de --http --port 8000
+uberspace web backend list
 ```
 
-Fertig — die Seite liegt unter `https://<host>.uberspace.de/flying-buddha`.
-Die Middleware in `app.py` (aktiv durch `URL_PREFIX`) entfernt den Präfix intern,
-sodass die Flask-Routen (`/`, `/buddha/api/...`) unverändert greifen und alle
-generierten URLs den Präfix tragen. Kein `--remove-prefix` nötig.
+Kein `--remove-prefix` — es gibt keinen Präfix mehr.
+
+## Umzug vom Pfad auf die Subdomain
+
+Reihenfolge, damit die Seite nicht zwischendurch tot ist:
+
+```bash
+# 1. Subdomain anlegen und routen, der alte Pfad läuft noch weiter
+uberspace web domain add buddha.fltdpl.de
+uberspace web backend set buddha.fltdpl.de --http --port 8000
+
+# 2. URL_PREFIX aus ~/etc/services.d/flying-buddha.ini entfernen, dann
+supervisorctl update && supervisorctl restart flying-buddha
+
+# 3. erst prüfen, dann abschalten
+curl -sI https://buddha.fltdpl.de/ | head -1        # muss 200 sein
+uberspace web backend del /flying-buddha
+```
+
+Zwischen Schritt 2 und 3 ist `fltdpl.de/flying-buddha` kaputt (die Routen
+liegen dann bei `/`, geroutet wird aber noch der Pfad). Das Fenster ist kurz;
+wer es vermeiden will, macht Schritt 3 direkt nach Schritt 2.
+
+Den 301 vom alten Pfad übernimmt danach `.htaccess` im Repository
+`fltdpl-root`, das `~/html` ausliefert. Der Pfad erreicht die statische
+Auslieferung erst, wenn sein Web-Backend gelöscht ist — deshalb Schritt 3.
+
+Zertifikate stellt Uberspace automatisch aus, sobald die Subdomain auf den Host
+zeigt. Stand 2026-08-28 gibt es für `*.fltdpl.de` einen A-Record, **aber keinen
+AAAA** — die Subdomain ist damit nur über IPv4 erreichbar.
 
 ## Neuen Stand ausrollen
 
