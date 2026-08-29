@@ -108,8 +108,32 @@ Den 301 vom alten Pfad übernimmt danach `.htaccess` im Repository
 Auslieferung erst, wenn sein Web-Backend gelöscht ist — deshalb Schritt 3.
 
 Zertifikate stellt Uberspace automatisch aus, sobald die Subdomain auf den Host
-zeigt. Stand 2026-08-28 gibt es für `*.fltdpl.de` einen A-Record, **aber keinen
-AAAA** — die Subdomain ist damit nur über IPv4 erreichbar.
+zeigt. **`uberspace web domain add` verlangt dafür A *und* AAAA** und lehnt
+einen Namen mit nur einem A-Record ab; der Name liefert dann Uberspaces
+„Diese Domain kennen wir leider nicht" aus — als **HTTP 200** und mit dem
+allgemeinen `*.uberspace.de`-Zertifikat, was nach TLS aussieht und DNS ist.
+Seit 2026-08-29 hat `*.fltdpl.de` bei INWX beides (A `185.26.156.230`, AAAA
+`2a00:d0c0:200:0:4878:80ff:fe16:d045`), `buddha` ist davon mit abgedeckt.
+
+Vorsicht mit Wildcards: ein **expliziter** Eintrag für `buddha` würde den
+`*`-Eintrag für diesen Namen verdrängen. Wer einen setzt, muss A **und** AAAA
+setzen, sonst fällt das jeweils andere Protokoll aus.
+
+## Erst ausrollen, dann pruefen — nicht nur den Statuscode
+
+Am 2026-08-29 lief auf dem Server noch Code von **vor** `7cfd80a`: die Seite
+antwortete mit 200, lud jQuery, Knockout und Bootstrap aber weiter von
+`cdnjs.cloudflare.com`. Der Statuscode sagt darueber nichts. Nach jedem Umzug
+oder Deploy deshalb den ausgelieferten HTML-Quelltext ansehen:
+
+```bash
+curl -s https://buddha.fltdpl.de/ | grep -c cdnjs     # muss 0 sein
+curl -s https://buddha.fltdpl.de/ | grep -o 'src="/[^"]*"' | sort -u
+```
+
+Die erste Zeile ist die wichtige: solange dort etwas anderes als `0` steht,
+gehen die IP-Adressen der Besucher an einen Dritten, waehrend das Impressum das
+Gegenteil behauptet.
 
 ## Neuen Stand ausrollen
 
