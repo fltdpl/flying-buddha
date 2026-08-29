@@ -24,20 +24,41 @@ cd ~/flying-buddha
 
 # venv + Abhängigkeiten (gunicorn nur auf dem Server nötig)
 ls /usr/bin/python3.1*        # vorhandene Interpreter zeigen
-python3.11 -m venv ~/venvs/flying-buddha
-~/venvs/flying-buddha/bin/pip install -r requirements.txt gunicorn
+python3.11 -m venv ~/flying-buddha/venv
+~/flying-buddha/venv/bin/pip install -r requirements.txt gunicorn
 ```
 
 Daemon-Konfiguration nach `~/etc/services.d/flying-buddha.ini`:
 
 ```ini
 [program:flying-buddha]
-command=%(ENV_HOME)s/venvs/flying-buddha/bin/gunicorn -b 0.0.0.0:8000 app:app
+command=%(ENV_HOME)s/flying-buddha/venv/bin/gunicorn -b 0.0.0.0:8000 app:app
 directory=%(ENV_HOME)s/flying-buddha
 environment=SECRET_KEY="bitte-ein-eigenes-secret-setzen"
 autostart=true
 autorestart=true
 ```
+
+**Der Pfad zum venv ist der real laufende**, geprüft am 2026-08-29 gegen
+`uberspace web backend list`:
+`/home/fltdpl/flying-buddha/venv/bin/gunicorn`. Frühere Fassungen dieser Datei
+nannten `~/venvs/flying-buddha` — das existiert auf dem Server nicht. Wer die
+`.ini` von dort abschreibt, zeigt auf ein leeres Verzeichnis und legt beim
+nächsten Neustart das laufende Spiel lahm.
+
+Das venv liegt **im Projektordner**. Das ist seit dem 2026-08-29 die
+**Server-Konvention für alle Seiten**: ein Verzeichnis enthält eine Anwendung
+vollständig, und wer es löscht, lässt nichts in einem parallelen `~/venvs/`
+zurück. `wetter` hält seines dort ebenso (`~/wetter/venv`); dieses Projekt war
+schon vorher so aufgebaut und musste nicht umziehen.
+
+`venv/` steht in `.gitignore`, das Repository sieht es also nie. Die Kehrseite:
+das venv ist eine ignorierte Datei **innerhalb** eines git-Checkouts, und
+**`git clean -fdx` löscht es** — zusammen mit `buddha.db`, also der kompletten
+Bestenliste. Ohne `-x` ist der Befehl harmlos.
+
+Lokal auf dem Entwicklungsrechner darf das venv weiter außerhalb liegen; die
+beiden Seiten unterscheiden sich absichtlich.
 
 `0.0.0.0`, nie `127.0.0.1` — auf Uberspace ist ein an localhost gebundenes
 Backend stillschweigend unerreichbar, der Prozess sieht dabei gesund aus.
